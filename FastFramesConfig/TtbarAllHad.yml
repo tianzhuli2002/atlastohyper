@@ -1,0 +1,64 @@
+general:
+  debug_level: DEBUG
+  input_filelist_path: "../../metadaHyPERTtbarAllHad/filelist.txt"
+  input_sumweights_path: "../../metadaHyPERTtbarAllHad/sum_of_weights.txt"
+  output_path_histograms: "/home/dbaronmo/Work/resultsHyPER"
+  output_path_ntuples: "/home/dbaronmo/Work/resultsHyPER"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: 
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  custom_frame_name: "PartonMatcher"
+  automatic_systematics: False
+  nominal_only: True
+  #use_region_subfolders: True
+  create_tlorentz_vectors_for: ["jet"]
+  number_of_cpus: 4
+
+regions:
+  - name: "6orMoreJets"
+    selection: "nJets_good_NOSYS >= 6"
+    variables:
+      - name: jet_pt
+        title: Transverse momentum jet1;p_{T} jet1 [GeV];Events
+        definition: Jet_TLV_NOSYS->pt()
+        type: float
+        binning:
+          min: 20
+          max: 300
+          number_of_bins: 56
+
+ntuples:
+  selection: nJets_good_NOSYS >= 6
+  branches:
+    - Jet_TLV_NOSYS
+    - Jet_TLV_NOSYS
+    - W_from_t_beforeFSR_TLV_NOSYS
+    - W_from_t_afterFSR_TLV_NOSYS
+
+samples:
+# ttbar all hadronic
+  - name: "ttbar_allhad_2023"
+    dsids: [601237]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim"
+    event_weights: &no_beamspot_weight "weight_mc_NOSYS"
+  - name: "ttbar_allhad_2022"
+    dsids: [601237]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2018"
+    dsids: [410471]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+  - name: "ttbar_allhad_2017"
+    dsids: [410471]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+  - name: "ttbar_allhad_2016"
+    dsids: [410471]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
