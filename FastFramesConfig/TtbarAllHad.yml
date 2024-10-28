@@ -17,26 +17,257 @@ general:
   create_tlorentz_vectors_for: ["jet"]
   number_of_cpus: 4
 
+cutflows:
+  - name: Top1Matches
+    variables_to_track:
+      - nJets
+      - reco_Top1_mass
+      - reco_W1_mass
+      - reco_Top2_mass
+      - reco_W2_mass
+    selections:
+      - selection: W1_Matched_NOSYS == 1 || W2_Matched_NOSYS == 1
+        title: "One_W_Matched"
+      - selection: W_Not_Overlap_NOSYS == 1
+        title: "W_Not_Overlap"
+      - selection: b_Not_Overlap_NOSYS == 1
+        title: "b_Not_Overlap"
+      - selection: Top1_Matched_NOSYS == 1
+        title: "Top1_Matched"
+      - selection: Top2_Matched_NOSYS == 1
+        title: "Top2_Matched"
+  - name: Top1Matches
+    variables_to_track:
+      - nJets
+    selections:
+      - selection: W1_Matched_NOSYS == 1 || W2_Matched_NOSYS == 1
+        title: "One_W_Matched"
+      - selection: W_Not_Overlap_NOSYS == 1
+        title: "W_Not_Overlap"
+      - selection: b_Not_Overlap_NOSYS == 1
+        title: "b_Not_Overlap"
+      - selection: Top2_Matched_NOSYS == 1
+        title: "Top2_Matched"
+      - selection: Top1_Matched_NOSYS == 1
+        title: "Top1_Matched"
+      
+
+
 regions:
   - name: "6orMoreJets"
     selection: "nJets_good_NOSYS >= 6"
     variables:
-      - name: jet_pt
-        title: Transverse momentum jet1;p_{T} jet1 [GeV];Events
-        definition: Jet_TLV_NOSYS->pt()
+      - name: nJets
+        title: Number of jets; N Jets;Events
+        definition: nJets_good_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 16
+          number_of_bins: 16
+      - name: reco_Top1_mass
+        title: Reco top mass; m_{t} [GeV];Events
+        definition: Top1_reco_mass_NOSYS
         type: float
         binning:
-          min: 20
+          min: 30
           max: 300
-          number_of_bins: 56
+          number_of_bins: 54
+      - name: reco_W1_mass
+        title: Reco W mass from top;m_{W} [GeV];Events
+        definition: W1_reco_mass_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: reco_Top2_mass
+        title: Reco anti-top mass; m_{tbar} [GeV];Events
+        definition: Top2_reco_mass_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: reco_W2_mass
+        title: Reco W mass from anti-top;m_{W} [GeV];Events
+        definition: W2_reco_mass_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_t_mass_afterFSR
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: truth_t_mass_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_afterFSR_from_branch
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: Ttbar_History_MC_t_afterFSR_m/1000
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_beforeFSR
+        title: Truth top mass before FSR;m_{t} [GeV];Events
+        definition: truth_t_mass_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_tbar_mass_afterFSR
+        title: Truth anti-top mass after FSR;m_{t} [GeV];Events
+        definition: truth_tbar_mass_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_afterFSR_from_branch
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: Ttbar_History_MC_tbar_afterFSR_m/1000
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_tbar_mass_beforeFSR
+        title: Truth anti-top mass before FSR;m_{t} [GeV];Events
+        definition: truth_tbar_mass_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_W_from_t_mass_afterFSR
+        title: Truth W mass from top after FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_t_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_t_mass_beforeFSR
+        title: Truth W mass from top before FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_t_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_tbar_mass_afterFSR
+        title: Truth W mass from anti-top after FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_tbar_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_tbar_mass_beforeFSR
+        title: Truth W mass from anti-top before FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_tbar_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      # B quark kinematics
+      - name: truth_b_pt
+        title: Truth b quark p_{T};p_{T} [GeV];Events
+        definition: Ttbar_History_MC_b_beforeFSR_from_t_pt/1000
+        type: float
+        binning:
+          min: 0
+          max: 200
+          number_of_bins: 40
+      - name: truth_b_eta
+        title: Truth b quark #eta;#eta;Events
+        definition: Ttbar_History_MC_b_beforeFSR_from_t_eta
+        type: float
+        binning:
+          min: -3
+          max: 3
+          number_of_bins: 60
+      - name: truth_b_phi
+        title: Truth b quark #phi;#phi;Events
+        definition: Ttbar_History_MC_b_beforeFSR_from_t_phi
+        type: float
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 64
+      - name: truth_bbar_pt
+        title: Truth bbar quark p_{T};p_{T} [GeV];Events
+        definition: Ttbar_History_MC_bbar_beforeFSR_from_tbar_pt/1000
+        type: float
+        binning:
+          min: 0
+          max: 200
+          number_of_bins: 40
+      - name: truth_bbar_eta
+        title: Truth bbar quark #eta;#eta;Events
+        definition: Ttbar_History_MC_bbar_beforeFSR_from_tbar_eta
+        type: float
+        binning:
+          min: -3
+          max: 3
+          number_of_bins: 60
+      - name: truth_bbar_phi  
+        title: Truth bbar quark #phi;#phi;Events
+        definition: Ttbar_History_MC_bbar_beforeFSR_from_tbar_phi
+        type: float
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 64
+      - name: truth_bbar_id
+        title: Truth bbar quark; pdgID;Events
+        definition: Ttbar_History_MC_bbar_afterFSR_from_tbar_pdgId
+        type: int
+        binning:
+          min: 0
+          max: 20
+          number_of_bins: 20
+      - name: truth_b_id
+        title: Truth b quark; pdgID;Events
+        definition: Ttbar_History_MC_b_afterFSR_from_t_pdgId
+        type: int
+        binning:
+          min: 0
+          max: 20
+          number_of_bins: 20
+
 
 ntuples:
   selection: nJets_good_NOSYS >= 6
   branches:
-    - Jet_TLV_NOSYS
-    - Jet_TLV_NOSYS
+    - jet_Ordered_TLV_NOSYS
     - W_from_t_beforeFSR_TLV_NOSYS
-    - W_from_t_afterFSR_TLV_NOSYS
+    - W_from_tbar_beforeFSR_TLV_NOSYS
+    - b_temp_beforeFSR_TLV_NOSYS
+    - bbar_temp_beforeFSR_TLV_NOSYS
+    - T_beforeFSR_TLV_NOSYS
+    - Tbar_beforeFSR_TLV_NOSYS
+    - q1_from_t_afterFSR_TLV_NOSYS
+    - q2_from_t_afterFSR_TLV_NOSYS
+    - q1_from_tbar_afterFSR_TLV_NOSYS
+    - q2_from_tbar_afterFSR_TLV_NOSYS
+    - truth_t_mass_beforeFSR_NOSYS
+    - truth_tbar_mass_beforeFSR_NOSYS
+    - truth_W_mass_from_t_afterFSR_NOSYS
+    - truth_W_mass_from_tbar_afterFSR_NOSYS
+    - q1_index_NOSYS
+    - q2_index_NOSYS
+    - q1bar_index_NOSYS
+    - q2bar_index_NOSYS
+    - b_index_NOSYS
+    - bbar_index_NOSYS
 
 samples:
 # ttbar all hadronic
