@@ -1,5 +1,5 @@
 general:
-  debug_level: DEBUG
+  debug_level: INFO
   input_filelist_path: "../../metadaHyPERTtbarAllHad/filelist.txt"
   input_sumweights_path: "../../metadaHyPERTtbarAllHad/sum_of_weights.txt"
   output_path_histograms: "/home/dbaronmo/Work/resultsHyPER"
@@ -13,8 +13,13 @@ general:
   custom_frame_name: "PartonMatcher"
   automatic_systematics: False
   nominal_only: True
-  #use_region_subfolders: True
   create_tlorentz_vectors_for: ["jet"]
+  config_define_after_custom_class: True
+  define_custom_columns:
+    - name: "Is_FullyMatched_NOSYS"
+      definition: "nJets_good_NOSYS >= 6 && W1_Matched_NOSYS == 1 && W2_Matched_NOSYS == 1 && W_Not_Overlap_NOSYS == 1 && b_Not_Overlap_NOSYS == 1 && Top1_Matched_NOSYS == 1 && Top2_Matched_NOSYS == 1"
+    - name: "Is_PartialMatched_NOSYS"
+      definition: "nJets_good_NOSYS >= 6 && (W1_Matched_NOSYS == 1 || W2_Matched_NOSYS == 1) && W_Not_Overlap_NOSYS == 1 && b_Not_Overlap_NOSYS == 1"
   number_of_cpus: 4
 
 cutflows:
@@ -26,6 +31,8 @@ cutflows:
       - reco_Top2_mass
       - reco_W2_mass
     selections:
+      - selection: nJets_good_NOSYS >= 6
+        title: "6plusJets"
       - selection: W1_Matched_NOSYS == 1 || W2_Matched_NOSYS == 1
         title: "One_W_Matched"
       - selection: W_Not_Overlap_NOSYS == 1
@@ -36,10 +43,10 @@ cutflows:
         title: "Top1_Matched"
       - selection: Top2_Matched_NOSYS == 1
         title: "Top2_Matched"
-  - name: Top1Matches
-    variables_to_track:
-      - nJets
+  - name: Top2Matches
     selections:
+      - selection: nJets_good_NOSYS >= 6
+        title: "6plusJets"
       - selection: W1_Matched_NOSYS == 1 || W2_Matched_NOSYS == 1
         title: "One_W_Matched"
       - selection: W_Not_Overlap_NOSYS == 1
@@ -51,12 +58,10 @@ cutflows:
       - selection: Top1_Matched_NOSYS == 1
         title: "Top1_Matched"
       
-
-
 regions:
   - name: "6orMoreJets"
     selection: "nJets_good_NOSYS >= 6"
-    variables:
+    variables: &all_variables
       - name: nJets
         title: Number of jets; N Jets;Events
         definition: nJets_good_NOSYS
@@ -242,26 +247,30 @@ regions:
           min: 0
           max: 20
           number_of_bins: 20
-
+  - name: "FullyMatched"
+    selection: "nJets_good_NOSYS >= 6 && W1_Matched_NOSYS == 1 && W2_Matched_NOSYS == 1 && W_Not_Overlap_NOSYS == 1 && b_Not_Overlap_NOSYS == 1 && Top1_Matched_NOSYS == 1 && Top2_Matched_NOSYS == 1"
+    variables: *all_variables
 
 ntuples:
-  selection: nJets_good_NOSYS >= 6
+  selection: Is_FullyMatched_NOSYS
   branches:
     - jet_Ordered_TLV_NOSYS
-    - W_from_t_beforeFSR_TLV_NOSYS
-    - W_from_tbar_beforeFSR_TLV_NOSYS
-    - b_temp_beforeFSR_TLV_NOSYS
-    - bbar_temp_beforeFSR_TLV_NOSYS
-    - T_beforeFSR_TLV_NOSYS
-    - Tbar_beforeFSR_TLV_NOSYS
-    - q1_from_t_afterFSR_TLV_NOSYS
-    - q2_from_t_afterFSR_TLV_NOSYS
-    - q1_from_tbar_afterFSR_TLV_NOSYS
-    - q2_from_tbar_afterFSR_TLV_NOSYS
+    - nJets_good_NOSYS
+    - GN2v01_PCBT_quantile_NOSYS
+    - nBjets_GN2v01_100_NOSYS
+    - nBjets_GN2v01_90_NOSYS
+    - nBjets_GN2v01_85_NOSYS
+    - nBjets_GN2v01_77_NOSYS
+    - nBjets_GN2v01_70_NOSYS
+    - nBjets_GN2v01_65_NOSYS
+    - Top1_reco_mass_NOSYS
+    - W1_reco_mass_NOSYS
+    - Top2_reco_mass_NOSYS
+    - W2_reco_mass_NOSYS
     - truth_t_mass_beforeFSR_NOSYS
     - truth_tbar_mass_beforeFSR_NOSYS
-    - truth_W_mass_from_t_afterFSR_NOSYS
-    - truth_W_mass_from_tbar_afterFSR_NOSYS
+    - truth_W_mass_from_t_beforeFSR_NOSYS
+    - truth_W_mass_from_tbar_beforeFSR_NOSYS
     - q1_index_NOSYS
     - q2_index_NOSYS
     - q1bar_index_NOSYS
@@ -275,12 +284,10 @@ samples:
     dsids: [601237]
     campaigns: ["mc23d"]
     simulation_type: "fullsim"
-    event_weights: &no_beamspot_weight "weight_mc_NOSYS"
   - name: "ttbar_allhad_2022"
     dsids: [601237]
     campaigns: ["mc23a"]
     simulation_type: "fullsim"
-    event_weights: *no_beamspot_weight
   - name: "ttbar_allhad_2018"
     dsids: [410471]
     campaigns: ["mc20e"]

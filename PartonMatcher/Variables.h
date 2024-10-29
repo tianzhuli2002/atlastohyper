@@ -67,6 +67,66 @@ namespace Variables{
     }
 
     /**
+     * @brief Create a container from the indices of pT sorted objects and another container.
+     * @param T The type of the output container (should match the input).
+     * @param pTOrderedJetIndices The indices of the jets ordered by pT.
+     * @param inputContainer The input container.
+     * @return std::vector<T> The output container.
+     */
+    template<typename T>
+    std::vector<T> pTSortedContainer(const std::vector<T>& inputContainer, const std::vector<std::size_t>& pTOrderedJetIndices){
+        std::vector<T> outputContainer;
+        for(const auto& i : pTOrderedJetIndices){
+            outputContainer.push_back(inputContainer.at(i));
+        }
+        return outputContainer;
+    }
+
+    /**
+     * @brief Count number of b-jets above certain GN2v01 working point
+     * @param pTOrderedJetIndices The indices of the jets ordered by pT.
+     * @param jetBTagVec The vector storing the pseudocontinuos b-tagging scores.
+     * @param jetBTagWP The working point for b-tagging.
+     * @return int The number of b-jets above the working point.
+     */
+    class nBJets{
+        public:
+        nBJets(const std::size_t jetBTagWP) : m_jetBTagWP(jetBTagWP){}
+        int getCuantile(){
+            switch (m_jetBTagWP){
+            case 100:
+                return 1;
+            case 90:
+                return 2;
+            case 85:
+                return 3;
+            case 77:
+                return 4;
+            case 70:
+                return 5;
+            case 65:
+                return 6;
+            default:
+                LOG(ERROR) << "Invalid b-tagging working point for this algorithm.";
+                throw std::invalid_argument("");
+            }
+        }
+
+        int operator()(const std::vector<std::size_t>& pTOrderedJetIndices, const std::vector<int>& jetBTagVec){
+            int nBJets = 0;
+            for(const auto& i : pTOrderedJetIndices){
+                if(jetBTagVec.at(i) >= this->getCuantile()){
+                    nBJets++;
+                }
+            }
+            return nBJets;
+        }
+
+        private:
+        const std::size_t m_jetBTagWP;
+    };
+
+    /**
      * @brief Create a TLV for a b-quark from the four momentum of the top quark and the W boson.
      * @return ROOT::Math::PtEtaPhiMVector The TLV of the b-quark.
      * @param topQuark The top quark TLV.

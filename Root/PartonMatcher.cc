@@ -48,6 +48,52 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
                                          {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Bjets multiplicity and properties ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_100_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_100_NOSYS",
+                                         Variables::nBJets(100),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_90_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_90_NOSYS",
+                                         Variables::nBJets(90),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_85_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_85_NOSYS",
+                                         Variables::nBJets(85),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_77_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_77_NOSYS",
+                                         Variables::nBJets(77),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_70_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_70_NOSYS",
+                                         Variables::nBJets(70),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+  
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_65_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "nBjets_GN2v01_65_NOSYS",
+                                         Variables::nBJets(65),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile"});
+
+  LOG(INFO) << "Adding variable: GN2v01_PCBT_quantile_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "GN2v01_PCBT_quantile_NOSYS",
+                                         Variables::pTSortedContainer<int>,
+                                         {"jet_GN2v01_Continuous_quantile", "jets_ptOrderIndex_NOSYS"});
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Parton TLVs ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -262,6 +308,10 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
                                          "b_Not_Overlap_NOSYS",
                                          Variables::isNotBOverlap,
                                          {"b_index_NOSYS", "bbar_index_NOSYS"});
+
+  // Uncomment to print variables!
+  //auto display = mainNode.Display({"b_index_NOSYS", "q1_index_NOSYS", "q2_index_NOSYS", "Top1_Matched_NOSYS", "W1_Matched_NOSYS"}, 200);
+  //display->Print();
 
   return mainNode;
 }
