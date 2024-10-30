@@ -309,6 +309,37 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
                                          Variables::isNotBOverlap,
                                          {"b_index_NOSYS", "bbar_index_NOSYS"});
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Trigger big OR ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Get branch names
+  auto columns = mainNode.GetColumnNames();
+  // Store the trigger branches
+  std::vector<std::string> triggerBranches;
+  for (const auto& column : columns) {
+    if (column.find("trigPassed") != std::string::npos) {
+      triggerBranches.push_back(column);
+    }
+  }
+
+  auto firstTrigger = [](bool triggerDecision){return triggerDecision;};
+  LOG(INFO) << "Adding variable: Passed_Any_Trigger_NOSYS\n";
+  mainNode = MainFrame::systematicDefine(mainNode,
+                                         "Passed_Any_Trigger_NOSYS",
+                                         firstTrigger,
+                                         {triggerBranches.at(0)});
+
+
+  auto triggerOR = [](bool triggerDecision1, bool triggerDecision2){return triggerDecision1 || triggerDecision2;};
+  LOG(INFO) << "Adding variable: Passed_Any_Trigger_NOSYS\n";
+  for (std::size_t iTriggerChain{1}; iTriggerChain < triggerBranches.size(); iTriggerChain++) {
+    
+    mainNode = mainNode.Redefine("Passed_Any_Trigger_NOSYS",
+                                 triggerOR,
+                                 {"Passed_Any_Trigger_NOSYS", triggerBranches.at(iTriggerChain)});
+
+  }
+
   // Uncomment to print variables!
   //auto display = mainNode.Display({"b_index_NOSYS", "q1_index_NOSYS", "q2_index_NOSYS", "Top1_Matched_NOSYS", "W1_Matched_NOSYS"}, 200);
   //display->Print();

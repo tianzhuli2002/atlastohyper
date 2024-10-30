@@ -254,8 +254,11 @@ regions:
 ntuples:
   selection: Is_FullyMatched_NOSYS
   branches:
+    - Passed_Any_Trigger_NOSYS
     - jet_Ordered_TLV_NOSYS
     - nJets_good_NOSYS
+    - met_met_NOSYS
+    - met_phi_NOSYS
     - GN2v01_PCBT_quantile_NOSYS
     - nBjets_GN2v01_100_NOSYS
     - nBjets_GN2v01_90_NOSYS
