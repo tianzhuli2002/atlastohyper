@@ -21,21 +21,18 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   ////////////////////////////////////////////////////////////// Object multiplicity ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  std::string jet_OR_flag = "jet_select_passesOR_NOSYS"; // "jet_select_or_NOSYS"
-
   LOG(INFO) << "Adding variable: nJets_good_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "nJets_good_NOSYS",
                                          Variables::nGoodJets,
-                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});   
+                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS"});   
 
   LOG(INFO) << "Adding variable: jet_Ordered_TLV_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "jet_Ordered_TLV_NOSYS",
                                          static_cast<std::vector<TLV>(*)(const std::vector<TLV>&,
-                                      const std::vector<char>&,
                                       const std::vector<char>&)>(DefineHelpers::sortedPassedVector),
-                                         {"jet_TLV_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});                                           
+                                         {"jet_TLV_NOSYS", "jet_select_baselineJvt_NOSYS"});                                           
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Pt indices ////////////////////////////////////////////////////
@@ -44,8 +41,8 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   LOG(INFO) << "Adding variable: jets_ptOrderIndex_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "jets_ptOrderIndex_NOSYS",
-                                         Variables::indexPtOrderedGoodTwoSelec,
-                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});
+                                         Variables::indexPtOrderedGoodOneSelec,
+                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS"});
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Bjets multiplicity and properties ////////////////////////////////////////////////////
@@ -130,56 +127,29 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   ////////////////////////////////////////////////////////////// Parton Kinematics ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Temporary fix for bad b-quarks...
-  LOG(INFO) << "Adding variable: b_temp_afterFSR_TLV_NOSYS\n";
-  mainNode = MainFrame::systematicDefine(mainNode,
-                                         "b_temp_afterFSR_TLV_NOSYS",
-                                         Variables::recoBQuarkPartonTLV,
-                                         {"T_afterFSR_TLV_NOSYS", "W_from_t_afterFSR_TLV_NOSYS"}); 
-
-  LOG(INFO) << "Adding variable: b_temp_beforeFSR_TLV_NOSYS\n";
-  mainNode = MainFrame::systematicDefine(mainNode,
-                                         "b_temp_beforeFSR_TLV_NOSYS",
-                                         Variables::recoBQuarkPartonTLV,
-                                         {"T_beforeFSR_TLV_NOSYS", "W_from_t_beforeFSR_TLV_NOSYS"});
-
-  LOG(INFO) << "Adding variable: bbar_temp_afterFSR_TLV_NOSYS\n";
-  mainNode = MainFrame::systematicDefine(mainNode,
-                                         "bbar_temp_afterFSR_TLV_NOSYS",
-                                         Variables::recoBQuarkPartonTLV,
-                                         {"Tbar_afterFSR_TLV_NOSYS", "W_from_tbar_afterFSR_TLV_NOSYS"});
-
-  LOG(INFO) << "Adding variable: bbar_temp_beforeFSR_TLV_NOSYS\n";
-  mainNode = MainFrame::systematicDefine(mainNode,
-                                         "bbar_temp_beforeFSR_TLV_NOSYS",
-                                         Variables::recoBQuarkPartonTLV,
-                                         {"Tbar_beforeFSR_TLV_NOSYS", "W_from_tbar_beforeFSR_TLV_NOSYS"}); 
-
-  // End of temporary fix
-
   LOG(INFO) << "Adding variable: truth_t_mass_afterFSR_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "truth_t_mass_afterFSR_NOSYS",
                                          Variables::invariantMassThree,
-                                         {"q1_from_t_afterFSR_TLV_NOSYS", "q2_from_t_afterFSR_TLV_NOSYS","b_temp_afterFSR_TLV_NOSYS"});  
+                                         {"q1_from_t_afterFSR_TLV_NOSYS", "q2_from_t_afterFSR_TLV_NOSYS","b_afterFSR_TLV_NOSYS"});  
 
   LOG(INFO) << "Adding variable: truth_t_mass_beforeFSR_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "truth_t_mass_beforeFSR_NOSYS",
                                          Variables::invariantMassThree,
-                                         {"q1_from_t_beforeFSR_TLV_NOSYS", "q2_from_t_beforeFSR_TLV_NOSYS","b_temp_beforeFSR_TLV_NOSYS"});    
+                                         {"q1_from_t_beforeFSR_TLV_NOSYS", "q2_from_t_beforeFSR_TLV_NOSYS","b_beforeFSR_TLV_NOSYS"});    
 
   LOG(INFO) << "Adding variable: truth_tbar_mass_afterFSR_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "truth_tbar_mass_afterFSR_NOSYS",
                                          Variables::invariantMassThree,
-                                         {"q1_from_tbar_afterFSR_TLV_NOSYS", "q2_from_tbar_afterFSR_TLV_NOSYS","bbar_temp_afterFSR_TLV_NOSYS"});
+                                         {"q1_from_tbar_afterFSR_TLV_NOSYS", "q2_from_tbar_afterFSR_TLV_NOSYS","bbar_afterFSR_TLV_NOSYS"});
 
   LOG(INFO) << "Adding variable: truth_tbar_mass_beforeFSR_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "truth_tbar_mass_beforeFSR_NOSYS",
                                          Variables::invariantMassThree,
-                                         {"q1_from_tbar_beforeFSR_TLV_NOSYS", "q2_from_tbar_beforeFSR_TLV_NOSYS","bbar_temp_beforeFSR_TLV_NOSYS"});
+                                         {"q1_from_tbar_beforeFSR_TLV_NOSYS", "q2_from_tbar_beforeFSR_TLV_NOSYS","bbar_beforeFSR_TLV_NOSYS"});
 
   LOG(INFO) << "Adding variable: truth_W_mass_from_t_afterFSR_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
@@ -225,7 +195,7 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "b_index_NOSYS",
                                          Variables::matchPartonRecoParticles,
-                                         {"b_temp_beforeFSR_TLV_NOSYS", "jet_Ordered_TLV_NOSYS"});
+                                         {"b_beforeFSR_TLV_NOSYS", "jet_Ordered_TLV_NOSYS"});
 
   LOG(INFO) << "Adding variable: q1bar_index_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
@@ -243,7 +213,7 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "bbar_index_NOSYS",
                                          Variables::matchPartonRecoParticles,
-                                         {"bbar_temp_beforeFSR_TLV_NOSYS", "jet_Ordered_TLV_NOSYS"});
+                                         {"bbar_beforeFSR_TLV_NOSYS", "jet_Ordered_TLV_NOSYS"});
 
   LOG(INFO) << "Adding variable: W1_reco_mass_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,

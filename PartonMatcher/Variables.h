@@ -11,6 +11,17 @@
 // Variables used in both channels
 namespace Variables{
     /**
+     * @brief Calculate the pt ordered indices of the objects that pass one selecttion.
+     * @return std::vector<std::size_t> The indices of the objects that pass the selection.
+     * @param ptVec The pT vector of the objects.
+     * @param selection The first selection.
+     */
+    std::vector<std::size_t> indexPtOrderedGoodOneSelec(const std::vector<float>& ptVec,
+                                        const std::vector<char>& selection){
+        return DefineHelpers::sortedPassedIndices(ptVec,selection);
+    }
+
+    /**
      * @brief Calculate the pt ordered indices of the objects that pass two selections.
      * @return std::vector<std::size_t> The indices of the objects that pass the two selections.
      * @param ptVec The pT vector of the objects.
@@ -24,16 +35,14 @@ namespace Variables{
     }
 
     /**
-     * @brief Calculate the number of jets that pass two selections and have a pT greater than 20 GeV.
-     * @return int The number of jets that pass the two selections.
+     * @brief Calculate the number of jets that pass one selection and have a pT greater than 20 GeV.
+     * @return int The number of jets that pass the selections.
      * @param ptVec The pT vector of the jets.
-     * @param selected1 The first selection.
-     * @param selected2 The second selection.
+     * @param selected The first selection.
      */
     int nGoodJets(const std::vector<float>& ptVec,
-                        const std::vector<char>& selected1,
-                        const std::vector<char>& selected2){
-        return DefineHelpers::numberOfObjects(ptVec,20000,selected1,selected2);
+                        const std::vector<char>& selected){
+        return DefineHelpers::numberOfObjects(ptVec,20000,selected);
     }
 
     /**

@@ -20,7 +20,7 @@ def MakeDatasetTtbarAllHad(input: str, output: str, split: bool = False, saveEve
     root_file = uproot.open(input)
     tree = root_file['reco']
     num_entries = tree.num_entries
-    num_entries = 2000
+    #num_entries = 10000
 
     # ---------------------------------------------------
     #                 Load data from ROOT
