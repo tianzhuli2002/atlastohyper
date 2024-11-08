@@ -1,5 +1,7 @@
 build/
 install/
+.asetup.save
+*/__pycache__/*
 
 # Do not track things related to the conversion of ROOT -> HDF5
 *.h5
