@@ -3,7 +3,7 @@
 #include "FastFrames/UniqueSampleID.h"
 #include "PartonMatcher/Variables.h"
 
-ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
+ROOT::RDF::RNode TtbarAllHadFrame::defineVariables(ROOT::RDF::RNode mainNode,
                                                 const std::shared_ptr<Sample>& /*sample*/,
                                                 const UniqueSampleID& /*id*/) {
 
@@ -15,7 +15,7 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   //   id.simulation() return simulation flavour
   // You can use it in your functions to apply only per sample define
   // Add all the variables needed for the analysis
-  LOG(INFO) << "You are running custom class: MyFrame"<<std::endl;    
+  LOG(INFO) << "You are running custom class: TtbarAllHadFrame" << std::endl;    
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Object multiplicity ////////////////////////////////////////////////////
@@ -317,7 +317,7 @@ ROOT::RDF::RNode PartonMatcher::defineVariables(ROOT::RDF::RNode mainNode,
   return mainNode;
 }
 
-ROOT::RDF::RNode PartonMatcher::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
+ROOT::RDF::RNode TtbarAllHadFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                       const std::shared_ptr<Sample>& sample,
                                                       const UniqueSampleID& id) {
   
@@ -325,17 +325,16 @@ ROOT::RDF::RNode PartonMatcher::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
   return mainNode;
 }
 
-ROOT::RDF::RNode PartonMatcher::defineVariablesTruth(ROOT::RDF::RNode node,
+ROOT::RDF::RNode TtbarAllHadFrame::defineVariablesTruth(ROOT::RDF::RNode node,
                                                      const std::string& /*sample*/,
                                                      const std::shared_ptr<Sample>& /*sample*/,
                                                      const UniqueSampleID& /*sampleID*/) {
   return node;
 }
 
-ROOT::RDF::RNode PartonMatcher::defineVariablesNtupleTruth(ROOT::RDF::RNode node,
+ROOT::RDF::RNode TtbarAllHadFrame::defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                            const std::string& /*treeName*/,
                                                            const std::shared_ptr<Sample>& /*sample*/,
                                                            const UniqueSampleID& /*sampleID*/) {
   return node;
 }
-  

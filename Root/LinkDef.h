@@ -7,6 +7,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclass;
-#pragma link C++ class PartonMatcher+;
+#pragma link C++ class TtbarAllHadFrame+;
+#pragma link C++ class TtbarSingleLeptonFrame+;
 
 #endif

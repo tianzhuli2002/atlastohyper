@@ -1,0 +1,174 @@
+general:
+  debug_level: INFO
+  input_filelist_path: "../../metadataHyPER/filelist.txt"
+  input_sumweights_path: "../../metadataHyPER/sum_of_weights.txt"
+  output_path_histograms: "/home/dbaronmo/Work/resultsHyPER"
+  output_path_ntuples: "/home/dbaronmo/Work/resultsHyPER"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_beamspot * weight_leptonSF_tight_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: 
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  custom_frame_name: "PartonMatcher"
+  automatic_systematics: False
+  nominal_only: True
+  #use_region_subfolders: True
+  create_tlorentz_vectors_for: ["jet", "el", "mu"]
+  number_of_cpus: 4
+
+regions:
+  - name: "Electron_total"
+    selection: "pass_ejets_NOSYS"
+    variables: 
+      # CUTS HISTOGRAMS
+      - name: passed_ejets
+        title: "histo title;X axis title;Y axis title"
+        definition: pass_ejets_NOSYS
+        type: char
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_basic
+        title: "histo title;X axis title;Y axis title"
+        definition: Electron_pass_basic_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_triggers_el
+        title: "histo title;X axis title;Y axis title"
+        definition: Electron_pass_triggers_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_triggerMatch
+        title: "histo title;X axis title;Y axis title"
+        definition: globalTriggerMatch_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: nElectrons
+        title: "histo title;X axis title;Y axis title"
+        definition: nElectrons_tight_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 4
+          number_of_bins: 4
+      - name: nJets
+        title: "Number of jets;Number of jets;Events"
+        definition: nJets_good_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 10
+          number_of_bins: 10
+
+  - name: "Muon_total"
+    selection: "pass_mujets_NOSYS"
+    variables: 
+      # CUTS HISTOGRAMS
+      - name: passed_mujets
+        title: "histo title;X axis title;Y axis title"
+        definition: pass_mujets_NOSYS
+        type: char
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_basic
+        title: "histo title;X axis title;Y axis title"
+        definition: Muon_pass_basic_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_triggers_mu
+        title: "histo title;X axis title;Y axis title"
+        definition: Muon_pass_triggers_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: passed_triggerMatch
+        title: "histo title;X axis title;Y axis title"
+        definition: globalTriggerMatch_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: nMuons
+        title: "histo title;X axis title;Y axis title"
+        definition: nMuons_tight_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 4
+          number_of_bins: 4
+      - name: nJets
+        title: "Number of jets;Number of jets;Events"
+        definition: nJets_good_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 10
+          number_of_bins: 10
+
+ntuples:
+  selection: Electron_pass_basic_NOSYS || Muon_pass_basic_NOSYS
+  branches:
+    - eventNumber
+    - Electron_pt
+    - Electron_eta
+    - Electron_phi
+    - Electron_e
+    - Electron_q
+    - Muon_pt
+    - Muon_eta
+    - Muon_phi
+    - Muon_e
+    - Muon_q
+    - Jet_pt
+    - Jet_eta
+    - Jet_phi
+    - Jet_e
+    - Jet_GN2v01_score
+    - Jet_SVmass
+    - Met_pt
+    - Met_phi
+    - Truth_.+_index
+
+samples:
+# ttbar
+  - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: &no_beamspot_weight "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS"
+  - name: "ttbar_singlelep_2022" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2018"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+  - name: "ttbar_nonallhad_2017"
+    dsids: [410470]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+  - name: "ttbar_nonallhad_2016"
+    dsids: [410470]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"

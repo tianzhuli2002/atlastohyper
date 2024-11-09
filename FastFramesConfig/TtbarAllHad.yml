@@ -10,7 +10,7 @@ general:
   xsection_files: 
     - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
     - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
-  custom_frame_name: "PartonMatcher"
+  custom_frame_name: "TtbarAllHadFrame"
   automatic_systematics: False
   nominal_only: True
   create_tlorentz_vectors_for: ["jet"]

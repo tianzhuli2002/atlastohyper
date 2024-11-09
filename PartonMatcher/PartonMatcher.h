@@ -16,12 +16,12 @@ using TLV = ROOT::Math::PtEtaPhiEVector;
 
 class UniqueSampleID;
 
-class PartonMatcher : public MainFrame {
+class TtbarAllHadFrame : public MainFrame {
 public:
 
-  explicit PartonMatcher() = default;
+  explicit TtbarAllHadFrame() = default;
 
-  virtual ~PartonMatcher() = default;
+  virtual ~TtbarAllHadFrame() = default;
 
   virtual void init() override final {MainFrame::init();}
 
@@ -44,6 +44,39 @@ public:
                                                       const UniqueSampleID& sampleID) override final;
 private:
 
-  ClassDefOverride(PartonMatcher, 1);
+  ClassDefOverride(TtbarAllHadFrame, 1);
+
+};
+
+class TtbarSingleLeptonFrame : public MainFrame {
+public:
+
+  explicit TtbarSingleLeptonFrame() = default;
+
+  virtual ~TtbarSingleLeptonFrame() = default;
+
+  virtual void init() override final {MainFrame::init();}
+
+  virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
+                                           const std::shared_ptr<Sample>& sample,
+                                           const UniqueSampleID& id) override final;
+  
+  virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
+                                                 const std::shared_ptr<Sample>& sample,
+                                                 const UniqueSampleID& id) override final;
+
+  virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
+                                                const std::string& treeName,
+                                                const std::shared_ptr<Sample>& sample,
+                                                const UniqueSampleID& sampleID) override final;
+
+    
+  virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
+                                                      const std::string& treeName,
+                                                      const std::shared_ptr<Sample>& sample,
+                                                      const UniqueSampleID& sampleID) override final;
+private:                             
+
+  ClassDefOverride(TtbarSingleLeptonFrame, 1);
 
 };
