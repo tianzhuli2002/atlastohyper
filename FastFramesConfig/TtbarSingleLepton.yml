@@ -11,6 +11,8 @@ general:
     - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
     - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
   custom_frame_name: "PartonMatcher"
+  custom_options:
+    class_name: "TtbarSingleLeptonFrame"
   automatic_systematics: False
   nominal_only: True
   #use_region_subfolders: True

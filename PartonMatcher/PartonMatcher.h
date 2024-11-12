@@ -15,68 +15,83 @@
 using TLV = ROOT::Math::PtEtaPhiEVector;
 
 class UniqueSampleID;
+class PartonMatcher;
 
-class TtbarAllHadFrame : public MainFrame {
-public:
+class ChannelFrame {
+  public:
+  explicit ChannelFrame(PartonMatcher* partonMatcherPtr) : m_partonMatcher(partonMatcherPtr) {}
 
-  explicit TtbarAllHadFrame() = default;
+  virtual ~ChannelFrame() { m_partonMatcher = nullptr; }
 
-  virtual ~TtbarAllHadFrame() = default;
-
-  virtual void init() override final {MainFrame::init();}
 
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const std::shared_ptr<Sample>& sample,
-                                           const UniqueSampleID& id) override final;
+                                           const UniqueSampleID& id) = 0;
   
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                  const std::shared_ptr<Sample>& sample,
-                                                 const UniqueSampleID& id) override final;
+                                                 const UniqueSampleID& id) = 0;
 
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
                                                 const std::string& truth,
                                                 const std::shared_ptr<Sample>& sample,
-                                                const UniqueSampleID& sampleID) override final;
+                                                const UniqueSampleID& sampleID) = 0;
   
   virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                       const std::string& treeName,
                                                       const std::shared_ptr<Sample>& sample,
-                                                      const UniqueSampleID& sampleID) override final;
-private:
+                                                      const UniqueSampleID& sampleID) = 0;
 
-  ClassDefOverride(TtbarAllHadFrame, 1);
-
+  PartonMatcher* m_partonMatcher;
 };
 
-class TtbarSingleLeptonFrame : public MainFrame {
+class PartonMatcher : public MainFrame {
 public:
 
-  explicit TtbarSingleLeptonFrame() = default;
+  explicit PartonMatcher() = default;
 
-  virtual ~TtbarSingleLeptonFrame() = default;
+  virtual ~PartonMatcher() = default;
 
-  virtual void init() override final {MainFrame::init();}
+  virtual void init() override {
+      MainFrame::init(); 
+      classFactory(); 
+  }
 
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const std::shared_ptr<Sample>& sample,
-                                           const UniqueSampleID& id) override final;
+                                           const UniqueSampleID& id) override 
+                                      {
+                                        return m_channelFrame->defineVariables(mainNode, sample, id);
+                                      }
   
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                  const std::shared_ptr<Sample>& sample,
-                                                 const UniqueSampleID& id) override final;
+                                                 const UniqueSampleID& id) override
+                                                 {
+                                                    return m_channelFrame->defineVariablesNtuple(mainNode, sample, id);
+                                                 }
 
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
-                                                const std::string& treeName,
+                                                const std::string& truth,
                                                 const std::shared_ptr<Sample>& sample,
-                                                const UniqueSampleID& sampleID) override final;
-
-    
+                                                const UniqueSampleID& sampleID) override
+                                                {
+                                                  return m_channelFrame->defineVariablesTruth(node, truth, sample, sampleID);
+                                                }
+  
   virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                       const std::string& treeName,
                                                       const std::shared_ptr<Sample>& sample,
-                                                      const UniqueSampleID& sampleID) override final;
-private:                             
+                                                      const UniqueSampleID& sampleID) override
+                                                      {
+                                                        return m_channelFrame->defineVariablesNtupleTruth(node, treeName, sample, sampleID);
+                                                      }
 
-  ClassDefOverride(TtbarSingleLeptonFrame, 1);
+  void classFactory();
+    
+private:
+  std::unique_ptr<ChannelFrame> m_channelFrame;
+
+  ClassDefOverride(PartonMatcher, 1);
 
 };
