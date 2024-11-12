@@ -1,16 +1,7 @@
-# Template for creating a custom class for FastFrames
+# ATLAS MC -> HyPER training inputs
 
-This simple repository can be used to generate a template for a custom class for FastFrames.
+This repository holds the code to convert ATLAS datasets ( produced with TCT ) into .h5 files. The code uses a FastFrames custom class that supports various channels, at the moment the supported channels are:
+- TtbarAllHadronic
+- TtbarSingleLepton
 
-To clone the repository do
-```
-git clone https://:@gitlab.cern.ch:8443/atlas-amglab/FastFramesCustomClassTemplate.git NameOfTheFolder
-```
-
-To rename the files and all the class names, you can use the attached bash script:
-```
-./renameFiles.sh NewClassName
-```
-
-That will rename all `MyCustomFrame` occurences in files and folders to `NewClassName`
-
+After FastFrames produces the desired ROOT files one needs to run the corresponding ROOT -> H5 converter under `H5Converters`.
