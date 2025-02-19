@@ -7,4 +7,5 @@ install/
 *.h5
 H5Converters/.env/*
 
-
+# Skip Validation outputs
+Validation/*.png

@@ -283,6 +283,14 @@ ntuples:
     - q2bar_index_NOSYS
     - b_index_NOSYS
     - bbar_index_NOSYS
+    - klfitter_eventProbability_NOSYS
+    - klfitter_logLikelihood_NOSYS
+    - KLF_b_from_top1_jetIndex_NOSYS
+    - KLF_b_from_top2_jetIndex_NOSYS
+    - KLF_lj1_from_top1_jetIndex_NOSYS
+    - KLF_lj1_from_top2_jetIndex_NOSYS
+    - KLF_lj2_from_top1_jetIndex_NOSYS
+    - KLF_lj2_from_top2_jetIndex_NOSYS
 
 samples:
 # ttbar all hadronic
