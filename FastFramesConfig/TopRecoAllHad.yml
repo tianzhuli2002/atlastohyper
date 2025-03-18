@@ -1,0 +1,211 @@
+general:
+  debug_level: INFO
+  input_filelist_path: "../../metadataTopRecoAllHadronic/filelist.txt"
+  input_sumweights_path: "../../metadataTopRecoAllHadronic/sum_of_weights.txt"
+  output_path_histograms: "/home/dbaronmo/Work/resultsTopRecoAllHadronic"
+  output_path_ntuples: "/home/dbaronmo/Work/resultsTopRecoAllHadronic"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: 
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  custom_frame_name: "PartonMatcher"
+  custom_options:
+    class_name: "TtbarTopRecoFrame"
+  automatic_systematics: False
+  nominal_only: True
+  create_tlorentz_vectors_for: ["jet"]
+  config_define_after_custom_class: True
+  number_of_cpus: 4
+      
+regions:
+  - name: "6Jets"
+    selection: "nJets_good_NOSYS == 6 && Passed_Any_Jet_Trigger_NOSYS"
+    variables: &all_variables
+      - name: nJets
+        title: Number of jets; N Jets;Events
+        definition: nJets_good_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 16
+          number_of_bins: 16
+      - name: truth_t_mass_afterFSR
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: truth_t_mass_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_afterFSR_from_branch
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: Ttbar_History_MC_t_afterFSR_m/1000
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_beforeFSR
+        title: Truth top mass before FSR;m_{t} [GeV];Events
+        definition: truth_t_mass_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_tbar_mass_afterFSR
+        title: Truth anti-top mass after FSR;m_{t} [GeV];Events
+        definition: truth_tbar_mass_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_t_mass_afterFSR_from_branch
+        title: Truth top mass after FSR;m_{t} [GeV];Events
+        definition: Ttbar_History_MC_tbar_afterFSR_m/1000
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_tbar_mass_beforeFSR
+        title: Truth anti-top mass before FSR;m_{t} [GeV];Events
+        definition: truth_tbar_mass_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 300
+          number_of_bins: 54
+      - name: truth_W_from_t_mass_afterFSR
+        title: Truth W mass from top after FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_t_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_t_mass_beforeFSR
+        title: Truth W mass from top before FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_t_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_tbar_mass_afterFSR
+        title: Truth W mass from anti-top after FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_tbar_afterFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: truth_W_from_tbar_mass_beforeFSR
+        title: Truth W mass from anti-top before FSR;m_{W} [GeV];Events
+        definition: truth_W_mass_from_tbar_beforeFSR_NOSYS
+        type: float
+        binning:
+          min: 30
+          max: 200
+          number_of_bins: 34
+      - name: N_corect_W
+        title: Number of correctly reconstructed W bosons by HyPER; N correct Ws; Events
+        definition: Number_W_correctly_reconstructed_NOSYS
+        type: int
+        binning:
+          min: -1
+          max: 3
+          number_of_bins: 4
+      - name: N_corect_Top
+        title: Number of correctly reconstructed Top quarks by HyPER; N correct Tops; Events
+        definition: Number_Top_correctly_reconstructed_NOSYS
+        type: int
+        binning:
+          min: -1
+          max: 3
+          number_of_bins: 4
+
+  - name: "7Jets"
+    selection: "nJets_good_NOSYS == 7 && Passed_Any_Jet_Trigger_NOSYS"
+    variables: *all_variables
+  - name: "8Jets"
+    selection: "nJets_good_NOSYS == 8 && Passed_Any_Jet_Trigger_NOSYS"
+    variables: *all_variables
+  - name: "9Jets"
+    selection: "nJets_good_NOSYS == 9 && Passed_Any_Jet_Trigger_NOSYS"
+    variables: *all_variables
+  - name: "10pJets"
+    selection: "nJets_good_NOSYS >= 10 && Passed_Any_Jet_Trigger_NOSYS"
+    variables: *all_variables
+
+samples:
+# ttbar
+  - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: &no_beamspot_weight "weight_mc_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS "
+  - name: "ttbar_singlelep_2022" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2018"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2017"
+    dsids: [410470]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2016"
+    dsids: [410470]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2023"
+    dsids: [601237]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2022"
+    dsids: [601237]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2018"
+    dsids: [410471]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2017"
+    dsids: [410471]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2016"
+    dsids: [410471]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_dilep_2023"
+    dsids: [601230]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_dilep_2022"
+    dsids: [601230]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight

@@ -66,6 +66,79 @@ namespace Variables{
     }
 
     /**
+     * @brief For the parton match branches convert from the ntuple index to the pT index.
+     * @param defaultValue The value to use if the index is not found. Unmatched particle.
+     * @return The converted index.
+     */
+    class ConverPartonMatchtNtupleIndexToPtIndex{
+        public:
+        ConverPartonMatchtNtupleIndexToPtIndex(int defaultValue = -2) : m_defaultValue(defaultValue) {}
+        // Overload operator ()
+        int operator()(int ntupleIndex, const std::vector<std::size_t>& ptIndices){
+            if (ntupleIndex == -1) return ntupleIndex; // This means that at the TCT level the event has been found to be di-lepton or ambigous matching.
+            // Try to find the index in the ptIndices vector. If found return the position. If not return the default value.
+            auto it = std::find(ptIndices.begin(),ptIndices.end(),ntupleIndex);
+            if (it != ptIndices.end()){
+                return std::distance(ptIndices.begin(), it);
+            } else {
+                return m_defaultValue;
+            }
+        }
+
+        private:
+        int m_defaultValue = -2;
+    };
+
+    /**
+     * @brief For the parton match branches convert from the ntuple index to the pT index.
+     * @param defaultValue The value to use if the index is not found. Unmatched particle.
+     * @return The converted index.
+     */
+    template <typename T>
+    class ConvertNtupleIndexToPtIndex{
+        public:
+        ConvertNtupleIndexToPtIndex(T defaultValue) : m_defaultValue(defaultValue) {}
+        // Overload operator ()
+        T operator()(T ntupleIndex, const std::vector<std::size_t>& ptIndices){
+            // Try to find the index in the ptIndices vector. If found return the position. If not return the default value.
+            auto it = std::find(ptIndices.begin(),ptIndices.end(),ntupleIndex);
+            if (it != ptIndices.end()){
+                return std::distance(ptIndices.begin(), it);
+            } else {
+                return m_defaultValue;
+            }
+        }
+
+        private:
+        T m_defaultValue;
+    };
+
+     /**
+     * @brief For the parton match branches convert from the ntuple index to the pT index.
+     * @param defaultValue The value to use if the index is not found. Unmatched particle.
+     * @return The converted index.
+     */
+    template <typename T>
+    class ConvertOneElementVectorNtupleIndexToPtIndex{
+        public:
+        ConvertOneElementVectorNtupleIndexToPtIndex(T defaultValue) : m_defaultValue(defaultValue) {}
+        // Overload operator ()
+        T operator()(std::vector<T> ntupleIndex, const std::vector<std::size_t>& ptIndices){
+            if (ntupleIndex.size() == 0) return m_defaultValue;
+            // Try to find the index in the ptIndices vector. If found return the position. If not return the default value.
+            auto it = std::find(ptIndices.begin(),ptIndices.end(),ntupleIndex[0]);
+            if (it != ptIndices.end()){
+                return std::distance(ptIndices.begin(), it);
+            } else {
+                return m_defaultValue;
+            }
+        }
+
+        private:
+        T m_defaultValue;
+    };
+
+    /**
      * @brief Count number of b-jets above certain GN2v01 working point
      * @param pTOrderedJetIndices The indices of the jets ordered by pT.
      * @param jetBTagVec The vector storing the pseudocontinuos b-tagging scores.
@@ -256,30 +329,6 @@ namespace TtbarSingleLeptonVars{
         float m_scale;
     };
 
-    /**
-     * @brief For the parton match branches convert from the ntuple index to the pT index.
-     * @param defaultValue The value to use if the index is not found. Unmatched particle.
-     * @return The converted index.
-     */
-    class ConverPartonMatchtNtupleIndexToPtIndex{
-        public:
-        ConverPartonMatchtNtupleIndexToPtIndex(int defaultValue = -2) : m_defaultValue(defaultValue) {}
-        // Overload operator ()
-        int operator()(int ntupleIndex, const std::vector<std::size_t>& ptIndices){
-            if (ntupleIndex == -1) return ntupleIndex; // This means that at the TCT level the event has been found to be di-lepton or ambigous matching.
-            // Try to find the index in the ptIndices vector. If found return the position. If not return the default value.
-            auto it = std::find(ptIndices.begin(),ptIndices.end(),ntupleIndex);
-            if (it != ptIndices.end()){
-                return std::distance(ptIndices.begin(), it);
-            } else {
-                return m_defaultValue;
-            }
-        }
-
-        private:
-        int m_defaultValue = -2;
-    };
-
     // Selection cuts for the muon channel
     namespace MuonSelection {
         // Events firing any of the triggers
@@ -301,4 +350,67 @@ namespace TtbarSingleLeptonVars{
         bool basic(const char& nTupleFlag, int numberOfElectrons,
                    int numberOfJets,bool triggered, bool triggerMatched);
     }
+}
+
+
+namespace HyPERPerformance{
+    template <typename T>
+    bool allValidIndices(const std::vector<T>& indices){
+        for (const auto& index : indices){
+            if (index == -1) return false;
+        }
+        return true;
+    }
+
+    template <typename T, typename U>
+    bool twoVectorsEqual(std::vector<T> vec1, std::vector<U> vec2){
+        if (vec1.size() != vec2.size()) return false;
+        // Order the vectors
+        std::sort(vec1.begin(), vec1.end());
+        std::sort(vec2.begin(), vec2.end());
+        //Compare
+        for (std::size_t i = 0; i < vec1.size(); i++){
+            if (vec1[i] != vec2[i]) return false;
+        }
+        return true;
+    }
+
+    template <typename T, typename U>
+    bool twoVectorsOverlap(const std::vector<T>& vec1, const std::vector<U>& vec2){
+        if (vec1.size() != vec2.size()) throw std::invalid_argument("The vectors must have the same size.");
+        // Compare
+        for (const auto& index1 : vec1){
+            for (const auto& index2 : vec2){
+                if (index1 == index2) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @brief Count the number of correctly reconstructed W bosons.
+     * @param HyPER_W1_Indices The HyPER indices of the W1 jets.
+     * @param HyPER_W2_Indices The HyPER indices of the W2 jets.
+     * @param jetTruthIdx The indices of the truth matched jets.
+     * @param nMatchedObjects The number of matched objects per truth object.
+     */
+    int countCorrectlyReconstructedW(const std::vector<long> HyPER_W1_Indices,
+                                     const std::vector<long> HyPER_W2_Indices,
+                                     const std::vector<int> jetTruthIdx,
+                                     const std::vector<int> nMatchedObjects);
+
+    /**
+     * @brief Count the number of correctly reconstructed Top quarks.
+     * @param HyPER_W1_Indices The HyPER indices of the Top1 jets.
+     * @param HyPER_W2_Indices The HyPER indices of the Top2 jets.
+     * @param jetTruthIdx The indices of the truth matched jets.
+     * @param nMatchedObjects The number of matched objects per truth object.
+     */
+    int countCorrectlyReconstructedTop(const std::vector<long> HyPER_T1_Indices,
+        const std::vector<long> HyPER_T2_Indices,
+        const std::vector<long> HyPER_W1_Indices,
+        const std::vector<long> HyPER_W2_Indices,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects);
+        
 }

@@ -281,3 +281,107 @@ namespace TtbarSingleLeptonVars{
         }
     }
 }
+
+namespace HyPERPerformance{
+  
+    int countCorrectlyReconstructedW(const std::vector<long> HyPER_W1_Indices,
+        const std::vector<long> HyPER_W2_Indices,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects){
+
+            // In TCT v2.17.0 the truth Ws are [1,2] and [4,5]. The assumption is that truth jets are uniquely matched.
+            // First check all sizes are appropriate.
+            if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2 || jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -1;
+
+            // Check HyPER at least has one valid prediction.
+            bool validW1HyPER = allValidIndices<long>(HyPER_W1_Indices);
+            bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
+            if (!validW1HyPER && !validW2HyPER) return -1;
+
+            // Check both truth Ws are uniquely matched.
+            bool truthW1Unique = nMatchedObjects.at(1) == 1 && nMatchedObjects.at(2) == 1;
+            bool truthW2Unique = nMatchedObjects.at(4) == 1 && nMatchedObjects.at(5) == 1;
+            if (!truthW1Unique || !truthW2Unique) return -1;
+
+            // Check HyPER has unique predictions.
+            bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
+            if (WPredictionsOverlap) return -1;
+
+            // Define the labels
+            std::vector<int> truthW1{jetTruthIdx.at(1),jetTruthIdx.at(2)};
+            std::vector<int> truthW2{jetTruthIdx.at(4),jetTruthIdx.at(5)};
+
+            // Check we have a truth matcheable event
+            bool truthW1Matcheable = truthW1.at(0) != -1 && truthW1.at(1) != -1;
+            bool truthW2Matcheable = truthW2.at(0) != -1 && truthW2.at(1) != -1;
+            if (!truthW1Matcheable || !truthW2Matcheable) return -1;
+
+            int nCorrectW = 0;
+            if (twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW1)) nCorrectW++;
+            if (twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW2)) nCorrectW++;
+            if (twoVectorsEqual<long,int>(HyPER_W2_Indices,truthW1)) nCorrectW++;
+            if (twoVectorsEqual<long,int>(HyPER_W2_Indices,truthW2)) nCorrectW++;
+
+            if (nCorrectW > 2) {
+                throw std::invalid_argument("The number of correctly reconstructed Ws is greater than 2.");
+            }
+
+            return nCorrectW;
+        }
+
+    int countCorrectlyReconstructedTop(const std::vector<long> HyPER_T1_Indices,
+        const std::vector<long> HyPER_T2_Indices,
+        const std::vector<long> HyPER_W1_Indices,
+        const std::vector<long> HyPER_W2_Indices,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects){
+
+            // In TCT v2.17.0 the truth Tops are [0,1,2] and [3,4,5]. 0 and 3 are the b-jets. The assumption is that truth jets are uniquely matched.
+            // First check all sizes are appropriate.
+            if (HyPER_T1_Indices.size() != 3 || HyPER_T2_Indices.size() != 3 || jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -1;
+            if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2) return -1;
+
+            // Check HyPER at least has one valid Top prediction.
+            bool validT1HyPER = allValidIndices<long>(HyPER_T1_Indices);
+            bool validT2HyPER = allValidIndices<long>(HyPER_T2_Indices);
+            if (!validT1HyPER && !validT2HyPER) return -1;
+            // Check HyPER at least has one valid W prediction.
+            bool validW1HyPER = allValidIndices<long>(HyPER_W1_Indices);
+            bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
+            if (!validW1HyPER && !validW2HyPER) return -1;
+
+            // Check both truth Ws are uniquely matched.
+            bool truthT1Unique = nMatchedObjects.at(0) == 1 && nMatchedObjects.at(1) == 1 && nMatchedObjects.at(2) == 1;
+            bool truthT2Unique = nMatchedObjects.at(3) == 1 && nMatchedObjects.at(4) == 1 && nMatchedObjects.at(5) == 1;
+            if (!truthT1Unique || !truthT2Unique) return -1;
+
+            // Check HyPER has unique predictions.
+            bool TPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_T1_Indices,HyPER_T2_Indices);
+            if (TPredictionsOverlap) return -1;
+            bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
+            if (WPredictionsOverlap) return -1;
+
+            // Define the labels
+            std::vector<int> truthT1{jetTruthIdx.at(0),jetTruthIdx.at(1),jetTruthIdx.at(2)};
+            std::vector<int> truthT2{jetTruthIdx.at(3),jetTruthIdx.at(4),jetTruthIdx.at(5)};
+            std::vector<int> truthW1{jetTruthIdx.at(1),jetTruthIdx.at(2)};
+            std::vector<int> truthW2{jetTruthIdx.at(4),jetTruthIdx.at(5)};
+
+            // Check we have a truth matcheable event
+            bool truthW1Matcheable = truthT1.at(0) != -1 && truthT1.at(1) != -1 && truthT1.at(2) != -1;
+            bool truthW2Matcheable = truthT2.at(0) != -1 && truthT2.at(1) != -1 && truthT2.at(2) != -1;
+            if (!truthW1Matcheable || !truthW2Matcheable) return -1;
+
+            int nCorrectTop = 0;
+            if (twoVectorsEqual<long,int>(HyPER_T1_Indices,truthT1) && twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW1)) nCorrectTop++;
+            if (twoVectorsEqual<long,int>(HyPER_T1_Indices,truthT2) && twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW2)) nCorrectTop++;
+            if (twoVectorsEqual<long,int>(HyPER_T2_Indices,truthT1) && twoVectorsEqual<long,int>(HyPER_W2_Indices,truthW1)) nCorrectTop++;
+            if (twoVectorsEqual<long,int>(HyPER_T2_Indices,truthT2) && twoVectorsEqual<long,int>(HyPER_W2_Indices,truthW2)) nCorrectTop++;
+
+            if (nCorrectTop > 2) {
+                throw std::invalid_argument("The number of correctly reconstructed Ws is greater than 2.");
+            }
+
+            return nCorrectTop;
+        }
+}

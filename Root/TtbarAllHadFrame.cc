@@ -90,6 +90,47 @@ ROOT::RDF::RNode TtbarAllHadFrame::defineVariables(ROOT::RDF::RNode mainNode,
                                          Variables::pTSortedContainer<int>,
                                          {"jet_GN2v01_Continuous_quantile", "jets_ptOrderIndex_NOSYS"});
 
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// KLF indices ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  LOG(INFO) << "Adding variable: KLF_b_from_top1_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_b_from_top1_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_b_from_top1_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: KLF_b_from_top2_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_b_from_top2_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_b_from_top2_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: KLF_lj1_from_top1_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_lj1_from_top1_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_lj1_from_top1_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: KLF_lj1_from_top2_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_lj1_from_top2_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_lj1_from_top2_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: KLF_lj2_from_top1_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_lj2_from_top1_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_lj2_from_top1_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: KLF_lj2_from_top2_jetIndex_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "KLF_lj2_from_top2_jetIndex_NOSYS",
+                                         Variables::ConvertOneElementVectorNtupleIndexToPtIndex<unsigned int>(10000),
+                                         {"klfitter_lj2_from_top2_jetIndex_NOSYS","jets_ptOrderIndex_NOSYS"});
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Parton TLVs ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -238,19 +238,19 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariablesNtuple(ROOT::RDF::RNode 
   // Parton labels
   LOG(INFO) << "Adding variable: Truth_down_index\n";
   mainNode = mainNode.Define("Truth_down_index",
-                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
                               {"parton_truth_down_index","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_up_index\n";
   mainNode = mainNode.Define("Truth_up_index",
-                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
                               {"parton_truth_up_index","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_had_b_index\n";
   mainNode = mainNode.Define("Truth_had_b_index",
-                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
                               {"parton_truth_had_b_index","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_lep_b_index\n";
   mainNode = mainNode.Define("Truth_lep_b_index",
-                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
                               {"parton_truth_lep_b_index","jets_ptOrderIndex_NOSYS"});
                           
 
