@@ -231,6 +231,72 @@ namespace Variables{
      * @return float The invariant mass of the three TLVs.
      */
     float recoInvariantMassThree(int index1, int index2, int index3, const std::vector<ROOT::Math::PtEtaPhiEVector>& tlvVector);
+    
+    /**
+     * @brief Calculate the invariant mass of three objects identified from indices, the objects are picked up from a vector of TLVs.
+     * The indices are stored in vectors. This is a KLF version.
+     * @param tlvVec The TLV vector.
+     * @param index1 The index of the first object.
+     * @param index2 The index of the second object.
+     * @param index3 The index of the third object.
+     * @return float The invariant mass of the three TLVs.
+     */
+    template <typename T>
+    float recoInvariantMassThree_KLF(const std::vector<T>& index1, const std::vector<T>& index2, const std::vector<T>& index3, const std::vector<ROOT::Math::PtEtaPhiEVector>& tlvVector){
+        ROOT::Math::PtEtaPhiEVector tlv1 = index1.size() > 0 ? tlvVector.at(index1[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv2 = index2.size() > 0 ? tlvVector.at(index2[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv3 = index3.size() > 0 ? tlvVector.at(index3[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+
+        return (tlv1+tlv2+tlv3).M()/1000.0f;
+    }
+
+    /**
+     * @brief Calculate the invariant mass of two objects identified from indices, the objects are picked up from a vector of TLVs.
+     * The indices are stored in vectors. This is a KLF version.
+     * @param tlvVec The TLV vector.
+     * @param index1 The index of the first object.
+     * @param index2 The index of the second object.
+     * @param index3 The index of the third object.
+     * @return float The invariant mass of the two TLVs.
+     */
+    template <typename T>
+    float recoInvariantMassTwo_KLF(const std::vector<T>& index1, const std::vector<T>& index2, const std::vector<ROOT::Math::PtEtaPhiEVector>& tlvVector){
+        ROOT::Math::PtEtaPhiEVector tlv1 = index1.size() > 0 ? tlvVector.at(index1[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv2 = index2.size() > 0 ? tlvVector.at(index2[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+
+        return (tlv1+tlv2).M()/1000.0f;
+    }
+
+    /**
+     * @brief Calculate the invariant mass of three objects identified from indices, the objects are picked up from a vector of TLVs.
+     * The indices are stored in vectors. This is a HyPER version.
+     * @param tlvVec The TLV vector.
+     * @param indices The vector holding the indices.
+     * @return float The invariant mass of the three TLVs.
+     */
+    template <typename T>
+    float recoInvariantMassThree_HyPER(const std::vector<T>& indices, const std::vector<ROOT::Math::PtEtaPhiEVector>& tlvVector){
+        ROOT::Math::PtEtaPhiEVector tlv1 = indices.at(0) != -1 ? tlvVector.at(indices[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv2 = indices.at(1) != -1 ? tlvVector.at(indices[1]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv3 = indices.at(2) != -1 ? tlvVector.at(indices[2]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+
+        return (tlv1+tlv2+tlv3).M()/1000.0f;
+    }
+
+    /**
+     * @brief Calculate the invariant mass of two objects identified from indices, the objects are picked up from a vector of TLVs.
+     * The indices are stored in vectors. This is a HyPER version.
+     * @param tlvVec The TLV vector.
+      * @param indices The vector holding the indices.
+     * @return float The invariant mass of the two TLVs.
+     */
+    template <typename T>
+    float recoInvariantMassTwo_HyPER(const std::vector<T>& indices, const std::vector<ROOT::Math::PtEtaPhiEVector>& tlvVector){
+        ROOT::Math::PtEtaPhiEVector tlv1 = indices.at(0) != -1 ? tlvVector.at(indices[0]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+        ROOT::Math::PtEtaPhiEVector tlv2 = indices.at(1) != -1 ? tlvVector.at(indices[1]) : ROOT::Math::PtEtaPhiEVector(0,0,0,0);
+
+        return (tlv1+tlv2).M()/1000.0f;
+    }
 
     /**
      * @brief Match a parton to a list of reco particles.
@@ -467,6 +533,22 @@ namespace HyPERPerformance{
                                      const std::vector<int> nMatchedObjects);
 
     /**
+     * @brief Count the number of correctly reconstructed W bosons.
+     * @param KLF_W11_Index The KLF indices of the W1 jet1.
+     * @param KLF_W12_Index The KLF indices of the W1 jet2.
+     * @param KLF_W21_Index The KLF indices of the W2 jet1.
+     * @param KLF_W22_Index The KLF indices of the W2 jet2.
+     * @param jetTruthIdx The indices of the truth matched jets.
+     * @param nMatchedObjects The number of matched objects per truth object.
+     */
+    int countCorrectlyReconstructedW_KLF(const std::vector<unsigned int> KLF_W11_Index,
+        const std::vector<unsigned int> KLF_W12_Index,
+        const std::vector<unsigned int> KLF_W21_Index,
+        const std::vector<unsigned int> KLF_W22_Index,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects);
+
+    /**
      * @brief Count the number of correctly reconstructed Top quarks.
      * @param HyPER_W1_Indices The HyPER indices of the Top1 jets.
      * @param HyPER_W2_Indices The HyPER indices of the Top2 jets.
@@ -477,6 +559,26 @@ namespace HyPERPerformance{
         const std::vector<long> HyPER_T2_Indices,
         const std::vector<long> HyPER_W1_Indices,
         const std::vector<long> HyPER_W2_Indices,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects);
+
+    /**
+     * @brief Count the number of correctly reconstructed Top quarks.
+     * @param KLF_W11_Index The KLF indices of the W1 jet1.
+     * @param KLF_W12_Index The KLF indices of the W1 jet2.
+     * @param KLF_b1_Index The KLF indices of the b1 jet.
+     * @param KLF_W21_Index The KLF indices of the W2 jet1.
+     * @param KLF_W22_Index The KLF indices of the W2 jet2.
+     * @param KLF_b2_Index The KLF indices of the b2 jet.
+     * @param jetTruthIdx The indices of the truth matched jets.
+     * @param nMatchedObjects The number of matched objects per truth object.
+     */
+    int countCorrectlyReconstructedTop_KLF(const std::vector<unsigned int> KLF_W11_Index,
+        const std::vector<unsigned int> KLF_W12_Index,
+        const std::vector<unsigned int> KLF_b1_Index,
+        const std::vector<unsigned int> KLF_W21_Index,
+        const std::vector<unsigned int> KLF_W22_Index,
+        const std::vector<unsigned int> KLF_b2_Index,
         const std::vector<int> jetTruthIdx,
         const std::vector<int> nMatchedObjects);
         
