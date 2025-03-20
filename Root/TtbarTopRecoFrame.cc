@@ -228,17 +228,82 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
 
     // For AllHad 
     if (jetTrigggerBranches.size() != 0){
-        LOG(INFO) << "Adding variable: Number_W_correctly_reconstructed_NOSYS\n";
+        LOG(INFO) << "Adding variable: Number_W_correctly_reconstructed_HyPER_NOSYS\n";
         mainNode = m_partonMatcher->systematicDefine(mainNode,
-            "Number_W_correctly_reconstructed_NOSYS",
+            "Number_W_correctly_reconstructed_HyPER_NOSYS",
             HyPERPerformance::countCorrectlyReconstructedW,
             {"hyper_TtbarAllHadronic_W1_Indices_NOSYS", "hyper_TtbarAllHadronic_W2_Indices_NOSYS", "event_jet_truth_idx", "event_jet_truth_candidates"});
 
-        LOG(INFO) << "Adding variable: Number_Top_correctly_reconstructed_NOSYS\n";
+        LOG(INFO) << "Adding variable: Number_W_correctly_reconstructed_KLF_NOSYS\n";
         mainNode = m_partonMatcher->systematicDefine(mainNode,
-            "Number_Top_correctly_reconstructed_NOSYS",
+            "Number_W_correctly_reconstructed_KLF_NOSYS",
+            HyPERPerformance::countCorrectlyReconstructedW_KLF,
+            {"klfitter_lj1_from_top1_jetIndex_NOSYS", "klfitter_lj2_from_top1_jetIndex_NOSYS",
+            "klfitter_lj1_from_top2_jetIndex_NOSYS", "klfitter_lj2_from_top2_jetIndex_NOSYS",
+            "event_jet_truth_idx", "event_jet_truth_candidates"});
+
+        LOG(INFO) << "Adding variable: Number_Top_correctly_reconstructed_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Number_Top_correctly_reconstructed_HyPER_NOSYS",
             HyPERPerformance::countCorrectlyReconstructedTop,
             {"hyper_TtbarAllHadronic_Top1_Indices_NOSYS","hyper_TtbarAllHadronic_Top2_Indices_NOSYS","hyper_TtbarAllHadronic_W1_Indices_NOSYS", "hyper_TtbarAllHadronic_W2_Indices_NOSYS", "event_jet_truth_idx", "event_jet_truth_candidates"});
+    
+        LOG(INFO) << "Adding variable: Number_Top_correctly_reconstructed_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Number_Top_correctly_reconstructed_KLF_NOSYS",
+            HyPERPerformance::countCorrectlyReconstructedTop_KLF,
+            {"klfitter_lj1_from_top1_jetIndex_NOSYS","klfitter_lj2_from_top1_jetIndex_NOSYS", "klfitter_b_from_top1_jetIndex_NOSYS",
+            "klfitter_lj1_from_top2_jetIndex_NOSYS","klfitter_lj2_from_top2_jetIndex_NOSYS", "klfitter_b_from_top2_jetIndex_NOSYS",
+            "event_jet_truth_idx", "event_jet_truth_candidates"});
+
+        // Mass variables
+        LOG(INFO) << "Adding variable: Top1_mass_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Top1_mass_KLF_NOSYS",
+            Variables::recoInvariantMassThree_KLF<unsigned int>,
+            {"klfitter_lj1_from_top1_jetIndex_NOSYS","klfitter_lj2_from_top1_jetIndex_NOSYS", "klfitter_b_from_top1_jetIndex_NOSYS","jet_TLV_NOSYS"});
+        
+        LOG(INFO) << "Adding variable: Top2_mass_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Top2_mass_KLF_NOSYS",
+            Variables::recoInvariantMassThree_KLF<unsigned int>,
+            {"klfitter_lj1_from_top2_jetIndex_NOSYS","klfitter_lj2_from_top2_jetIndex_NOSYS", "klfitter_b_from_top2_jetIndex_NOSYS","jet_TLV_NOSYS"});
+        
+        LOG(INFO) << "Adding variable: W1_mass_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "W1_mass_KLF_NOSYS",
+            Variables::recoInvariantMassTwo_KLF<unsigned int>,
+            {"klfitter_lj1_from_top1_jetIndex_NOSYS","klfitter_lj2_from_top1_jetIndex_NOSYS","jet_TLV_NOSYS"});
+        
+        LOG(INFO) << "Adding variable: W2_mass_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "W2_mass_KLF_NOSYS",
+            Variables::recoInvariantMassTwo_KLF<unsigned int>,
+            {"klfitter_lj1_from_top2_jetIndex_NOSYS","klfitter_lj2_from_top2_jetIndex_NOSYS","jet_TLV_NOSYS"});
+
+        LOG(INFO) << "Adding variable: Top1_mass_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Top1_mass_HyPER_NOSYS",
+            Variables::recoInvariantMassThree_HyPER<long>,
+            {"hyper_TtbarAllHadronic_Top1_Indices_NOSYS","jet_TLV_NOSYS"});
+        
+        LOG(INFO) << "Adding variable: Top2_mass_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Top2_mass_HyPER_NOSYS",
+            Variables::recoInvariantMassThree_HyPER<long>,
+            {"hyper_TtbarAllHadronic_Top2_Indices_NOSYS","jet_TLV_NOSYS"});
+
+        LOG(INFO) << "Adding variable: W1_mass_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "W1_mass_HyPER_NOSYS",
+            Variables::recoInvariantMassTwo_HyPER<long>,
+            {"hyper_TtbarAllHadronic_W1_Indices_NOSYS","jet_TLV_NOSYS"});
+        
+        LOG(INFO) << "Adding variable: W2_mass_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "W2_mass_HyPER_NOSYS",
+            Variables::recoInvariantMassTwo_HyPER<long>,
+            {"hyper_TtbarAllHadronic_W2_Indices_NOSYS","jet_TLV_NOSYS"});
 
     }
 

@@ -565,6 +565,24 @@ namespace HyPERPerformance{
             return nCorrectW;
         }
 
+    int countCorrectlyReconstructedW_KLF(const std::vector<unsigned int> KLF_W11_Index,
+        const std::vector<unsigned int> KLF_W12_Index,
+        const std::vector<unsigned int> KLF_W21_Index,
+        const std::vector<unsigned int> KLF_W22_Index,
+        const std::vector<int> jetTruthIdx,
+        const std::vector<int> nMatchedObjects){
+
+            // Form the indices pairs and use the HyPER function.
+            long KLF_W11 = KLF_W11_Index.size() == 0 ? -1 : KLF_W11_Index.at(0);
+            long KLF_W12 = KLF_W12_Index.size() == 0 ? -1 : KLF_W12_Index.at(0);
+            long KLF_W21 = KLF_W21_Index.size() == 0 ? -1 : KLF_W21_Index.at(0);
+            long KLF_W22 = KLF_W22_Index.size() == 0 ? -1 : KLF_W22_Index.at(0);
+            std::vector<long> KLF_W1_Indices{KLF_W11,KLF_W12};
+            std::vector<long> KLF_W2_Indices{KLF_W21,KLF_W22};
+
+            return countCorrectlyReconstructedW(KLF_W1_Indices,KLF_W2_Indices,jetTruthIdx,nMatchedObjects);
+        }
+
     int countCorrectlyReconstructedTop(const std::vector<long> HyPER_T1_Indices,
         const std::vector<long> HyPER_T2_Indices,
         const std::vector<long> HyPER_W1_Indices,
@@ -619,5 +637,29 @@ namespace HyPERPerformance{
             }
 
             return nCorrectTop;
+        }
+
+        int countCorrectlyReconstructedTop_KLF(const std::vector<unsigned int> KLF_W11_Index,
+            const std::vector<unsigned int> KLF_W12_Index,
+            const std::vector<unsigned int> KLF_b1_Index,
+            const std::vector<unsigned int> KLF_W21_Index,
+            const std::vector<unsigned int> KLF_W22_Index,
+            const std::vector<unsigned int> KLF_b2_Index,
+            const std::vector<int> jetTruthIdx,
+            const std::vector<int> nMatchedObjects){
+
+            // Form the indices pairs and use the HyPER function.
+            long KLF_W11 = KLF_W11_Index.size() == 0 ? -1 : KLF_W11_Index.at(0);
+            long KLF_W12 = KLF_W12_Index.size() == 0 ? -1 : KLF_W12_Index.at(0);
+            long KLF_W21 = KLF_W21_Index.size() == 0 ? -1 : KLF_W21_Index.at(0);
+            long KLF_W22 = KLF_W22_Index.size() == 0 ? -1 : KLF_W22_Index.at(0);
+            long KLF_b1 = KLF_b1_Index.size() == 0 ? -1 : KLF_b1_Index.at(0);
+            long KLF_b2 = KLF_b2_Index.size() == 0 ? -1 : KLF_b2_Index.at(0);
+            std::vector<long> KLF_T1_Indices{KLF_b1,KLF_W11,KLF_W12};
+            std::vector<long> KLF_T2_Indices{KLF_b2,KLF_W21,KLF_W22};
+            std::vector<long> KLF_W1_Indices{KLF_W11,KLF_W12};
+            std::vector<long> KLF_W2_Indices{KLF_W21,KLF_W22};
+
+            return countCorrectlyReconstructedTop(KLF_T1_Indices,KLF_T2_Indices,KLF_W1_Indices,KLF_W2_Indices,jetTruthIdx,nMatchedObjects);
         }
 }
