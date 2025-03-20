@@ -3,9 +3,9 @@ import numpy as np
 from tqdm import tqdm
 import uproot
 
-from Common import main
+from Common import argparser, main
 
-def MakeDatasetTtbarAllHad(input_file: str, output: str, split: bool = False, saveEven = True):
+def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = False, saveEven = True):
     r"""Function to construct HyPER dataset.
 
     Args:
@@ -211,4 +211,9 @@ def MakeDatasetTtbarAllHad(input_file: str, output: str, split: bool = False, sa
 
 
 if __name__ == "__main__":
-    main(MakeDatasetTtbarAllHad)
+
+    parser = argparser()
+
+    args = parser.parse_args()
+
+    main(MakeDatasetTtbarAllHad, args)

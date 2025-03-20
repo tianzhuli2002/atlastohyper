@@ -17,30 +17,36 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariables(ROOT::RDF::RNode mainNo
   LOG(INFO) << "You are running custom class: TtbarSingleLeptonFrame" << std::endl;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////// Object multiplicity ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Char to bool ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  std::string el_OR_flag = "el_select_passesOR_NOSYS"; // "el_select_or_NOSYS"
-  std::string mu_OR_flag = "mu_select_passesOR_NOSYS"; // "mu_select_or_NOSYS"
-  std::string jet_OR_flag = "jet_select_passesOR_NOSYS"; // "jet_select_or_NOSYS"
+  LOG(INFO) << "Adding variable: globalTriggerMatch_bool_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "globalTriggerMatch_bool_NOSYS",
+                                         Variables::charToBool,
+                                         {"globalTriggerMatch_NOSYS"});  
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Object multiplicity ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   LOG(INFO) << "Adding variable: nElectrons_tight_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "nElectrons_tight_NOSYS",
                                          TtbarSingleLeptonVars::nGoodLeptons,
-                                         {"el_pt_NOSYS", "el_select_tight_NOSYS",el_OR_flag});
+                                         {"el_pt_NOSYS", "el_select_tight_NOSYS", "el_select_tight_NOSYS"});
 
   LOG(INFO) << "Adding variable: nMuons_tight_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "nMuons_tight_NOSYS",
                                          TtbarSingleLeptonVars::nGoodLeptons,
-                                         {"mu_pt_NOSYS", "mu_select_tight_NOSYS",mu_OR_flag});
+                                         {"mu_pt_NOSYS", "mu_select_tight_NOSYS", "mu_select_tight_NOSYS"});
 
   LOG(INFO) << "Adding variable: nJets_good_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "nJets_good_NOSYS",
                                          TtbarSingleLeptonVars::nGoodJets,
-                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});
+                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS", "jet_select_baselineJvt_NOSYS"});
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Pt indices ////////////////////////////////////////////////////
@@ -50,49 +56,77 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariables(ROOT::RDF::RNode mainNo
   LOG(INFO) << "Adding variable: jets_ptOrderIndex_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "jets_ptOrderIndex_NOSYS",
-                                         TtbarSingleLeptonVars::indexPtOrderedGoodTwoSelec,
-                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS",jet_OR_flag});  
+                                         Variables::indexPtOrderedGoodOneSelec,
+                                         {"jet_pt_NOSYS", "jet_select_baselineJvt_NOSYS"});  
   
   LOG(INFO) << "Adding variable: el_ptOrderIndex_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "el_ptOrderIndex_NOSYS",
-                                         TtbarSingleLeptonVars::indexPtOrderedGoodTwoSelec,
-                                         {"el_pt_NOSYS", "el_select_tight_NOSYS",el_OR_flag});
+                                         Variables::indexPtOrderedGoodOneSelec,
+                                         {"el_pt_NOSYS", "el_select_tight_NOSYS"});
 
   LOG(INFO) << "Adding variable: mu_ptOrderIndex_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "mu_ptOrderIndex_NOSYS",
-                                         TtbarSingleLeptonVars::indexPtOrderedGoodTwoSelec,
-                                         {"mu_pt_NOSYS", "mu_select_tight_NOSYS",mu_OR_flag});
+                                         Variables::indexPtOrderedGoodOneSelec,
+                                         {"mu_pt_NOSYS", "mu_select_tight_NOSYS"});
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Jet KLFitter indices ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  LOG(INFO) << "Adding variable: topHad_indexKLF_NOSYS\n";
+  LOG(INFO) << "Adding variable: bHad_indexKLF_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
-                                         "topHad_indexKLF_NOSYS",
+                                         "bHad_indexKLF_NOSYS",
                                          TtbarSingleLeptonVars::fromKLFToNtupleIndex,
-                                         {"b_from_tophad_jetIndex_NOSYS"});
+                                         {"klfitter_bhad_jetIndex_NOSYS"});
     
-  LOG(INFO) << "Adding variable: topLep_indexKLF_NOSYS\n";
+  LOG(INFO) << "Adding variable: bLep_indexKLF_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
-                                         "topLep_indexKLF_NOSYS",
+                                         "bLep_indexKLF_NOSYS",
                                          TtbarSingleLeptonVars::fromKLFToNtupleIndex,
-                                         {"b_from_toplep_jetIndex_NOSYS"});
+                                         {"klfitter_blep_jetIndex_NOSYS"});
 
-  LOG(INFO) << "Adding variable: W1_indexKLF_NOSYS\n";
+  LOG(INFO) << "Adding variable: q1_indexKLF_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
-                                         "W1_indexKLF_NOSYS",
+                                         "q1_indexKLF_NOSYS",
                                          TtbarSingleLeptonVars::fromKLFToNtupleIndex,
-                                         {"jet1_from_W_jetIndex_NOSYS"});
+                                         {"klfitter_lq1_jetIndex_NOSYS"});
 
-  LOG(INFO) << "Adding variable: W2_indexKLF_NOSYS\n";
+  LOG(INFO) << "Adding variable: q2_indexKLF_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
-                                         "W2_indexKLF_NOSYS",
+                                         "q2_indexKLF_NOSYS",
                                          TtbarSingleLeptonVars::fromKLFToNtupleIndex,
-                                         {"jet2_from_W_jetIndex_NOSYS"});                                                                                              
+                                         {"klfitter_lq2_jetIndex_NOSYS"});                                                                                              
         
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Define the truth indices ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  LOG(INFO) << "Adding variable: parton_truth_down_index_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "parton_truth_down_index_NOSYS",
+                                         TtbarSingleLeptonVars::getPartonTruthDown,
+                                         {"event_jet_truth_idx"});
+  
+  LOG(INFO) << "Adding variable: parton_truth_up_index_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "parton_truth_up_index_NOSYS",
+                                         TtbarSingleLeptonVars::getPartonTruthUp,
+                                         {"event_jet_truth_idx"});
+
+  LOG(INFO) << "Adding variable: parton_truth_had_b_index_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "parton_truth_had_b_index_NOSYS",
+                                         TtbarSingleLeptonVars::getPartonTruthBHad,
+                                         {"event_jet_truth_idx"});
+  
+  LOG(INFO) << "Adding variable: parton_truth_lep_b_index_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "parton_truth_lep_b_index_NOSYS",
+                                         TtbarSingleLeptonVars::getPartonTruthBLep,
+                                         {"event_jet_truth_idx"});
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Define the electron selection cuts ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,9 +136,9 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariables(ROOT::RDF::RNode mainNo
   auto colNames = mainNode.GetColumnNames();
   if (std::find(colNames.begin(), colNames.end(), "globalTriggerMatch_NOSYS") == colNames.end()){
     auto returnTrue = [](const char& dummy){(void)(dummy); return true;};
-    LOG(INFO) << "Adding variable: globalTriggerMatch_NOSYS\n";
+    LOG(INFO) << "Adding variable: globalTriggerMatch_bool_NOSYS\n";
     mainNode = m_partonMatcher->systematicDefine(mainNode,
-                                         "globalTriggerMatch_NOSYS",
+                                         "globalTriggerMatch_bool_NOSYS",
                                          returnTrue,
                                          {"pass_ejets_NOSYS"});
 
@@ -127,7 +161,7 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariables(ROOT::RDF::RNode mainNo
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "Electron_pass_basic_NOSYS",
                                          TtbarSingleLeptonVars::ElectronSelection::basic,
-                                         {"pass_ejets_NOSYS", "nElectrons_tight_NOSYS","nJets_good_NOSYS","Electron_pass_triggers_NOSYS","globalTriggerMatch_NOSYS"});
+                                         {"pass_ejets_NOSYS", "nElectrons_tight_NOSYS","nJets_good_NOSYS","Electron_pass_triggers_NOSYS","globalTriggerMatch_bool_NOSYS"});
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Define the muon selection cuts ////////////////////////////////////////////////////
@@ -144,7 +178,76 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariables(ROOT::RDF::RNode mainNo
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                          "Muon_pass_basic_NOSYS",
                                          TtbarSingleLeptonVars::MuonSelection::basic,
-                                         {"pass_mujets_NOSYS", "nMuons_tight_NOSYS","nJets_good_NOSYS","Muon_pass_triggers_NOSYS","globalTriggerMatch_NOSYS"});
+                                         {"pass_mujets_NOSYS", "nMuons_tight_NOSYS","nJets_good_NOSYS","Muon_pass_triggers_NOSYS","globalTriggerMatch_bool_NOSYS"});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Define the jets selection cuts ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  LOG(INFO) << "Adding variable: Jets_fullyMatched_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "Jets_fullyMatched_NOSYS",
+                                         TtbarSingleLeptonVars::JetsSelection::fullyMatched,
+                                         {"parton_truth_down_index_NOSYS", "parton_truth_up_index_NOSYS",
+                                         "parton_truth_had_b_index_NOSYS","parton_truth_lep_b_index_NOSYS"});
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////// btag //////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  LOG(INFO) << "Adding variable: jet_GN2v01_Continuous_quantile_NOSYS\n";   
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "jet_GN2v01_Continuous_quantile_NOSYS",
+                                         Variables::getPCBT,
+                                         {"jet_GN2v01_FixedCutBEff_65_select", "jet_GN2v01_FixedCutBEff_70_select", "jet_GN2v01_FixedCutBEff_77_select", "jet_GN2v01_FixedCutBEff_85_select", "jet_GN2v01_FixedCutBEff_90_select"});
+  
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// HyPER results ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /*LOG(INFO) << "Adding variable: HyPER_TopHad_Indices_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                              "HyPER_TopHad_Indices_NOSYS",
+                              Variables::getSelecHyPERIndices,
+                              { "hyper_TtbarLJets_TopHad_Indices_NOSYS",
+                                "hyper_TtbarLJets_TopHad_IDs_NOSYS",
+                                "jets_ptOrderIndex_NOSYS",
+                                "el_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_TopLep_Indices_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                              "HyPER_TopLep_Indices_NOSYS",
+                              Variables::getSelecHyPERIndices,
+                              { "hyper_TtbarLJets_TopLep_Indices_NOSYS",
+                                "hyper_TtbarLJets_TopLep_IDs_NOSYS",
+                                "jets_ptOrderIndex_NOSYS",
+                                "el_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS"}); //muon as placeholder for taus
+
+  LOG(INFO) << "Adding variable: HyPER_WHad_Indices_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                              "HyPER_WHad_Indices_NOSYS",
+                              Variables::getSelecHyPERIndices,
+                              { "hyper_TtbarLJets_WHad_Indices_NOSYS",
+                                "hyper_TtbarLJets_TopHad_IDs_NOSYS",
+                                "jets_ptOrderIndex_NOSYS",
+                                "el_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_WLep_Indices_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                              "HyPER_WLep_Indices_NOSYS",
+                              Variables::getSelecHyPERIndices,
+                              { "hyper_TtbarLJets_WLep_Indices_NOSYS",
+                                "hyper_TtbarLJets_TopLep_IDs_NOSYS",
+                                "jets_ptOrderIndex_NOSYS",
+                                "el_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS",
+                                "mu_ptOrderIndex_NOSYS"});*/
 
   return mainNode;
 }
@@ -170,7 +273,7 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariablesNtuple(ROOT::RDF::RNode 
                               {"el_phi","el_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Electron_e\n";
   mainNode = mainNode.Define("Electron_e",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
+                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(1000.0f),
                               {"el_e_NOSYS","el_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Electron_q\n";
   mainNode = mainNode.Define("Electron_q",
@@ -192,7 +295,7 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariablesNtuple(ROOT::RDF::RNode 
                               {"mu_phi","mu_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Muon_e\n";
   mainNode = mainNode.Define("Muon_e",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
+                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(1000.0f),
                               {"mu_e_NOSYS","mu_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Muon_q\n";
   mainNode = mainNode.Define("Muon_q",
@@ -214,16 +317,61 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariablesNtuple(ROOT::RDF::RNode 
                               {"jet_phi","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Jet_e\n";
   mainNode = mainNode.Define("Jet_e",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
+                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(1000.0f),
                               {"jet_e_NOSYS","jets_ptOrderIndex_NOSYS"});
-  LOG(INFO) << "Adding variable: Jet_GN2v01_score\n";
-  mainNode = mainNode.Define("Jet_GN2v01_score",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
-                              {"jet_GN2v01","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Jet_SVmass\n";
   mainNode = mainNode.Define("Jet_SVmass",
                               TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
                               {"jet_SV1_masssvx","jets_ptOrderIndex_NOSYS"});
+
+  //btag  
+  LOG(INFO) << "Adding variable: Jet_GN2v01_score\n";
+  mainNode = mainNode.Define("Jet_GN2v01_score",
+                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
+                              {"jet_GN2v01","jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: Jet_GN2v01_PCBT_quantile_NOSYS\n";   
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "Jet_GN2v01_PCBT_quantile_NOSYS",
+                                         Variables::pTSortedContainer<int>,
+                                         {"jet_GN2v01_Continuous_quantile_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_100_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_100_NOSYS",
+                                         Variables::nBJets(100),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_90_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_90_NOSYS",
+                                         Variables::nBJets(90),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_85_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_85_NOSYS",
+                                         Variables::nBJets(85),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_77_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_77_NOSYS",
+                                         Variables::nBJets(77),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_70_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_70_NOSYS",
+                                         Variables::nBJets(70),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+  
+  LOG(INFO) << "Adding variable: nBjets_GN2v01_65_NOSYS\n";
+  mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                         "nBjets_GN2v01_65_NOSYS",
+                                         Variables::nBJets(65),
+                                         {"jets_ptOrderIndex_NOSYS", "jet_GN2v01_Continuous_quantile_NOSYS"});
+  
 
   // MET
   LOG(INFO) << "Adding variable: Met_pt\n";
@@ -238,21 +386,65 @@ ROOT::RDF::RNode TtbarSingleLeptonFrame::defineVariablesNtuple(ROOT::RDF::RNode 
   // Parton labels
   LOG(INFO) << "Adding variable: Truth_down_index\n";
   mainNode = mainNode.Define("Truth_down_index",
-                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
-                              {"parton_truth_down_index","jets_ptOrderIndex_NOSYS"});
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"parton_truth_down_index_NOSYS","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_up_index\n";
   mainNode = mainNode.Define("Truth_up_index",
-                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
-                              {"parton_truth_up_index","jets_ptOrderIndex_NOSYS"});
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"parton_truth_up_index_NOSYS","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_had_b_index\n";
   mainNode = mainNode.Define("Truth_had_b_index",
-                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
-                              {"parton_truth_had_b_index","jets_ptOrderIndex_NOSYS"});
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"parton_truth_had_b_index_NOSYS","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Truth_lep_b_index\n";
   mainNode = mainNode.Define("Truth_lep_b_index",
-                              Variables::ConverPartonMatchtNtupleIndexToPtIndex(),
-                              {"parton_truth_lep_b_index","jets_ptOrderIndex_NOSYS"});
-                          
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"parton_truth_lep_b_index_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  // KLFitter results
+  LOG(INFO) << "Adding variable: KLF_lq1_index\n";
+  mainNode = mainNode.Define("KLF_lq1_index",
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"q1_indexKLF_NOSYS","jets_ptOrderIndex_NOSYS"});                      
+  LOG(INFO) << "Adding variable: KLF_lq2_index\n";
+  mainNode = mainNode.Define("KLF_lq2_index",
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"q2_indexKLF_NOSYS","jets_ptOrderIndex_NOSYS"}); 
+  LOG(INFO) << "Adding variable: KLF_had_b_index\n";
+  mainNode = mainNode.Define("KLF_had_b_index",
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"bHad_indexKLF_NOSYS","jets_ptOrderIndex_NOSYS"}); 
+  LOG(INFO) << "Adding variable: KLF_lep_b_index\n";
+  mainNode = mainNode.Define("KLF_lep_b_index",
+                              TtbarSingleLeptonVars::ConverPartonMatchtNtupleIndexToPtIndex(),
+                              {"bLep_indexKLF_NOSYS","jets_ptOrderIndex_NOSYS"});
+
+  // HyPER results
+  /*LOG(INFO) << "Adding variable: HyPER_TopHad_IDs\n";
+  mainNode = mainNode.Define("HyPER_TopHad_IDs",
+                              [](const std::vector<long>& topHadIDs) { return topHadIDs; },
+                              {"hyper_TtbarLJets_TopHad_IDs_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_TopLep_IDs\n";
+  mainNode = mainNode.Define("HyPER_TopLep_IDs",
+                              [](const std::vector<long>& topLepIDs) { return topLepIDs; },
+                              {"hyper_TtbarLJets_TopLep_IDs_NOSYS"});
+
+  LOG(INFO) << "Adding variable: HyPER_TopHad_Indices\n";
+  mainNode = mainNode.Define("HyPER_TopHad_Indices",
+                              [](const std::vector<long>& topHadIndices) { return topHadIndices; },
+                              {"HyPER_TopHad_Indices_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_TopLep_Indices\n";
+  mainNode = mainNode.Define("HyPER_TopLep_Indices",
+                              [](const std::vector<long>& topLepIndices) { return topLepIndices; },
+                              {"HyPER_TopLep_Indices_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_WHad_Indices\n";
+  mainNode = mainNode.Define("HyPER_WHad_Indices",
+                              [](const std::vector<long>& WHadIndices) { return WHadIndices; },
+                              {"HyPER_WHad_Indices_NOSYS"});
+  LOG(INFO) << "Adding variable: HyPER_WLep_Indices\n";
+  mainNode = mainNode.Define("HyPER_WLep_Indices",
+                              [](const std::vector<long>& WLepIndices) { return WLepIndices; },
+                              {"HyPER_WLep_Indices_NOSYS"});*/
 
   return mainNode;
 }

@@ -1,6 +1,7 @@
 #include<vector>
 #include <string>
 #include <algorithm>
+#include <cmath>
 #include "Math/Vector4D.h"
 #include "ROOT/RDataFrame.hxx"
 #include "Math/Vector4D.h"
@@ -8,6 +9,7 @@
 #include "FastFrames/MainFrame.h"
 #include "FastFrames/DefineHelpers.h"
 #include "PartonMatcher/Variables.h"
+#include "TRandom.h"
 
 // Variables used in both channels
 namespace Variables{
@@ -195,6 +197,144 @@ namespace Variables{
     bool isNotBOverlap(int bIndex, int bbarIndex){
         return bIndex != bbarIndex;
     }
+
+    /**
+     * @brief Create PCBT vector from the WPs information.
+     * @param FCBEff_65 Is the jet there at the 65% WP (boolean).
+     * @param FCBEff_70 Is the jet there at the 70% WP (boolean).
+     * @param FCBEff_77 Is the jet there at the 77% WP (boolean).
+     * @param FCBEff_85 Is the jet there at the 85% WP (boolean).
+     * @param FCBEff_90 Is the jet there at the 90% WP (boolean).
+     * @return std::vector<int> The output container.
+     */
+    std::vector<int> getPCBT(const std::vector<char>& FCBEff_65, const std::vector<char>& FCBEff_70, const std::vector<char>& FCBEff_77, const std::vector<char>& FCBEff_85, const std::vector<char>& FCBEff_90){
+        std::vector<int> PCBT_output;
+
+        size_t n = FCBEff_65.size();
+
+        for (size_t i = 0; i < n; ++i) {
+            if (FCBEff_65.at(i)) {
+                PCBT_output.push_back(6);
+            } else if (FCBEff_70.at(i)) {
+                PCBT_output.push_back(5);
+            } else if (FCBEff_77.at(i)) {
+                PCBT_output.push_back(4);
+            } else if (FCBEff_85.at(i)) {
+                PCBT_output.push_back(3);
+            } else if (FCBEff_90.at(i)) {
+                PCBT_output.push_back(2);
+            } else {
+                PCBT_output.push_back(1);
+            }
+        }
+
+        return PCBT_output;
+    }
+
+    /**
+     * @brief Adjust the HyPER indices in function of the selections applied on the object containers
+     * @return std::vector<long> The updated version of the HyPER indices.
+     * @param edgeOrder 2 for edges, 3+ for hyperedges (number of final states associated with the (hyper)edge)
+     * @param HyPER_indices Initial HyPER indices vector.
+     * @param HyPER_IDs Corresponding HyPER IDs vector.
+     * @param jet_idx Post selections jet indices.
+     * @param el_idx Post selections electron indices.
+     * @param mu_idx Post selections muon indices.
+     */
+    std::vector<long> getSelecHyPERIndices(const std::vector<long>& HyPER_indices,
+                                        const std::vector<long>& HyPER_IDs,
+                                        const std::vector<size_t>& jet_idx,
+                                        const std::vector<size_t>& el_idx,
+                                        const std::vector<size_t>& mu_idx,
+                                        const std::vector<size_t>& tau_idx){
+        
+        std::vector<long> new_HyPER_indices = {};
+
+        int edgeOrder = HyPER_indices.size();
+
+        for(long i = 0; i < edgeOrder; ++i){
+            
+            long type;
+
+            if(edgeOrder == 2){
+                type = HyPER_IDs[i+1];
+            }else{
+                type = HyPER_IDs[i];
+            }
+            
+            switch(type){
+                case 1:
+                    //Jet
+                    for(size_t j = 0; j < jet_idx.size(); ++j){
+                        if(static_cast<long>(jet_idx[j]) == HyPER_indices[i]){
+                            new_HyPER_indices.push_back(j);
+                        }
+                    }
+
+                    if(static_cast<long>(new_HyPER_indices.size()) < i){
+                        new_HyPER_indices.push_back(-1);
+                    }
+
+                    break;
+                case 2:
+                    //Electron
+                    for(size_t j = 0; j < el_idx.size(); ++j){
+                        if(static_cast<long>(el_idx[j]) == HyPER_indices[i]){
+                            new_HyPER_indices.push_back(j);
+                        }
+                    }
+
+                    if(static_cast<long>(new_HyPER_indices.size()) < i){
+                        new_HyPER_indices.push_back(-1);
+                    }
+
+                    break;
+                case 3:
+                    //Muon
+                    for(size_t j = 0; j < mu_idx.size(); ++j){
+                        if(static_cast<long>(mu_idx[j]) == HyPER_indices[i]){
+                            new_HyPER_indices.push_back(j);
+                        }
+                    }
+
+                    if(static_cast<long>(new_HyPER_indices.size()) < i){
+                        new_HyPER_indices.push_back(-1);
+                    }
+
+                    break;
+                case 4:
+                    //MET or Neutrino
+                    new_HyPER_indices.push_back(HyPER_indices[i]); //Not expecting any "fake" neutrino or neutrino removal via selection
+                    break;
+                case 5:
+                    //Tau
+                    for(size_t j = 0; j < tau_idx.size(); ++j){
+                        if(static_cast<long>(tau_idx[j]) == HyPER_indices[i]){
+                            new_HyPER_indices.push_back(j);
+                        }
+                    }
+
+                    if(static_cast<long>(new_HyPER_indices.size()) < i){
+                        new_HyPER_indices.push_back(-1);
+                    }
+
+                    break;
+                default:
+                    new_HyPER_indices.push_back(-1);
+                    break;
+            }
+        }
+
+        return new_HyPER_indices;
+    }
+
+    /**
+     * @brief Turn Char_t variable to bool.
+     * @param myVariable variable that should be used as boolean
+     */
+    bool charToBool(Char_t myVariable){
+        return static_cast<int>(myVariable) == 1;
+    }
 }
 
 namespace TtbarSingleLeptonVars{
@@ -260,7 +400,7 @@ namespace TtbarSingleLeptonVars{
 
         // Basic selection with number of good objects, triggers and correct ntuple branch.
         bool basic(const char& nTupleFlag, int numberOfMuons, int numberOfJets,bool triggered, bool triggerMatched){
-            return nTupleFlag && numberOfMuons == 1 && triggered && triggerMatched && numberOfJets == 4;
+            return nTupleFlag && numberOfMuons == 1 && triggered && triggerMatched && numberOfJets >= 4;//numberOfJets == 4;
         }
     }
 
@@ -277,8 +417,104 @@ namespace TtbarSingleLeptonVars{
 
         // Basic selection with number of good objects, triggers and correct ntuple branch.
         bool basic(const char& nTupleFlag, int numberOfElectrons, int numberOfJets,bool triggered, bool triggerMatched){
-            return nTupleFlag && numberOfElectrons == 1 && triggered && triggerMatched && numberOfJets == 4;
+            return nTupleFlag && numberOfElectrons == 1 && triggered && triggerMatched && numberOfJets >= 4;//numberOfJets == 4;
         }
+   }
+
+   //Selection cuts on jets
+   namespace JetsSelection {
+        bool fullyMatched(Int_t truth_down_index, Int_t truth_up_index, Int_t truth_bhad_index, Int_t truth_blep_index){
+            bool have_down = (truth_down_index != -1);
+            bool have_up   = (truth_up_index != -1);
+            bool have_bhad = (truth_bhad_index != -1);
+            bool have_blep = (truth_blep_index != -1);
+
+            return (have_down && have_up && have_bhad && have_blep);
+        } 
+   }
+
+    /**
+     * @brief Get index of true down jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true down jet
+     */
+    Int_t getPartonTruthDown(const std::vector<int>& event_jet_truth_idx){
+
+        Int_t myIndex = -1;
+
+        if((event_jet_truth_idx[2] != -1) && (event_jet_truth_idx[5] == -1)){
+
+            myIndex = event_jet_truth_idx[2];
+        
+        }else if((event_jet_truth_idx[2] == -1) && (event_jet_truth_idx[5] != -1)){
+            
+            myIndex = event_jet_truth_idx[5];
+        }
+
+        return myIndex;
+    }
+
+    /**
+     * @brief Get index of true up jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true up jet
+     */
+    Int_t getPartonTruthUp(const std::vector<int>& event_jet_truth_idx){
+
+        Int_t myIndex = -1;
+
+        if((event_jet_truth_idx[1] != -1) && (event_jet_truth_idx[4] == -1)){
+
+            myIndex = event_jet_truth_idx[1];
+        
+        }else if((event_jet_truth_idx[1] == -1) && (event_jet_truth_idx[4] != -1)){
+            
+            myIndex = event_jet_truth_idx[4];
+        }
+        
+        return myIndex;
+    }
+
+    /**
+     * @brief Get index of true hadronic b jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true hadronic b jet
+     */
+    Int_t getPartonTruthBHad(const std::vector<int>& event_jet_truth_idx){
+
+        Int_t myIndex = -1;
+
+        if((event_jet_truth_idx[0] != -1) && (event_jet_truth_idx[1] != -1) && (event_jet_truth_idx[2] != -1)){
+
+            myIndex = event_jet_truth_idx[0];
+        
+        }else if((event_jet_truth_idx[3] != -1) && (event_jet_truth_idx[4] != -1) && (event_jet_truth_idx[5] != -1)){
+            
+            myIndex = event_jet_truth_idx[3];
+        }
+        
+        return myIndex;
+    }
+
+    /**
+     * @brief Get index of true leptonic b jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true leptonic b jet
+     */
+    Int_t getPartonTruthBLep(const std::vector<int>& event_jet_truth_idx){
+
+        Int_t myIndex = -1;
+
+        if((event_jet_truth_idx[0] != -1) && (event_jet_truth_idx[1] == -1) && (event_jet_truth_idx[2] == -1)){
+
+            myIndex = event_jet_truth_idx[0];
+        
+        }else if((event_jet_truth_idx[3] == -1) && (event_jet_truth_idx[4] == -1) && (event_jet_truth_idx[5] == -1)){
+            
+            myIndex = event_jet_truth_idx[3];
+        }
+        
+        return myIndex;
     }
 }
 

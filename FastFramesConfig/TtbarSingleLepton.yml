@@ -1,9 +1,9 @@
 general:
   debug_level: INFO
-  input_filelist_path: "../../metadataHyPER/filelist.txt"
-  input_sumweights_path: "../../metadataHyPER/sum_of_weights.txt"
-  output_path_histograms: "/home/dbaronmo/Work/resultsHyPER"
-  output_path_ntuples: "/home/dbaronmo/Work/resultsHyPER"
+  input_filelist_path: "/home/sdellasa/QT_HyPER_Training/fastframes/metadata/filelist.txt"
+  input_sumweights_path: "/home/sdellasa/QT_HyPER_Training/fastframes/metadata/sum_of_weights.txt"
+  output_path_histograms: "/data/sdellasa/QT_HyPER_Training/tuples_withKLFinfo"
+  output_path_ntuples: "/data/sdellasa/QT_HyPER_Training/tuples_withKLFinfo"
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_beamspot * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
@@ -146,9 +146,12 @@ ntuples:
     - Jet_e
     - Jet_GN2v01_score
     - Jet_SVmass
+    - Jet_GN2v01_PCBT_quantile
+    - nBjets_GN2v01_.+
     - Met_pt
     - Met_phi
     - Truth_.+_index
+    - KLF_.+_index
 
 samples:
 # ttbar

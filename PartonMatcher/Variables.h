@@ -66,6 +66,17 @@ namespace Variables{
     }
 
     /**
+     * @brief Create PCBT vector from the WPs information.
+     * @param FCBEff_65 Is the jet there at the 65% WP (boolean).
+     * @param FCBEff_70 Is the jet there at the 70% WP (boolean).
+     * @param FCBEff_77 Is the jet there at the 77% WP (boolean).
+     * @param FCBEff_85 Is the jet there at the 85% WP (boolean).
+     * @param FCBEff_90 Is the jet there at the 90% WP (boolean).
+     * @return std::vector<int> The output container.
+     */
+    std::vector<int> getPCBT(const std::vector<char>& FCBEff_65, const std::vector<char>& FCBEff_70, const std::vector<char>& FCBEff_77, const std::vector<char>& FCBEff_85, const std::vector<char>& FCBEff_90);
+
+    /** 
      * @brief For the parton match branches convert from the ntuple index to the pT index.
      * @param defaultValue The value to use if the index is not found. Unmatched particle.
      * @return The converted index.
@@ -261,6 +272,29 @@ namespace Variables{
      */
     bool isNotBOverlap(int bIndex, int bbarIndex);
 
+    /**
+     * @brief Adjust the HyPER indices in function of the selections applied on the object containers
+     * @return std::vector<long> The updated version of the HyPER indices.
+     * @param HyPER_indices Initial HyPER indices vector.
+     * @param HyPER_IDs Corresponding HyPER IDs vector.
+     * @param jet_idx Post selections jet indices.
+     * @param el_idx Post selections electron indices.
+     * @param mu_idx Post selections muon indices.
+     * @param tau_idx Post selections tau indices.
+     */
+    std::vector<long> getSelecHyPERIndices(const std::vector<long>& HyPER_indices,
+                                        const std::vector<long>& HyPER_IDs,
+                                        const std::vector<size_t>& jet_idx,
+                                        const std::vector<size_t>& el_idx,
+                                        const std::vector<size_t>& mu_idx,
+                                        const std::vector<size_t>& tau_idx);
+
+    /**
+     * @brief Turn Char_t variable to bool.
+     * @param myVariable variable that should be used as boolean
+     */
+    bool charToBool(Char_t myVariable);
+
 }
 
 namespace TtbarSingleLeptonVars{
@@ -302,6 +336,34 @@ namespace TtbarSingleLeptonVars{
      * @return int The unique element in the KLF index vector.
      */
     int fromKLFToNtupleIndex(const std::vector<unsigned int>& klfIndex);
+
+    /**
+     * @brief Get index of true down jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true down jet
+     */
+    Int_t getPartonTruthDown(const std::vector<int>& event_jet_truth_idx);
+
+    /**
+     * @brief Get index of true up jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true up jet
+     */
+    Int_t getPartonTruthUp(const std::vector<int>& event_jet_truth_idx);
+
+    /**
+     * @brief Get index of true hadronic b jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true hadronic b jet
+     */
+    Int_t getPartonTruthBHad(const std::vector<int>& event_jet_truth_idx);
+
+    /**
+     * @brief Get index of true leptonic b jet
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @return Int_t index of true leptonic b jet
+     */
+    Int_t getPartonTruthBLep(const std::vector<int>& event_jet_truth_idx);
 
     /**
      * @brief Create a container from a variable stored in a column. The container is created with the indices of the pT ordered objects.
@@ -349,6 +411,11 @@ namespace TtbarSingleLeptonVars{
         // Basic selection with number of good objects, triggers and correct ntuple branch.
         bool basic(const char& nTupleFlag, int numberOfElectrons,
                    int numberOfJets,bool triggered, bool triggerMatched);
+    }
+
+    //Selection cuts on jets
+    namespace JetsSelection {
+        bool fullyMatched(Int_t truth_down_index, Int_t truth_up_index, Int_t truth_bhad_index, Int_t truth_blep_index);
     }
 }
 
