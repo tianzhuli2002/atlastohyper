@@ -550,8 +550,10 @@ namespace HyPERPerformance{
 
     /**
      * @brief Count the number of correctly reconstructed Top quarks.
-     * @param HyPER_W1_Indices The HyPER indices of the Top1 jets.
-     * @param HyPER_W2_Indices The HyPER indices of the Top2 jets.
+     * @param HyPER_T1_Indices The HyPER indices of the Top1 jets.
+     * @param HyPER_T2_Indices The HyPER indices of the Top2 jets.
+     * @param HyPER_W1_Indices The HyPER indices of the W1 jets.
+     * @param HyPER_W2_Indices The HyPER indices of the W2 jets.
      * @param jetTruthIdx The indices of the truth matched jets.
      * @param nMatchedObjects The number of matched objects per truth object.
      */
@@ -581,5 +583,28 @@ namespace HyPERPerformance{
         const std::vector<unsigned int> KLF_b2_Index,
         const std::vector<int> jetTruthIdx,
         const std::vector<int> nMatchedObjects);
+
+    /**
+     * @brief Check if the HyPER algorithm converged for Two Tops.
+     * @param HyPER_T1_Indices The HyPER indices of the Top1 jets.
+     * @param HyPER_T2_Indices The HyPER indices of the Top2 jets.
+     * @param HyPER_W1_Indices The HyPER indices of the W1 jets.
+     * @param HyPER_W2_Indices The HyPER indices of the W2 jets.
+     * @return bool True if the algorithm converged and gives two valid tops.
+     */
+    bool HyPERConvergedTwoTops(const std::vector<long> HyPER_T1_Indices,
+        const std::vector<long> HyPER_T2_Indices,
+        const std::vector<long> HyPER_W1_Indices,
+        const std::vector<long> HyPER_W2_Indices);
+    
+    /**
+     * @brief Check if the KLF algorithm converged for Two Tops.
+     */
+    bool KLFConvergedTwoTops(const std::vector<unsigned int> KLF_W11_Index,
+        const std::vector<unsigned int> KLF_W12_Index,
+        const std::vector<unsigned int> KLF_b1_Index,
+        const std::vector<unsigned int> KLF_W21_Index,
+        const std::vector<unsigned int> KLF_W22_Index,
+        const std::vector<unsigned int> KLF_b2_Index);
         
 }

@@ -256,6 +256,20 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
             "klfitter_lj1_from_top2_jetIndex_NOSYS","klfitter_lj2_from_top2_jetIndex_NOSYS", "klfitter_b_from_top2_jetIndex_NOSYS",
             "event_jet_truth_idx", "event_jet_truth_candidates"});
 
+        // Check if the algorithms converged for two tops.
+        LOG(INFO) << "Adding variable: Two_Tops_Reco_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Two_Tops_Reco_NOSYS",
+            HyPERPerformance::HyPERConvergedTwoTops,
+            {"hyper_TtbarAllHadronic_Top1_Indices_NOSYS","hyper_TtbarAllHadronic_Top2_Indices_NOSYS","hyper_TtbarAllHadronic_W1_Indices_NOSYS", "hyper_TtbarAllHadronic_W2_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: Two_Tops_Reco_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Two_Tops_Reco_KLF_NOSYS",
+            HyPERPerformance::KLFConvergedTwoTops,
+            {"klfitter_lj1_from_top1_jetIndex_NOSYS","klfitter_lj2_from_top1_jetIndex_NOSYS", "klfitter_b_from_top1_jetIndex_NOSYS",
+            "klfitter_lj1_from_top2_jetIndex_NOSYS","klfitter_lj2_from_top2_jetIndex_NOSYS", "klfitter_b_from_top2_jetIndex_NOSYS"});
+
         // Mass variables
         LOG(INFO) << "Adding variable: Top1_mass_KLF_NOSYS\n";
         mainNode = m_partonMatcher->systematicDefine(mainNode,

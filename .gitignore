@@ -9,3 +9,4 @@ H5Converters/.env/*
 
 # Skip Validation outputs
 Validation/*.png
+FFPlot/*.png

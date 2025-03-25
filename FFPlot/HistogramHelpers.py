@@ -1,0 +1,981 @@
+import ROOT as r
+import os
+import numpy as np
+import math
+
+from Logger import INFO, WARNING, ERROR, DEBUG, Logger
+Logger.LOGLEVEL = 3
+
+
+r.TH1.AddDirectory(False)
+
+############################################################################################################
+# Storage class for histogram information
+class HistogramInfo:
+    def __init__(self, name, binEdges=[], binSteps=[], binNorm=1.0, xTitle="", leftCut=0, rightCut=0, units="",logScale=False,xRange=[0.0,0.0],isIntegerPlot=False):
+        self.m_name = name
+        self.m_binEdges = binEdges
+        self.m_binSteps = binSteps
+        self.m_binNorm = binNorm
+        self.m_xTitle = xTitle
+        self.m_leftCut = leftCut
+        self.m_rightCut = rightCut
+        self.m_units = units
+        self.m_logScale = logScale
+        self.m_xRange = xRange
+        self.m_isIntegerPlot = isIntegerPlot
+
+    def __str__(self):
+        return f"Name: {self.m_name}, Bin Edges: {self.m_binEdges}, Bin Steps: {self.m_binSteps}, Bin Norm: {self.m_binNorm}, xTitle: {self.m_xTitle}, Left Cut: {self.m_leftCut}, Right Cut: {self.m_rightCut}, Units: {self.m_units}"
+    
+    def needsRebin(self):
+        return len(self.m_binEdges)!=0
+    
+    def xRangeIsCustom(self):
+        if self.m_xRange[0] > self.m_xRange[1]:
+            WARNING.log('X range is inverted!\n')
+        return self.m_xRange[0] != self.m_xRange[1]
+
+############################################################################################################
+# Function that returns the list of bin edges used by ROOT to rebin a histogram
+def biner(edges,bin_widths,histogram):
+    # Check that the number of internal edges is one less than the number of bin widths
+    if (len(edges)+1!=len(bin_widths)):
+        ERROR.log("Check edges and bin widths array sizes!")
+        return
+    
+    # Get the first and last bin edges of the histogram
+    first_bin = histogram.GetXaxis().GetBinLowEdge(1)
+    last_bin = histogram.GetXaxis().GetBinUpEdge(histogram.GetNbinsX())
+    edges_with_borders = [first_bin] + edges + [last_bin]
+
+    number_of_homogeneous_spaces = len(edges_with_borders)-1
+
+    bin_edges = np.array([])
+    for iterator in range(0,number_of_homogeneous_spaces):
+        low_edge = edges_with_borders[iterator]
+        high_edge = edges_with_borders[iterator+1]
+        bin_width = bin_widths[iterator]
+        number_of_bins = round((high_edge-low_edge)/bin_width)
+
+        # Check that this binning makes sense
+        if abs( number_of_bins - (high_edge-low_edge)/bin_width ) > 0.0001:
+            ERROR.log("The binning is not consistent with the bin width! You provided the following bins:")
+            ERROR.log("Low edge: ",low_edge)
+            ERROR.log("High edge: ",high_edge)
+            ERROR.log("Bin width: ",bin_width)
+            ERROR.log("This is not consistent! Check...")
+            exit(1)
+
+        # Construct the bins...
+        if number_of_bins == 0:
+            ERROR.log("The bin with is zero! Check the binning...")
+            exit(1)
+        else :
+            bin_edges = np.concatenate((bin_edges , np.linspace(low_edge,high_edge,number_of_bins,endpoint=False)))
+
+    bin_edges = np.concatenate((bin_edges,[last_bin]))
+    # Perform some checks before returning the bin edges
+    # 1. Check that the last and first bin edges are the same as the histogram
+    if first_bin not in bin_edges or last_bin not in bin_edges:
+        ERROR.log("The first or last bin is not in the bin objects! Check the code!")
+        exit(1)
+    # 2. Check that there are no repeated bin edges
+    if len(bin_edges) != len(np.unique(bin_edges)):
+        ERROR.log("There are repeated bin edges! Check the code!")
+        exit(1)
+
+    # Round the bin edges to 3 decimal places
+    bin_edges = np.round(bin_edges,3)
+    INFO.log("Using bin edges = ",bin_edges)
+    return bin_edges
+
+############################################################################################################
+
+# Function to normalise a list of histograms to a given bin width
+def normalization(hist_list,norm_bin):
+    # Loop the histograms
+    for hist in hist_list:
+        # Store number of entries to fix at the end of the loop
+        entries=hist.GetEntries()
+        # Scale each bin of the histogram by the bin width
+        for i in range(1,hist.GetNbinsX()+1):
+            value=hist.GetBinContent(i)
+            error=hist.GetBinError(i)
+            if value==0 and error==0:
+                continue
+            sf=hist.GetXaxis().GetBinWidth(i)/norm_bin
+            hist.SetBinContent(i,value/sf)
+            hist.SetBinError(i,error/sf)
+        hist.SetEntries(entries)
+
+############################################################################################################
+
+# Function to return the bin content and uncertainty of a histogram as numpy arrays
+def unpackHisto(histogram_file):
+    bin_content = []
+    bin_content_uncer =[]
+    for i in range(1,histogram_file.GetNbinsX()+1):
+        bin_content.append(histogram_file.GetBinContent(i))
+        bin_content_uncer.append(histogram_file.GetBinError(i))
+        
+    return np.array(bin_content),np.array(bin_content_uncer)
+
+############################################################################################################
+
+# Function to return a histogram that is the data minus all the samples included in a list
+def dataSubtract(histoName,histogramsPath,dataFileName,sampleFilesToSubtract,histogramInfo,rebin=True):
+    # Get the data histogram
+    dataFile = r.TFile.Open(histogramsPath+dataFileName+".root")
+    dataHistogram = r.TH1F(dataFile.Get(histoName))
+    subtractHistograms = []
+    # First rebin all the histograms using the histogramInfo object
+    if rebin:
+        binsArray=biner(histogramInfo.m_binEdges,histogramInfo.m_binSteps,dataHistogram)
+        numberBins=len(binsArray)-1
+        dataHistogram = dataHistogram.Rebin(numberBins,dataFileName,binsArray)
+        # Now rebin the other samples
+        for sampleToSubtract in sampleFilesToSubtract:
+            sampleFile = r.TFile.Open(histogramsPath+sampleToSubtract+".root")
+            sampleHistogram = r.TH1F(sampleFile.Get(histoName))
+            sampleHistogram = sampleHistogram.Rebin(numberBins,sampleToSubtract,binsArray)
+            subtractHistograms.append(sampleHistogram)
+            
+    else :
+        for sampleToSubtract in sampleFilesToSubtract:
+            sampleFile = r.TFile.Open(histogramsPath+sampleToSubtract+".root")
+            sampleHistogram = r.TH1F(sampleFile.Get(histoName))
+            subtractHistograms.append(sampleHistogram)
+            
+    # Subtract the samples
+    for sampleHistogram in subtractHistograms:
+        dataHistogram.Add(sampleHistogram,-1)
+
+    return dataHistogram
+
+############################################################################################################
+
+# This function calculates the ratio = (Data-BG)/Signal and returns the x and y values of the ratio with the uncertainty as a multiple return value
+def ratioDataMinusBG(path_to_samples=os.getcwd(),signal_name="Signal",data_name="Data",bg_names=[],histogram_info=None,SFs={}):
+    
+    # Open the files
+    Data = r.TFile.Open(path_to_samples+"/"+data_name+".root","READ")
+    Signal = r.TFile.Open(path_to_samples+"/"+signal_name+".root","READ")
+    bg_files_list=[]
+    for i in bg_names: # Open all the background files
+        bg_files_list.append(r.TFile.Open(path_to_samples+"/"+i+".root","READ"))
+    
+    # Get the histograms
+    histogram_name = list(histogram_info.keys())[0]
+    data=Data.Get(histogram_name)
+    signal=Signal.Get(histogram_name)
+    bg_histograms_list = [i.Get(histogram_name) for i in bg_files_list]
+    
+    
+    signal.SetDirectory(0)
+    data.SetDirectory(0)
+    for i in bg_histograms_list:
+        i=i.SetDirectory(0)
+    
+    Signal.Close()
+    Data.Close()
+    [i.Close() for i in bg_files_list]
+    
+    # Rebin the histograms
+    s=data.GetXaxis().GetBinLowEdge(1)
+    e=data.GetXaxis().GetBinUpEdge(data.GetNbinsX())
+    rebining=biner(histogram_info[histogram_name][0],histogram_info[histogram_name][1],data)
+    nb=len(rebining)-1
+    signal=signal.Rebin(nb,"signal",rebining)
+    data=data.Rebin(nb,"data",rebining)
+    for i in range(0,len(bg_histograms_list)):
+        bg_histograms_list[i]=bg_histograms_list[i].Rebin(nb,bg_names[i],rebining)
+
+    # Scale the samples by the scale factors given in the dictionary
+    for i in bg_histograms_list:
+        try :
+            sampleName = i.GetName()
+            i.Scale(SFs[sampleName])
+        except KeyError:
+            WARNING.log("No scale factor for sample: "+sampleName)
+            continue
+
+
+
+    # Normalise the histograms
+    if len(histogram_info[histogram_name])>0:
+        hist_list=[signal,data]+bg_histograms_list
+        normalization(hist_list,histogram_info[histogram_name][2])
+
+    # Subtract the backgrounds from the data    
+    data_subtracted=data.Clone()
+    for i in bg_histograms_list:
+        data_subtracted.Add(i,-1)
+        
+    # Divide the data minus background by the signal    
+    ratio=data_subtracted.Clone()
+    ratio.Divide(signal)
+
+    # Initialise return values
+    x_values = []
+    y_values = []
+    y_uncern = []
+
+    # Fill the return values
+    for i in range(1,ratio.GetNbinsX()+1):
+        if ratio.GetBinContent(i)>0 or i==1:
+            x_values.append(ratio.GetBinCenter(i))
+            y_values.append(round(ratio.GetBinContent(i),3))
+            y_uncern.append(ratio.GetBinError(i))
+        else : # Do not fill the return values if the ratio is negative or zero ?
+            break
+    
+    return np.array(x_values),np.array(y_values),np.array(y_uncern)
+
+############################################################################################################
+
+# Function to make the negative bins of a histogram equal to zero. 
+def makeNegativeBinsZero(histogram):
+    for i in range(1,histogram.GetNbinsX()+1):
+        if histogram.GetBinContent(i)<0:
+            histogram.SetBinContent(i,0.0)
+
+############################################################################################################
+
+# Function to scale the uncertainty of a histogram by a fractional amount of the bin content
+def scaleUncertainty(histogram,scaleFactor):
+    for i in range(1,histogram.GetNbinsX()+1):
+        error = histogram.GetBinError(i)
+        content = histogram.GetBinContent(i)
+        newError = np.sqrt(error*error + content*content*scaleFactor*scaleFactor)
+        histogram.SetBinError(i,newError)
+
+############################################################################################################
+
+# Function that returns the sum of a set of MC samples
+def mcAdd(histoName,histogramsPath,sampleFilesToAdd,histogramInfo,rebin=True):
+    addHistograms = []
+    if rebin:
+        # Rebing parameters
+        refererenceFile = r.TFile.Open(histogramsPath+sampleFilesToAdd[0]+".root")
+        referenceHistogram = r.TH1F(refererenceFile.Get(histoName))
+        binsArray= binsArray=biner(histogramInfo.m_binEdges,histogramInfo.m_binSteps,referenceHistogram)
+        numberBins=len(binsArray)-1
+        refererenceFile.Close()
+        # Now rebin the samples
+        for sampleToAdd in sampleFilesToAdd:
+            sampleFile = r.TFile.Open(histogramsPath+sampleToAdd+".root")
+            sampleHistogram = r.TH1F(sampleFile.Get(histoName))
+            sampleHistogram = sampleHistogram.Rebin(numberBins,sampleToAdd,binsArray)
+            addHistograms.append(sampleHistogram)
+            
+    else :
+        for sampleToAdd in sampleFilesToAdd:
+            sampleFile = r.TFile.Open(histogramsPath+sampleToAdd+".root")
+            sampleHistogram = r.TH1F(sampleFile.Get(histoName))
+            addHistograms.append(sampleHistogram)
+    
+    # Add the samples
+    for sampleHistogram in addHistograms[1:]:
+        addHistograms[0].Add(sampleHistogram)
+
+    return addHistograms[0]
+
+############################################################################################################
+
+# AUX Function: Check if a bin is in the SR
+def isSRBin(binMidPoint,cutLeft,cutRight):
+    if cutLeft==cutRight:
+        return True
+    return (binMidPoint>cutLeft and binMidPoint<cutRight)
+
+# Function to make the uncertainty and the bin content of a histogram consistent with no MJ in the SR
+def makeSRBinsConsistentWithNOMJ(histogram,cutLeft,cutRight,totalMJ,totalMJUncertainty,SRhistogram):
+    # Get the integral in the SR bins
+    integral = 0.0
+    for i in range(1,SRhistogram.GetNbinsX()+1):
+        binMidPoint = SRhistogram.GetBinCenter(i)
+        if isSRBin(binMidPoint,cutLeft,cutRight):
+            integral += SRhistogram.GetBinContent(i)
+    if integral == 0.0:
+        return
+    
+    INFO.log("Integral in SR bins: "+str(integral))
+    # Spread the MJ in the SR bins
+    for i in range(1,histogram.GetNbinsX()+1):
+        binMidPoint = histogram.GetBinCenter(i)
+        if isSRBin(binMidPoint,cutLeft,cutRight):
+            sf = SRhistogram.GetBinContent(i)/integral
+            binContent = totalMJ*sf+0.0001
+            binError = totalMJUncertainty*np.sqrt(sf)
+            histogram.SetBinContent(i,binContent)
+            histogram.SetBinError(i,binError)
+
+############################################################################################################
+
+# Function to blind the histogram bins that have a purity above a given limit
+# Returns a list of booleans that indicate if the bin was blinded. Includes underflow and overflow.
+def blindHistogram(dataHistogram,
+                   purityHistogram,             # For criterion 1
+                   purityLimit,                 # For criterion 1
+                   signalHistogram,             # For criterion 2
+                   totalUncertaintyHistogram,    # For criterion 2
+                   histogramName,
+                   lowXRange,
+                   highXRange):
+    blindedBins = []
+    # Check if the histogram is the reco_mass
+    isRecoMass = False
+    if "reco_mass" in histogramName:
+        INFO.log("Blinding reco_mass histogram")
+        isRecoMass = True
+
+    # Loop over all bins including underflow and overflow
+    for i in range(0,dataHistogram.GetNbinsX()+2):
+        blindBin = False
+        # 1) ALWAYS Blind the high-mass reco_mass bins 
+        if isRecoMass and dataHistogram.GetBinCenter(i)>=160:
+            dataHistogram.SetBinContent(i,0.0)
+            dataHistogram.SetBinError(i,0.0)
+            blindBin = True
+
+        # 2) Criterion 1: Blind according to purity
+        criterion1 = False
+        purity = 100.0*purityHistogram.GetBinContent(i) # Get the purity in this bin
+        abovePuretyLimit = purity > purityLimit
+        inBlindingRange = dataHistogram.GetBinCenter(i) > lowXRange and dataHistogram.GetBinCenter(i) < highXRange
+        isNotCut = lowXRange == highXRange
+        isSignalRegion = inBlindingRange or isNotCut
+        if (abovePuretyLimit or isSignalRegion) and not isRecoMass:
+            criterion1 = True
+
+        # 3) Criterion 2: Blind according to signal yield and total uncertainty
+        criterion2 = False
+        signal = signalHistogram.GetBinContent(i)
+        totalUncertainty = totalUncertaintyHistogram.GetBinError(i)
+        # If the signal is larger than the total uncertainty, blind the bin
+        if signal >= totalUncertainty and not isRecoMass:
+            criterion2 = True
+
+        # Here you make the decision... if any of the criteria is met, blind the bin
+        if criterion2:
+            blindBin = True
+            DEBUG.log("Blinding bin: "+str(i)+" because of criterion 2")
+        if criterion1 and not criterion2:
+            blindBin = True
+            DEBUG.log("Blinding bin: "+str(i)+" because of criterion 1")
+
+        # Blind   
+        if blindBin:
+            dataHistogram.SetBinContent(i,0.0)
+            dataHistogram.SetBinError(i,0.0)
+        
+        # Append the blinded status to the list
+        blindedBins.append(blindBin)
+        
+    # Reset stats after modification
+    if any(blindedBins):
+        dataHistogram.ResetStats()
+
+    return blindedBins
+
+############################################################################################################
+
+# Function to return a histogram that covers all the blinded bins
+def setupShadeHistogram(baseHistogram, blindedBins,highYRange):
+    # Sanity check
+    if (baseHistogram.GetNbinsX()+2) != len(blindedBins):
+        ERROR.log("The blinded bins list does not have the same number of bins as the histogram!")
+        exit(1)
+
+    # Create a histogram with the same binning as the base histogram
+    blindHistogram = baseHistogram.Clone()
+    # Set the bin content and error to the upper range of the plot
+    for i in range(0,blindHistogram.GetNbinsX()+2):
+        if blindedBins[i]:
+            blindHistogram.SetBinContent(i,highYRange)
+            blindHistogram.SetBinError(i,highYRange)
+        else:
+            blindHistogram.SetBinContent(i,0.0)
+            blindHistogram.SetBinError(i,0.0)
+        # Change style to a shaded histogram
+        blindHistogram.SetLineWidth(0);
+        blindHistogram.SetLineColor(r.kGray);
+        blindHistogram.SetFillColorAlpha(r.kGray,0.35);
+        blindHistogram.SetFillStyle(3345);
+    # return the built histograms
+    return blindHistogram
+    
+
+############################################################################################################
+
+# Function to plot a histogram stack of MC with data
+def setupZprimeHistograms(histogram_objet : HistogramInfo, Zprime_pack):
+    INFO.log("Setting up Z prime histograms.")
+    for s in Zprime_pack:
+        file = r.TFile.Open(Zprime_pack[s][0],"READ")
+        hist = file.Get(histogram_objet.m_name)
+        if hist == None:
+            hist = file.Get(histogram_objet.m_name + "_basic_all") # If the histogram is not found, try with the basic_all suffix
+            if hist == None:
+                WARNING.log("Histogram not found in file: ",samples[s][0])
+                continue
+        hist.SetDirectory(0)
+        Zprime_pack[s][2] = hist
+        file.Close()
+    
+    ###### REBIN AND NORMALISE ######
+    first_zp_key = list(Zprime_pack.keys())[0]
+    if histogram_objet.needsRebin():
+        rebining=biner(histogram_objet.m_binEdges,histogram_objet.m_binSteps,Zprime_pack[first_zp_key][2])
+        INFO.log("Using bin edges = ",rebining)
+        nb=len(rebining)-1
+        for s in Zprime_pack:
+            Zprime_pack[s][2]=Zprime_pack[s][2].Rebin(nb,s,rebining)
+        hist_list=[Zprime_pack[s][2] for s in Zprime_pack]
+        normalization(hist_list,histogram_objet.m_binNorm)
+
+    ###### SETTING THE STYLE ######
+    for s in Zprime_pack:
+        Zprime_pack[s][2].SetLineWidth(3)
+        Zprime_pack[s][2].SetLineColor(Zprime_pack[s][1])
+        Zprime_pack[s][2].SetFillColorAlpha(0,0.0)
+        
+
+    return Zprime_pack
+
+############################################################################################################
+
+# Function to plot a histogram stack of MC (singal and BG) with (or without) data.
+# We always asume there is at least on histogram in the signal dictionary.
+
+def stackPlot(data,
+              signal,
+              background,
+              histograms,
+              watermark,
+              scales_dict,
+              final_state = "Z#rightarrow #mu#mu",
+              regionLabel = "",
+              blind = True,
+              unblindPurityLimit = 0.0,
+              printVersion = False,
+              printOverflows = False,
+              purityMultiplier = 1.0):
+    
+
+    ###### Check if the input samples ############
+    DATA_EXISTS = data != 'NO_DATA'
+    BG_EXISTS = len(background) > 0
+    SIGNAL_EXISTS = len(signal) > 0
+
+    if not SIGNAL_EXISTS:
+        ERROR.log("No signal sample found! Please give at least one signal sample.")
+        exit(1)
+    
+    if DATA_EXISTS:
+        INFO.log("Running with data.")
+        samples = data.copy()
+        if BG_EXISTS:
+            samples.update(background)
+        samples.update(signal)
+    else:
+        WARNING.log("Running without data.")
+        blind = False # If there is no data, there is no need to blind.
+        samples = signal.copy()
+        if BG_EXISTS:
+            samples.update(background)
+    
+    if not BG_EXISTS:
+        WARNING.log("Running without background.")
+
+    ########################################################################################################### PLOT ####################################################################################################
+
+    for i in histograms:
+        INFO.log("========================================================")
+        INFO.log("Histogram = " + i.m_name)
+
+        not_found_samples = []
+        for sample in samples:
+            file = r.TFile.Open(samples[sample][0],"READ")
+            hist = file.Get(i.m_name)
+            if hist == None:
+                WARNING.log("Histogram not found in file: " + samples[sample][0] + "... trying with basic_all post-fix.")
+                not_found_samples.append(s)
+                continue
+
+            hist.SetDirectory(0)
+            samples[sample][2]=hist # add histogram (TH1F) to list of samples
+            DEBUG.log("Sample " + sample + " found in file: " + samples[sample][0])
+            file.Close()
+        if len(not_found_samples) == len(samples):
+            WARNING.log("Histogram not found in any sample. Skipping histogram!!! ")
+            continue
+
+        ###### DROP NOT FOUND SAMPLES ######
+        for sample in not_found_samples:
+            INFO.log("Dropping not found sample: " + sample)
+            samples.pop(sample)
+
+        ###### REBIN AND NORMALISE ######
+        if i.needsRebin():
+            model_key = next(iter(samples))
+            model_histogram = samples[model_key][2]
+            rebining=biner(i.m_binEdges,i.m_binSteps,model_histogram)
+            nb=len(rebining)-1
+            for s in samples:
+                if s == "MJ": # MJ should not be rebinned. It should come rebin already.
+                    continue
+                samples[s][2]=samples[s][2].Rebin(nb,s,rebining)
+                samples[s][2].GetMaximum()
+            hist_list=[samples[s][2] for s in samples]
+            normalization(hist_list,i.m_binNorm)
+        DEBUG.log("Rebinning and normalising done.")
+
+        ###### SETTING THE COLOURS ######
+        for s in samples:
+            if s=="Data":
+                samples[s][2].SetMarkerStyle(20)
+                samples[s][2].SetMarkerSize(0.5)
+                samples[s][2].SetLineColor(samples[s][1])
+            else :
+                DEBUG.log("Setting colour %d for sample %s" % (samples[s][1],s))
+                samples[s][2].SetFillColor(samples[s][1])
+                samples[s][2].SetLineColor(samples[s][1])
+        DEBUG.log("Setting colours done.")
+        
+        #################### SCALING FACTORS FROM FIT ####################
+        #samples["Signal"][2].Scale(signalMu)
+        #samples["QCDjj"][2].Scale(backgroundMu)
+                
+        ####################### CREATING MC HISTOGRAM, STAT UNCERTAINTY HISTOGRAM AND STACK ########################        
+        first_signal_key = next(iter(signal))
+        if BG_EXISTS:
+            first_bg_key = next(iter(background))
+
+        mc_stack = r.THStack("mc_stack","")
+        mc_histo = samples[first_signal_key][2].Clone()
+        signal_histo = samples[first_signal_key][2].Clone()
+        if BG_EXISTS:
+            bg_histo = samples[first_bg_key][2].Clone()
+
+        for sample in samples:
+            if sample!="Data":
+                mc_stack.Add(samples[sample][2])
+                if sample != first_signal_key:
+                    mc_histo.Add(samples[sample][2],1)
+                if sample in signal and sample != first_signal_key:
+                    signal_histo.Add(samples[sample][2],1)
+                if BG_EXISTS and sample in background and sample != first_bg_key:
+                    bg_histo.Add(samples[sample][2],1)
+
+        statUncer = mc_histo.Clone()
+        statUncer.SetLineColor(r.kBlue)
+        statUncer.SetFillColor(r.kBlue-4)
+        statUncer.SetFillStyle(3354)
+        DEBUG.log("Creating MC histogram, stat uncertainty histogram and stack done.")
+
+        ############### DEFINING Signal/MC RATIO ###############
+        ratio_sg_mc = signal_histo.Clone()
+        ratio_sg_mc.Divide(mc_histo)
+        ratio_sg_mc.SetLineColor(r.kBlack)
+        DEBUG.log("Defining Signal/MC ratio done.")
+
+        ###### SCALING PURITY IF NEEDED ######
+        ratio_sg_mc_for_blinding = ratio_sg_mc.Clone()
+        if purityMultiplier != 1.0:
+            ratio_sg_mc.Scale(purityMultiplier)
+        DEBUG.log("Scaling purity done.")
+
+        ############## BLINDING BINS WITH ABOVE THE PURITY LIMIT OR IN THE SELECTED REGION AND DEFINING Data/MC RATIO ################
+        if blind:
+            ratio_signal_mc = ratio_sg_mc
+            signal_histogram = samples["Signal"][2]
+            blindedBins = blindHistogram(samples["Data"][2],ratio_signal_mc,unblindPurityLimit, signal_histogram, statUncer,i.m_name,i.m_leftCut,i.m_rightCut)
+        DEBUG.log("Blinding bins done.")
+
+        ############### DEFINING DATA/MC RATIO ###############
+        ratio = r.TGraphAsymmErrors()
+        if DATA_EXISTS:
+            ratio.Divide(mc_histo,samples["Data"][2],"pois")
+        else:
+            ratio.Divide(mc_histo,mc_histo,"pois")
+        DEBUG.log("Defining Data/MC ratio done.")
+
+        ##### DRAWING TOP PAD, SETTING MARGINS #######
+        canvas = r.TCanvas("Canvas1","Plot",800,800)
+        canvas.cd()
+
+        pad1 = r.TPad (" pad1 "," pad1 " ,0 ,0.40 ,0.85 ,1)
+        pad1.SetTopMargin(0.07)
+        pad1.SetRightMargin(0.01)
+        pad1.SetLeftMargin(0.16)
+        pad1.SetBottomMargin(0.0)
+        pad1.Draw ()
+        pad1.cd ()
+
+        ###### DRAWING INFO PAD ######
+        canvas.cd()
+        InfoPad = r.TPad (" InfoPad "," InfoPad " ,0.85 ,0.1 ,1.0 ,0.9)
+        InfoPad.SetTopMargin(0.05)
+        InfoPad.SetRightMargin(0.01)
+        InfoPad.SetLeftMargin(0.01)
+        InfoPad.SetBottomMargin(0.0)
+        InfoPad.Draw ()
+        pad1.cd ()
+
+        ###### SETTING STATS BOX POSITION ######
+        r.gStyle.SetOptStat("mri")
+        r.gStyle.SetStatY(0.91);                
+        r.gStyle.SetStatX(0.97);
+        r.gStyle.SetStatW(0.3);                
+        r.gStyle.SetStatH(0.4);
+        r.gStyle.SetStatFormat("2.3g")
+        
+        ###### DRAWING HISTOGRAMS ######
+        statUncer.Draw("E2") # The order here is very important. The first drawn histogram will define the axis.
+        mc_stack.Draw("hist same")
+        AXIS_REF_HIST = statUncer
+        if DATA_EXISTS:
+            samples["Data"][2].Draw("pe same")
+        AXIS_REF_HIST.Draw("sameaxis")
+        AXIS_REF_HIST.Draw("E2 same")
+        DEBUG.log("Drawing histograms done.")
+
+        ###### SETTING Y AXIS RANGE ######
+        yScale = 1.5
+        yLow = 0.0
+        if i.m_logScale:
+            maxValueFirstInStack = mc_stack.GetHists().At(0).GetMaximum()
+            it = 0
+            while maxValueFirstInStack == 0:
+                it = it + 1
+                maxValueFirstInStack = mc_stack.GetHists().At(it).GetMaximum()
+            closestLowerPowerOf10 = 10**math.floor(math.log10(maxValueFirstInStack))
+            yLow = closestLowerPowerOf10/10.0
+            yScale = 15
+            pad1.SetLogy()
+        
+        ###### CHANGING SIZE OF TICKS AND LABELS ######
+        AXIS_REF_HIST.GetYaxis().SetLabelSize(0.06)
+        AXIS_REF_HIST.GetYaxis().SetTitleSize(0.08)
+        AXIS_REF_HIST.GetYaxis().SetTitleOffset(0.88)
+        AXIS_REF_HIST.GetYaxis().SetTitle("Events/"+str(i.m_binNorm)+" "+i.m_units)
+        AXIS_REF_HIST.GetYaxis().ChangeLabel(1,-1,0.)
+
+        ###### SETTING MAX NUMBER OF DIGITS IN Y/X AXIS ######
+        AXIS_REF_HIST.GetYaxis().SetMaxDigits(3)
+
+        ###### SETTING X AXIS RANGE ######
+        if i.xRangeIsCustom():
+            xLow=i.m_xRange[0]
+            xHigh=i.m_xRange[1]
+        else:
+            xLow=AXIS_REF_HIST.GetXaxis().GetBinLowEdge(1)
+            xHigh=AXIS_REF_HIST.GetXaxis().GetBinUpEdge(AXIS_REF_HIST.GetNbinsX())
+        
+        if DATA_EXISTS:
+            yHigh = yScale*max(samples["Data"][2].GetMaximum(),mc_histo.GetMaximum())
+        else:
+            yHigh = yScale*mc_histo.GetMaximum()
+
+        AXIS_REF_HIST.GetYaxis().SetRangeUser(yLow, yHigh)
+        AXIS_REF_HIST.GetXaxis().SetRangeUser(xLow,xHigh)
+        DEBUG.log("Setting Y axis range to: "+str(yLow)+" - "+str(yHigh))
+        DEBUG.log("Setting X axis range to: "+str(xLow)+" - "+str(xHigh))
+        DEBUG.log("Number of bins: ",AXIS_REF_HIST.GetXaxis().GetNbins())
+        for b_ in AXIS_REF_HIST.GetXaxis().GetXbins():
+            DEBUG.log("Bin: ", b_)
+
+        ###### SET UP BLINDING HISTOGRAM ######
+        if blind:
+            shadeHistogram = setupShadeHistogram(samples["Signal"][2], blindedBins, yHigh)
+            shadeHistogram.Draw("hist same")
+
+        ###### DRAWING OVERFLOW CONTENTS ######
+        if printOverflows:
+            textBox = r.TPaveText(0.0,0.1,.95,0.4,"NDC")
+            tittleStr = textBox.AddText("Overflow:")
+            mcStr = textBox.AddText("MC = "+str(round(statUncer.GetBinContent(statUncer.GetNbinsX()+1),2))+"#pm"+str(round(statUncer.GetBinError(statUncer.GetNbinsX()+1),2)))
+            if DATA_EXISTS:
+                dataStr = textBox.AddText("Data = "+str(round(samples["Data"][2].GetBinContent(samples["Data"][2].GetNbinsX()+1),2))+"#pm"+str(round(samples["Data"][2].GetBinError(samples["Data"][2].GetNbinsX()+1),2)))
+                dataStr.SetTextSize(0.12)
+            tittleStr.SetTextSize(0.12)
+            mcStr.SetTextSize(0.12)
+            InfoPad.cd()
+            textBox.Draw("same")
+            pad1.cd()
+
+
+        ###### DRAWING LEGEND ######
+        legend = r.TLegend (0.0 ,0.45 ,1.0 ,1.0)
+        for sample in samples:
+            if sample!="Data":
+                legend.AddEntry(samples[sample][2],sample,"f")
+            else:
+                legend.AddEntry(samples[sample][2],sample,"lep")
+        legend.AddEntry(statUncer,"MC Stat.")
+
+        legend.SetNColumns(1)
+        r.gStyle.SetLegendBorderSize(0)
+        legend.SetLineWidth (0)
+        r.gStyle.SetLegendTextSize(0.12)
+        InfoPad.cd()
+        legend.Draw()
+        pad1.cd()
+
+        ###### DRAWING PRINT VERSION ######
+        AXIS_REF_HIST.SetTitle("")
+        l=r.TLatex()
+        l.SetNDC ()
+        if printVersion:
+            r.gStyle.SetOptStat(0)
+
+        # Draw normalisation factors AND samples used in this plot
+        l.DrawLatex(0.225,0.70,final_state)
+        if "PythonEval" in regionLabel:
+            expression = regionLabel.strip("PythonEval")
+            DEBUG.log("Using expression for region label: ",expression)
+            regionStr = eval(expression,locals())
+            DEBUG.log("Region label: ",regionStr)
+            regionText = r.TText(.5,.97,regionStr)
+        else:
+            regionText = r.TText(.5,.97,regionLabel)
+
+        regionText.SetNDC()
+        regionText.SetTextAlign(22)
+        regionText.SetTextFont(43)
+        regionText.SetTextSize(27)
+        regionText.Draw("same")    
+
+        ###### DRAWING CUT LINES ######
+        if i.m_leftCut!=i.m_rightCut:
+            cut1 = r. TLine (i.m_leftCut, yLow ,i.m_leftCut, yHigh)
+            cut1.SetLineColor ( r. kRed+1 )
+            cut1.SetLineWidth (2)
+            cut1.SetLineStyle(2)
+            
+            cut2 = r. TLine (i.m_rightCut, yLow ,i.m_rightCut, yHigh)
+            cut2.SetLineColor ( r. kRed+1 )
+            cut2.SetLineWidth (2)
+            cut2.SetLineStyle(2)
+            
+            cut1.Draw("same")
+            cut2.Draw("same")
+        
+        ###### SETUP SECOND PAD ######
+
+        canvas.cd()
+        pad2 = r.TPad (" pad2 "," pad2 " ,0 ,0.24 ,0.85 ,0.40)
+        pad2.SetRightMargin(0.01)
+        pad2.SetLeftMargin(0.16)
+        pad2.SetTopMargin(0)
+        pad2.SetBottomMargin(0.0)
+        pad2.Draw()
+        pad2.cd()
+
+        # NECESSARY TRICK BECAUSE:
+        # First, a histogram must be the first object drawn.
+        # TGrapAsymmErrors might not have all bins.
+        dummy_histo = mc_histo.Clone()
+        dummy_histo.Divide(dummy_histo) 
+        dummy_histo.Draw("hist p")
+
+        ratio.SetFillColorAlpha(r.kGray,0.95)
+        ratio.Draw("P E0 E2 same")
+        if blind:
+            shadeHistogram.Draw("hist same")
+        
+        dummy_histo.SetTitle("")
+        dummy_histo.SetStats(0)
+        dummy_histo.GetYaxis (). SetRangeUser (0.3 ,2.0)
+        dummy_histo.GetXaxis (). SetRangeUser(xLow,xHigh)
+        if DATA_EXISTS:
+            dummy_histo.GetYaxis (). SetTitle ("MC/Data")
+        else:
+            dummy_histo.GetYaxis (). SetTitle ("MC/MC")
+        dummy_histo.GetYaxis (). SetTitleSize (0.24)
+        dummy_histo.GetYaxis (). SetTitleOffset (0.26)
+        dummy_histo.GetXaxis (). SetTitleSize (0.09)
+        dummy_histo.GetXaxis().SetLabelSize(0.10)
+        dummy_histo.GetYaxis().SetLabelSize(0.18)
+        dummy_histo.SetMarkerStyle(8)
+        dummy_histo.SetMarkerSize(0.6)       
+        dummy_histo.GetYaxis().ChangeLabel(-1,-1,0.)
+
+        ###### SETTING ALL THE HORIZONTAL DASHED LINES #######
+        line = r.TLine(xLow ,1 ,xHigh,1)
+        line.SetLineColor( r.kBlack )
+        line.SetLineWidth(2)
+        line.Draw(" same ")   
+
+        separators = []
+        resolution = 10 # In percentage
+        j=0
+        range_sep = []
+        while j < (int(2.0)+1):
+            step = resolution/100
+            if j > 0.3:
+                range_sep.append(j)
+            j = j + step
+
+        for k in range (len(range_sep)):
+            sep = r.TLine(xLow ,range_sep[k],xHigh,range_sep[k])
+            sep.SetLineColor(r.kBlack)
+            sep.SetLineWidth(1)
+            sep.SetLineStyle(2)
+            separators.append(sep)
+        
+        for separ in separators:
+            separ.Draw("same")
+        
+        canvas.cd()
+        pad3 = r.TPad (" pad3","pad3" ,0.0 ,0.0 ,0.85 ,0.24)
+        pad3.SetRightMargin(0.01)
+        pad3.SetLeftMargin(0.16)
+        pad3.SetTopMargin(0)
+        pad3.SetBottomMargin(0.5)
+        pad3.Draw ()
+        pad3.cd ()
+        ratio_sg_mc.SetStats(0)
+        ratio_sg_mc.GetYaxis (). SetRangeUser (0.0 ,1.02)
+        ratio_sg_mc.GetXaxis (). SetRangeUser(xLow,xHigh)
+        ratio_sg_mc.GetYaxis (). SetTitle ("Purity")
+        ratio_sg_mc.GetYaxis (). SetTitleSize (0.18)
+        ratio_sg_mc.GetYaxis (). SetTitleOffset (0.30)
+        ratio_sg_mc.GetYaxis().ChangeLabel(1,-1,0.)
+        ratio_sg_mc.GetYaxis().ChangeLabel(-1,-1,0.)
+        ratio_sg_mc.SetTitle("")
+
+        ###### SCALING PURITY IF NEEDED ######
+        if purityMultiplier!=1.0:
+            ratio_sg_mc.GetYaxis (). SetTitle ("Purity(#times"+str(int(purityMultiplier))+")")
+            ratio_sg_mc.GetYaxis (). SetRangeUser (0.0 ,1.0)
+            ratio_sg_mc.GetYaxis (). SetTitleSize (0.16)
+            ratio_sg_mc.GetYaxis (). SetTitleOffset (0.30)
+            ratio_sg_mc.GetYaxis().SetNdivisions(405, r.kFALSE);
+
+        if i.m_isIntegerPlot:
+            nDivisions = int(xHigh-xLow)
+            samples["Data"][2].GetXaxis().SetNdivisions(nDivisions)
+            mc.GetXaxis().SetNdivisions(nDivisions)
+            ratio_sg_mc.GetXaxis().SetNdivisions(nDivisions)
+            ratio_sg_mc.GetXaxis().CenterLabels()
+            
+        
+        ############ X AXIS TITLE #################
+        unitsString = ''
+        if str(i.m_units) != '': # If there are units, put them in brackets.
+            unitsString = '['+str(i.m_units)+']'   
+        ratio_sg_mc.SetXTitle(i.m_xTitle+"  "+unitsString)
+        ratio_sg_mc.SetTitleSize(0.22,"X")
+        ratio_sg_mc.SetTitleOffset(1.0,"X")
+        ratio_sg_mc.GetYaxis().SetLabelSize(0.14)
+        ratio_sg_mc.GetXaxis().SetLabelSize(0.20)
+        ratio_sg_mc.SetMarkerStyle(8)
+        ratio_sg_mc.SetMarkerSize(0.6)
+
+        ratio_sg_mc.Draw ("hist p E1 X0")
+        ###### SETTING ALL THE HORIZONTAL DASHED LINES #######
+
+        line11 = r.TLine (xLow ,0.80 ,xHigh,0.80)
+        line11.SetLineColor ( r.kBlack )
+        line11.SetLineWidth (1)
+        line11.SetLineStyle(2)
+        line12 = r.TLine (xLow ,0.60 ,xHigh,0.60)
+        line12.SetLineColor ( r.kBlack )
+        line12.SetLineWidth (1)
+        line12.SetLineStyle(2)
+        line13 = r.TLine (xLow ,0.40 ,xHigh,0.40)
+        line13.SetLineColor ( r.kBlack )
+        line13.SetLineWidth (1)
+        line13.SetLineStyle(2)
+        line14 = r.TLine (xLow ,0.20 ,xHigh,0.20)
+        line14.SetLineColor ( r.kBlack )
+        line14.SetLineWidth (1)
+        line14.SetLineStyle(2)
+        sline = r.TLine (xLow ,1 ,xHigh,1)
+        sline.SetLineColor ( r.kBlack )
+        sline.SetLineWidth (2)
+        sline.Draw("same")
+        line11.Draw (" same ")
+        line12.Draw (" same ")
+        line13.Draw (" same ")
+        line14.Draw (" same ")
+        
+        file_name = i.m_name+"_"+watermark+".pdf"
+        file_name = file_name.replace("NOSYS/","")
+        canvas.Update()
+        canvas.RedrawAxis()
+        canvas.Print(file_name)    
+        canvas.Destructor()    
+
+############################################################################################################
+
+# Histogram dictionaries for the different channels
+
+# Dictionaries for Z->ee
+
+ttbarAllHad6jets = [
+HistogramInfo('NOSYS/Top1_Score_6Jets_HyPER_2R', [], [], 1.0, 'Top1 Score',0,0,''),
+HistogramInfo('NOSYS/Top2_Score_6Jets_HyPER_2R', [], [], 1.0, 'Top2 Score',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Sum_6Jets_HyPER_2R', [], [], 1.0, 'Top Score Sum',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Mul_6Jets_HyPER_2R', [], [], 1.0, 'Top Score Mul',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Ratio_6Jets_HyPER_2R', [], [], 1.0, 'Top Score Ratio',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Stack_6Jets_HyPER_2R', [], [], 1.0, 'Top Score Stack',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Asymm_6Jets_HyPER_2R', [], [], 1.0, 'Top Score Stack',0,0,''),
+HistogramInfo('NOSYS/KLF_LLH_6Jets_KLF_2R', [-60,-30], [5, 2, 10], 5, 'KLF_LLH',0,0,''),
+HistogramInfo('NOSYS/W1_mass_KLF_6Jets_KLF_2R', [], [], 1.0, 'W1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W2_mass_KLF_6Jets_KLF_2R', [], [], 1.0, 'W2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top1_mass_KLF_6Jets_KLF_2R', [], [], 1.0, 'Top1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top2_mass_KLF_6Jets_KLF_2R', [], [], 1.0, 'Top2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W1_mass_HyPER_6Jets_HyPER_2R', [], [], 1.0, 'W1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W2_mass_HyPER_6Jets_HyPER_2R', [], [], 1.0, 'W2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top1_mass_HyPER_6Jets_HyPER_2R', [], [], 1.0, 'Top1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top2_mass_HyPER_6Jets_HyPER_2R', [], [], 1.0, 'Top2 mass',0,0,'GeV'),
+# After Cuts
+HistogramInfo('NOSYS/W1_mass_KLF_6Jets_KLF_2R_CUTLLH', [], [], 1.0, 'W1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W2_mass_KLF_6Jets_KLF_2R_CUTLLH', [], [], 1.0, 'W2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top1_mass_KLF_6Jets_KLF_2R_CUTLLH', [], [], 1.0, 'Top1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top2_mass_KLF_6Jets_KLF_2R_CUTLLH', [], [], 1.0, 'Top2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W1_mass_HyPER_6Jets_HyPER_2R_CUTSUM', [], [], 1.0, 'W1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W2_mass_HyPER_6Jets_HyPER_2R_CUTSUM', [], [], 1.0, 'W2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top1_mass_HyPER_6Jets_HyPER_2R_CUTSUM', [], [], 1.0, 'Top1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top2_mass_HyPER_6Jets_HyPER_2R_CUTSUM', [], [], 1.0, 'Top2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W1_mass_HyPER_6Jets_HyPER_2R_CUTMUL', [], [], 1.0, 'W1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/W2_mass_HyPER_6Jets_HyPER_2R_CUTMUL', [], [], 1.0, 'W2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top1_mass_HyPER_6Jets_HyPER_2R_CUTMUL', [], [], 1.0, 'Top1 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top2_mass_HyPER_6Jets_HyPER_2R_CUTMUL', [], [], 1.0, 'Top2 mass',0,0,'GeV'),
+HistogramInfo('NOSYS/Top_Score_Sum_6Jets_HyPER_2R_CUTSUM', [], [], 1.0, 'Top Score Sum',0,0,''),
+HistogramInfo('NOSYS/Top_Score_Mul_6Jets_HyPER_2R_CUTMUL', [], [], 1.0, 'Top Score Mul',0,0,''),
+HistogramInfo('NOSYS/KLF_LLH_6Jets_KLF_2R_CUTLLH', [-60,-30], [5, 2, 10], 5, 'KLF_LLH',0,0,''),
+]
+
+ttbarAllHad = []
+jet_bins = ['6Jets','7Jets','8Jets','9Jets','10pJets']
+for jet_bin in jet_bins:
+    for histogram in ttbarAllHad6jets:
+        new_histogram = HistogramInfo(histogram.m_name.replace('6Jets',jet_bin), 
+                                      histogram.m_binEdges,
+                                      histogram.m_binSteps,
+                                      histogram.m_binNorm,
+                                      histogram.m_xTitle, 
+                                      histogram.m_leftCut,
+                                      histogram.m_rightCut, 
+                                      histogram.m_units,
+                                      histogram.m_logScale,
+                                      histogram.m_xRange, 
+                                      histogram.m_isIntegerPlot, 
+                                      )
+        if '_CUT' not in new_histogram.m_name:
+            ttbarAllHad.append(new_histogram)
+        elif jet_bin == '6Jets' or jet_bin == '8Jets': 
+            ttbarAllHad.append(new_histogram)
+
+templatesDict = {
+    'ttbarAllHad6jets' : ttbarAllHad6jets,
+    'ttbarAllHad' : ttbarAllHad,
+}
+
+if __name__ == "__main__":
+    print("This is a module with histogram helpers. Import it to use it!")

@@ -1,7 +1,7 @@
 general:
   debug_level: INFO
-  input_filelist_path: "../../metadataTopRecoAllHadronic/filelist.txt"
-  input_sumweights_path: "../../metadataTopRecoAllHadronic/sum_of_weights.txt"
+  input_filelist_path: "../../metadata/filelist.txt"
+  input_sumweights_path: "../../metadata/sum_of_weights.txt"
   output_path_histograms: "/home/dbaronmo/Work/resultsTopRecoAllHadronic"
   output_path_ntuples: "/home/dbaronmo/Work/resultsTopRecoAllHadronic"
   default_sumweights: "NOSYS"
@@ -26,16 +26,8 @@ general:
   nominal_only: True
   create_tlorentz_vectors_for: ["jet"]
   config_define_after_custom_class: True
-  number_of_cpus: 4
+  number_of_cpus: 16
   define_custom_columns:
-    - name: "Top1_Reco_NOSYS"
-      definition: "hyper_TtbarAllHadronic_Top1_Indices_NOSYS[0] != -1 && hyper_TtbarAllHadronic_Top1_Indices_NOSYS[1] != -1 && hyper_TtbarAllHadronic_Top1_Indices_NOSYS[2] != -1"
-    - name: "Top2_Reco_NOSYS"
-      definition: "hyper_TtbarAllHadronic_Top2_Indices_NOSYS[0] != -1 && hyper_TtbarAllHadronic_Top2_Indices_NOSYS[1] != -1 && hyper_TtbarAllHadronic_Top2_Indices_NOSYS[2] != -1"
-    - name: "Two_Tops_Reco_NOSYS"
-      definition: "Top1_Reco_NOSYS && Top2_Reco_NOSYS"
-    - name: "One_Top_Reco_NOSYS"
-      definition: "(Top1_Reco_NOSYS && !Top2_Reco_NOSYS) || (!Top1_Reco_NOSYS && Top2_Reco_NOSYS)"
     - name: "Top_Score_Sum_NOSYS"
       definition: "hyper_TtbarAllHadronic_Top1_Score_NOSYS + hyper_TtbarAllHadronic_Top2_Score_NOSYS"
     - name: "Top_Score_Mul_NOSYS"
@@ -46,24 +38,6 @@ general:
       definition: "std::vector<float>{hyper_TtbarAllHadronic_Top1_Score_NOSYS,hyper_TtbarAllHadronic_Top2_Score_NOSYS}"
     - name: "Top_Score_Asymm_NOSYS"
       definition: "(hyper_TtbarAllHadronic_Top1_Score_NOSYS - hyper_TtbarAllHadronic_Top2_Score_NOSYS) / (hyper_TtbarAllHadronic_Top1_Score_NOSYS + hyper_TtbarAllHadronic_Top2_Score_NOSYS)"
-    - name: "KLF_lj1_from_top1_index_NOSYS"
-      definition: "klfitter_lj1_from_top1_jetIndex_NOSYS.size() > 0 ? klfitter_lj1_from_top1_jetIndex_NOSYS[0] : -1"
-    - name: "KLF_lj2_from_top1_index_NOSYS"
-      definition: "klfitter_lj2_from_top1_jetIndex_NOSYS.size() > 0 ? klfitter_lj2_from_top1_jetIndex_NOSYS[0] : -1"
-    - name: "KLF_b_from_top1_index_NOSYS"
-      definition: "klfitter_b_from_top1_jetIndex_NOSYS.size() > 0 ? klfitter_b_from_top1_jetIndex_NOSYS[0] : -1"
-    - name: "KLF_lj1_from_top2_index_NOSYS"
-      definition: "klfitter_lj1_from_top2_jetIndex_NOSYS.size() > 0 ? klfitter_lj1_from_top2_jetIndex_NOSYS[0] : -1"
-    - name: "KLF_lj2_from_top2_index_NOSYS"
-      definition: "klfitter_lj2_from_top2_jetIndex_NOSYS.size() > 0 ? klfitter_lj2_from_top2_jetIndex_NOSYS[0] : -1"
-    - name: "KLF_b_from_top2_index_NOSYS"
-      definition: "klfitter_b_from_top2_jetIndex_NOSYS.size() > 0 ? klfitter_b_from_top2_jetIndex_NOSYS[0] : -1"
-    - name: "Top1_Reco_KLF_NOSYS"
-      definition: "KLF_lj1_from_top1_index_NOSYS != KLF_lj2_from_top1_index_NOSYS && KLF_lj1_from_top1_index_NOSYS != KLF_b_from_top1_index_NOSYS && KLF_lj2_from_top1_index_NOSYS != KLF_b_from_top1_index_NOSYS"
-    - name: "Top2_Reco_KLF_NOSYS"
-      definition: "KLF_lj1_from_top2_index_NOSYS != KLF_lj2_from_top2_index_NOSYS && KLF_lj1_from_top2_index_NOSYS != KLF_b_from_top2_index_NOSYS && KLF_lj2_from_top2_index_NOSYS != KLF_b_from_top2_index_NOSYS"
-    - name: "Two_Tops_Reco_KLF_NOSYS"
-      definition: "Top1_Reco_KLF_NOSYS && Top2_Reco_KLF_NOSYS"
 
 regions:
   - name: "6Jets"
@@ -162,44 +136,36 @@ regions:
         definition: Number_W_correctly_reconstructed_HyPER_NOSYS
         type: int
         binning:
-          min: -1
+          min: -2
           max: 3
-          number_of_bins: 4
+          number_of_bins: 5
       - name: N_corect_Top_HyPER
         title: Number of correctly reconstructed Top quarks by HyPER; N correct Tops; Events
         definition: Number_Top_correctly_reconstructed_HyPER_NOSYS
         type: int
         binning:
-          min: -1
+          min: -2
           max: 3
-          number_of_bins: 4
+          number_of_bins: 5
       - name: N_corect_W_KLF
         title: Number of correctly reconstructed W bosons by KLF; N correct Ws; Events
         definition: Number_W_correctly_reconstructed_KLF_NOSYS
         type: int
         binning:
-          min: -1
+          min: -2
           max: 3
-          number_of_bins: 4
+          number_of_bins: 5
       - name: N_corect_Top_KLF
         title: Number of correctly reconstructed Top quarks by KLF; N correct Tops; Events
         definition: Number_Top_correctly_reconstructed_KLF_NOSYS
         type: int
         binning:
-          min: -1
+          min: -2
           max: 3
-          number_of_bins: 4
+          number_of_bins: 5
       - name: Is_Two_Tops_Reco
         title: Two tops reconstructed by HyPER; HyPER(2T); Events
         definition: Two_Tops_Reco_NOSYS
-        type: bool
-        binning:
-          min: 0
-          max: 2
-          number_of_bins: 2
-      - name: Is_One_Top_Reco
-        title: One top reconstructed by HyPER; HyPER(1T); Events
-        definition: One_Top_Reco_NOSYS
         type: bool
         binning:
           min: 0
@@ -217,6 +183,38 @@ regions:
     variables: *all_variables
   - name: "10pJets"
     selection: "nJets_good_NOSYS >= 10 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS"
+    variables: *all_variables
+
+  - name: "6Jets_Even"
+    selection: "nJets_good_NOSYS == 6 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 == 0)"
+    variables: *all_variables
+  - name: "7Jets_Even"
+    selection: "nJets_good_NOSYS == 7 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 == 0)"
+    variables: *all_variables
+  - name: "8Jets_Even"
+    selection: "nJets_good_NOSYS == 8 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 == 0)"
+    variables: *all_variables
+  - name: "9Jets_Even"
+    selection: "nJets_good_NOSYS == 9 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 == 0)"
+    variables: *all_variables
+  - name: "10pJets_Even"
+    selection: "nJets_good_NOSYS >= 10 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 == 0)"
+    variables: *all_variables
+  
+  - name: "6Jets_Odd"
+    selection: "nJets_good_NOSYS == 6 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 != 0)"
+    variables: *all_variables
+  - name: "7Jets_Odd"
+    selection: "nJets_good_NOSYS == 7 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 != 0)"
+    variables: *all_variables
+  - name: "8Jets_Odd"
+    selection: "nJets_good_NOSYS == 8 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 != 0)"
+    variables: *all_variables
+  - name: "9Jets_Odd"
+    selection: "nJets_good_NOSYS == 9 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 != 0)"
+    variables: *all_variables
+  - name: "10pJets_Odd"
+    selection: "nJets_good_NOSYS >= 10 && Passed_Any_Jet_Trigger_NOSYS && pass_sixjets_NOSYS && (eventNumber % 2 != 0)"
     variables: *all_variables
 
   # KLF regions

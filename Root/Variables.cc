@@ -526,22 +526,16 @@ namespace HyPERPerformance{
         const std::vector<int> nMatchedObjects){
 
             // In TCT v2.17.0 the truth Ws are [1,2] and [4,5]. The assumption is that truth jets are uniquely matched.
-            // First check all sizes are appropriate.
-            if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2 || jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -1;
+            // Let's mark events which are not matcheable with -2.
+            // And the events where HyPER did not converge properly with -1.
 
-            // Check HyPER at least has one valid prediction.
-            bool validW1HyPER = allValidIndices<long>(HyPER_W1_Indices);
-            bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
-            if (!validW1HyPER && !validW2HyPER) return -1;
+            // First check all sizes are appropriate.
+            if (jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -2;
 
             // Check both truth Ws are uniquely matched.
             bool truthW1Unique = nMatchedObjects.at(1) == 1 && nMatchedObjects.at(2) == 1;
             bool truthW2Unique = nMatchedObjects.at(4) == 1 && nMatchedObjects.at(5) == 1;
-            if (!truthW1Unique || !truthW2Unique) return -1;
-
-            // Check HyPER has unique predictions.
-            bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
-            if (WPredictionsOverlap) return -1;
+            if (!truthW1Unique || !truthW2Unique) return -2;
 
             // Define the labels
             std::vector<int> truthW1{jetTruthIdx.at(1),jetTruthIdx.at(2)};
@@ -550,7 +544,19 @@ namespace HyPERPerformance{
             // Check we have a truth matcheable event
             bool truthW1Matcheable = truthW1.at(0) != -1 && truthW1.at(1) != -1;
             bool truthW2Matcheable = truthW2.at(0) != -1 && truthW2.at(1) != -1;
-            if (!truthW1Matcheable || !truthW2Matcheable) return -1;
+            if (!truthW1Matcheable || !truthW2Matcheable) return -2;
+            
+            // Now check the HyPER predictions.
+            if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2) return -1;
+
+            // Check HyPER at least has one valid prediction.
+            bool validW1HyPER = allValidIndices<long>(HyPER_W1_Indices);
+            bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
+            if (!validW1HyPER && !validW2HyPER) return -1;
+
+            // Check HyPER has unique predictions.
+            bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
+            if (WPredictionsOverlap) return -1;
 
             int nCorrectW = 0;
             if (twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW1)) nCorrectW++;
@@ -591,8 +597,30 @@ namespace HyPERPerformance{
         const std::vector<int> nMatchedObjects){
 
             // In TCT v2.17.0 the truth Tops are [0,1,2] and [3,4,5]. 0 and 3 are the b-jets. The assumption is that truth jets are uniquely matched.
+            // Let's mark events which are not matcheable with -2.
+            // And the events where HyPER did not converge properly with -1.
+
             // First check all sizes are appropriate.
-            if (HyPER_T1_Indices.size() != 3 || HyPER_T2_Indices.size() != 3 || jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -1;
+            if (jetTruthIdx.size() != 6 || nMatchedObjects.size() != 6) return -2;
+
+            // Check both truth Tops are uniquely matched.
+            bool truthT1Unique = nMatchedObjects.at(0) == 1 && nMatchedObjects.at(1) == 1 && nMatchedObjects.at(2) == 1;
+            bool truthT2Unique = nMatchedObjects.at(3) == 1 && nMatchedObjects.at(4) == 1 && nMatchedObjects.at(5) == 1;
+            if (!truthT1Unique || !truthT2Unique) return -2;
+
+            // Define the labels
+            std::vector<int> truthT1{jetTruthIdx.at(0),jetTruthIdx.at(1),jetTruthIdx.at(2)};
+            std::vector<int> truthT2{jetTruthIdx.at(3),jetTruthIdx.at(4),jetTruthIdx.at(5)};
+            std::vector<int> truthW1{jetTruthIdx.at(1),jetTruthIdx.at(2)};
+            std::vector<int> truthW2{jetTruthIdx.at(4),jetTruthIdx.at(5)};
+
+            // Check we have a truth matcheable event
+            bool truthW1Matcheable = truthT1.at(0) != -1 && truthT1.at(1) != -1 && truthT1.at(2) != -1;
+            bool truthW2Matcheable = truthT2.at(0) != -1 && truthT2.at(1) != -1 && truthT2.at(2) != -1;
+            if (!truthW1Matcheable || !truthW2Matcheable) return -2;
+
+            // Now check the HyPER predictions.
+            if (HyPER_T1_Indices.size() != 3 || HyPER_T2_Indices.size() != 3) return -1;
             if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2) return -1;
 
             // Check HyPER at least has one valid Top prediction.
@@ -604,27 +632,11 @@ namespace HyPERPerformance{
             bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
             if (!validW1HyPER && !validW2HyPER) return -1;
 
-            // Check both truth Ws are uniquely matched.
-            bool truthT1Unique = nMatchedObjects.at(0) == 1 && nMatchedObjects.at(1) == 1 && nMatchedObjects.at(2) == 1;
-            bool truthT2Unique = nMatchedObjects.at(3) == 1 && nMatchedObjects.at(4) == 1 && nMatchedObjects.at(5) == 1;
-            if (!truthT1Unique || !truthT2Unique) return -1;
-
             // Check HyPER has unique predictions.
             bool TPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_T1_Indices,HyPER_T2_Indices);
             if (TPredictionsOverlap) return -1;
             bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
             if (WPredictionsOverlap) return -1;
-
-            // Define the labels
-            std::vector<int> truthT1{jetTruthIdx.at(0),jetTruthIdx.at(1),jetTruthIdx.at(2)};
-            std::vector<int> truthT2{jetTruthIdx.at(3),jetTruthIdx.at(4),jetTruthIdx.at(5)};
-            std::vector<int> truthW1{jetTruthIdx.at(1),jetTruthIdx.at(2)};
-            std::vector<int> truthW2{jetTruthIdx.at(4),jetTruthIdx.at(5)};
-
-            // Check we have a truth matcheable event
-            bool truthW1Matcheable = truthT1.at(0) != -1 && truthT1.at(1) != -1 && truthT1.at(2) != -1;
-            bool truthW2Matcheable = truthT2.at(0) != -1 && truthT2.at(1) != -1 && truthT2.at(2) != -1;
-            if (!truthW1Matcheable || !truthW2Matcheable) return -1;
 
             int nCorrectTop = 0;
             if (twoVectorsEqual<long,int>(HyPER_T1_Indices,truthT1) && twoVectorsEqual<long,int>(HyPER_W1_Indices,truthW1)) nCorrectTop++;
@@ -661,5 +673,54 @@ namespace HyPERPerformance{
             std::vector<long> KLF_W2_Indices{KLF_W21,KLF_W22};
 
             return countCorrectlyReconstructedTop(KLF_T1_Indices,KLF_T2_Indices,KLF_W1_Indices,KLF_W2_Indices,jetTruthIdx,nMatchedObjects);
+        }
+
+        bool HyPERConvergedTwoTops(const std::vector<long> HyPER_T1_Indices,
+            const std::vector<long> HyPER_T2_Indices,
+            const std::vector<long> HyPER_W1_Indices,
+            const std::vector<long> HyPER_W2_Indices){
+
+            // Now check the HyPER predictions.
+            if (HyPER_T1_Indices.size() != 3 || HyPER_T2_Indices.size() != 3) return false;
+            if (HyPER_W1_Indices.size() != 2 || HyPER_W2_Indices.size() != 2) return false;
+
+            // Check HyPER has two valid Top predictions.
+            bool validT1HyPER = allValidIndices<long>(HyPER_T1_Indices);
+            bool validT2HyPER = allValidIndices<long>(HyPER_T2_Indices);
+            if (!validT1HyPER || !validT2HyPER) return false;
+            // Check HyPER has two valid W predictions.
+            bool validW1HyPER = allValidIndices<long>(HyPER_W1_Indices);
+            bool validW2HyPER = allValidIndices<long>(HyPER_W2_Indices);
+            if (!validW1HyPER || !validW2HyPER) return false;
+
+            // Check HyPER has unique predictions.
+            bool TPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_T1_Indices,HyPER_T2_Indices);
+            if (TPredictionsOverlap) return false;
+            bool WPredictionsOverlap = twoVectorsOverlap<long,long>(HyPER_W1_Indices,HyPER_W2_Indices);
+            if (WPredictionsOverlap) return false;
+
+            return true;
+        }
+
+        bool KLFConvergedTwoTops(const std::vector<unsigned int> KLF_W11_Index,
+            const std::vector<unsigned int> KLF_W12_Index,
+            const std::vector<unsigned int> KLF_b1_Index,
+            const std::vector<unsigned int> KLF_W21_Index,
+            const std::vector<unsigned int> KLF_W22_Index,
+            const std::vector<unsigned int> KLF_b2_Index){
+
+            // Form the indices pairs and use the HyPER function.
+            long KLF_W11 = KLF_W11_Index.size() == 0 ? -1 : KLF_W11_Index.at(0);
+            long KLF_W12 = KLF_W12_Index.size() == 0 ? -1 : KLF_W12_Index.at(0);
+            long KLF_W21 = KLF_W21_Index.size() == 0 ? -1 : KLF_W21_Index.at(0);
+            long KLF_W22 = KLF_W22_Index.size() == 0 ? -1 : KLF_W22_Index.at(0);
+            long KLF_b1 = KLF_b1_Index.size() == 0 ? -1 : KLF_b1_Index.at(0);
+            long KLF_b2 = KLF_b2_Index.size() == 0 ? -1 : KLF_b2_Index.at(0);
+            std::vector<long> KLF_T1_Indices{KLF_b1,KLF_W11,KLF_W12};
+            std::vector<long> KLF_T2_Indices{KLF_b2,KLF_W21,KLF_W22};
+            std::vector<long> KLF_W1_Indices{KLF_W11,KLF_W12};
+            std::vector<long> KLF_W2_Indices{KLF_W21,KLF_W22};
+
+            return HyPERConvergedTwoTops(KLF_T1_Indices,KLF_T2_Indices,KLF_W1_Indices,KLF_W2_Indices);
         }
 }
