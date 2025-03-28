@@ -327,9 +327,13 @@ ROOT::RDF::RNode TtbarAllHadFrame::defineVariables(ROOT::RDF::RNode mainNode,
   auto columns = mainNode.GetColumnNames();
   // Store the trigger branches
   std::vector<std::string> triggerBranches;
+  bool isHyPERAvailable = false;
   for (const auto& column : columns) {
     if (column.find("trigPassed") != std::string::npos) {
       triggerBranches.push_back(column);
+    }
+    if (column.find("hyper") != std::string::npos) {
+      isHyPERAvailable = true;
     }
   }
 
@@ -348,6 +352,64 @@ ROOT::RDF::RNode TtbarAllHadFrame::defineVariables(ROOT::RDF::RNode mainNode,
     mainNode = mainNode.Redefine("Passed_Any_Trigger_NOSYS",
                                  triggerOR,
                                  {"Passed_Any_Trigger_NOSYS", triggerBranches.at(iTriggerChain)});
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// HyPER Info - if available ////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  if (isHyPERAvailable) {
+    // Find bs in Tops
+    LOG(INFO) << "Adding variable: HyPER_b_from_top1_Ntuple_Index_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                            "HyPER_b_from_top1_Ntuple_Index_NOSYS",
+                                            HyPERPerformance::FindBIndexInHyPER,
+                                            {"hyper_TtbarAllHadronic_W1_Indices_NOSYS", "hyper_TtbarAllHadronic_Top1_Indices_NOSYS"});
+
+    LOG(INFO) << "Adding variable: HyPER_b_from_top2_Ntuple_Index_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                            "HyPER_b_from_top2_Ntuple_Index_NOSYS",
+                                            HyPERPerformance::FindBIndexInHyPER,
+                                            {"hyper_TtbarAllHadronic_W2_Indices_NOSYS", "hyper_TtbarAllHadronic_Top2_Indices_NOSYS"});
+
+    // Find the indices of the jets that are matched to the tops in pT order
+    LOG(INFO) << "Adding variable: HyPER_b_from_top1_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_b_from_top1_jetIndex_NOSYS",
+                                           Variables::ConvertNtupleIndexToPtIndex(-1),
+                                           {"HyPER_b_from_top1_Ntuple_Index_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+    LOG(INFO) << "Adding variable: HyPER_b_from_top2_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_b_from_top2_jetIndex_NOSYS",
+                                           Variables::ConvertNtupleIndexToPtIndex(-1),
+                                           {"HyPER_b_from_top2_Ntuple_Index_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+    LOG(INFO) << "Adding variable: HyPER_lj1_from_top1_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_lj1_from_top1_jetIndex_NOSYS",
+                                           HyPERPerformance::ConvertHyPERIndexToPtIndex(0),
+                                           {"hyper_TtbarAllHadronic_W1_Indices_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+    LOG(INFO) << "Adding variable: HyPER_lj2_from_top1_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_lj2_from_top1_jetIndex_NOSYS",
+                                           HyPERPerformance::ConvertHyPERIndexToPtIndex(1),
+                                           {"hyper_TtbarAllHadronic_W1_Indices_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+    LOG(INFO) << "Adding variable: HyPER_lj1_from_top2_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_lj1_from_top2_jetIndex_NOSYS",
+                                           HyPERPerformance::ConvertHyPERIndexToPtIndex(0),
+                                           {"hyper_TtbarAllHadronic_W2_Indices_NOSYS", "jets_ptOrderIndex_NOSYS"});
+    
+    LOG(INFO) << "Adding variable: HyPER_lj2_from_top2_jetIndex_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                           "HyPER_lj2_from_top2_jetIndex_NOSYS",
+                                           HyPERPerformance::ConvertHyPERIndexToPtIndex(1),
+                                           {"hyper_TtbarAllHadronic_W2_Indices_NOSYS", "jets_ptOrderIndex_NOSYS"});
+
+
 
   }
 

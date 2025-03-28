@@ -1,6 +1,15 @@
 import argparse
 import uproot
 
+class LoopStorage:
+    def __init__(self):
+        self.tree = None
+        self.n_events_in_tree = 0
+        self.n_events_to_save = 0
+        self.whole_array = []
+        self.even_array = []
+        self.odd_array = []
+
 def argparser():
 
     parser = argparse.ArgumentParser(description='Convert ROOT dataset to HyPER format')
@@ -20,14 +29,15 @@ def print_branches(root_file_name):
     for branch in branches:
         print(branch)
 
-def MakeDataset(make_dataset_function, args, input: str, output: str, split: bool = False):
-    if not split:
-        make_dataset_function(args, input, output)
+def MakeDataset(make_dataset_function, args, loop_storage):
+    output = args.output
+    if not args.split:
+        make_dataset_function(args, loop_storage, output)
     else:
-        make_dataset_function(args, input, output.replace('.h5', '_even.h5'), split=True, saveEven=True)
-        make_dataset_function(args, input, output.replace('.h5', '_odd.h5'), split=True, saveEven=False)
+        make_dataset_function(args, loop_storage, output.replace('.h5', '_even.h5'), split=True, saveEven=True)
+        make_dataset_function(args, loop_storage, output.replace('.h5', '_odd.h5'), split=True, saveEven=False)
 
-def main(make_dataset_function, args):
+def main(make_dataset_function, args, loop_storage = None):
 
     # Check that when using -p only the input file is provided
     if args.print_branches and (args.output or args.split):
@@ -43,8 +53,5 @@ def main(make_dataset_function, args):
         if args.output.split('.')[-1] != 'h5':
             raise ValueError('Output file must be in .h5 format.')
             exit(1)
-        
-        if args.split:
-            MakeDataset(make_dataset_function, args, args.input, args.output, True)
-        else:
-            MakeDataset(make_dataset_function, args, args.input, args.output)
+
+        MakeDataset(make_dataset_function, args, loop_storage)

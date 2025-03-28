@@ -723,4 +723,27 @@ namespace HyPERPerformance{
 
             return HyPERConvergedTwoTops(KLF_T1_Indices,KLF_T2_Indices,KLF_W1_Indices,KLF_W2_Indices);
         }
+
+        int FindBIndexInHyPER(const std::vector<long>& HyPER_W_indices, const std::vector<long>& HyPER_Top_indices){
+            // Sanity checks
+            if (HyPER_W_indices.size() != 2 || HyPER_Top_indices.size() != 3) return -1;
+            if (!allValidIndices<long>(HyPER_W_indices)) return -1; // Bad W
+            if (!allValidIndices<long>(HyPER_Top_indices)) return -1; // Bad Top
+
+            // Check W indices are contained in Top
+            for (const auto& W_index : HyPER_W_indices){
+                if (std::find(HyPER_Top_indices.begin(), HyPER_Top_indices.end(), W_index) == HyPER_Top_indices.end()){
+                    throw std::invalid_argument("W index not found in Top indices.");
+                }
+            }
+
+            // Find the b index: It is the one that is not in the W indices
+            for (const auto& top_index : HyPER_Top_indices){
+                if (std::find(HyPER_W_indices.begin(), HyPER_W_indices.end(), top_index) == HyPER_W_indices.end()){
+                    return static_cast<int>(top_index);
+                }
+            }
+            
+            throw std::invalid_argument("The code should never get here!.");
+        }
 }

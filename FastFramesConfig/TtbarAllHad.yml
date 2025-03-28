@@ -7,9 +7,18 @@ general:
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS"
   default_reco_tree_name: "reco"
+  luminosity:
+    mc23a: 26071.4
+    mc23d: 25767.5
   xsection_files: 
-    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
-    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d","mc23x"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
   custom_frame_name: "PartonMatcher"
   custom_options:
     class_name: "TtbarAllHadFrame"
@@ -291,6 +300,13 @@ ntuples:
     - KLF_lj1_from_top2_jetIndex_NOSYS
     - KLF_lj2_from_top1_jetIndex_NOSYS
     - KLF_lj2_from_top2_jetIndex_NOSYS
+    # If HyPER is availble, you can store it.
+    #- HyPER_b_from_top1_jetIndex_NOSYS
+    #- HyPER_b_from_top2_jetIndex_NOSYS
+    #- HyPER_lj1_from_top1_jetIndex_NOSYS
+    #- HyPER_lj1_from_top2_jetIndex_NOSYS
+    #- HyPER_lj2_from_top1_jetIndex_NOSYS
+    #- HyPER_lj2_from_top2_jetIndex_NOSYS
 
 samples:
 # ttbar all hadronic

@@ -7,7 +7,7 @@ import awkward as ak
 from Common import argparser, main
 
 
-def MakeDatasetTtbarSingleLepton(args, input: str, output: str, split: bool = False, saveEven: bool = True):
+def MakeDatasetTtbarSingleLepton(args, loop_storage, output: str, split: bool = False, saveEven: bool = True):
     r"""Function to construct HyPER dataset.
 
     Args:
@@ -16,6 +16,9 @@ def MakeDatasetTtbarSingleLepton(args, input: str, output: str, split: bool = Fa
         split (bool): save only events with odd/even event number.
         saveEven (bool): if True, will save events with even event number
     """
+
+    if loop_storage != None:
+        raise ValueError('LoopStorage is not used in this converter.')
 
     includeBTag  = args.btag
     fullyMatch   = args.fully_matched
@@ -26,6 +29,7 @@ def MakeDatasetTtbarSingleLepton(args, input: str, output: str, split: bool = Fa
     pad_to_lepton = 3
 
     # Load the ROOT file
+    input = args.input
     root_file = uproot.open(input)
     tree = root_file['reco']
     num_entries = tree.num_entries

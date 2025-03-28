@@ -606,5 +606,25 @@ namespace HyPERPerformance{
         const std::vector<unsigned int> KLF_W21_Index,
         const std::vector<unsigned int> KLF_W22_Index,
         const std::vector<unsigned int> KLF_b2_Index);
-        
+
+    class ConvertHyPERIndexToPtIndex{
+        public:
+        ConvertHyPERIndexToPtIndex(std::size_t index) : m_index(index) {}
+        // Overload operator ()
+        int operator()(const std::vector<long>& HyPER_indices, const std::vector<std::size_t>& ptIndices){
+            // Sanity checks
+            if (m_index == -1) throw std::invalid_argument("The index is not set.");
+            if (HyPER_indices.size() <= static_cast<std::size_t>(m_index)) return -1;
+            long nTupleIndex = HyPER_indices.at(m_index);
+            if (nTupleIndex == -1) return -1;
+
+            Variables::ConvertNtupleIndexToPtIndex<int> converter(-1);
+            return converter(nTupleIndex,ptIndices);   
+        }
+
+        private:
+        int m_index = -1;
+    };
+    
+    int FindBIndexInHyPER(const std::vector<long>& HyPER_W_indices, const std::vector<long>& HyPER_Top_indices);
 }

@@ -3,16 +3,9 @@ import numpy as np
 from tqdm import tqdm
 import uproot
 
-from Common import argparser, main
+from Common import argparser, main, LoopStorage
 
-def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = False, saveEven = True):
-    r"""Function to construct HyPER dataset.
-
-    Args:
-        input (str): input ROOT file.
-        output (str): output HyPER dataset in .h5 format.
-        split (bool): split dataset in two according to (eventNumber mod 2).
-    """
+def load_tree(input_file, loop_storage):
     # Ask user if they want to include the KLF info.
     include_klf = False
     answer_klf = input("Do you want to include the KLF info? (y/n): ")
@@ -20,8 +13,6 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
         answer_klf = input("Invalid input. Please enter 'y' or 'n': ")
     include_klf = answer_klf == 'y'
 
-    # Max number of objects (padding)
-    pad_to_jet = 20
 
     # Load the ROOT file
     branches = ["GN2v01_PCBT_quantile_NOSYS",
@@ -47,19 +38,116 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
 
 
     root_file = uproot.open(input_file)
-    num_entries = root_file["reco"].num_entries
+    loop_storage.n_events_in_tree = root_file["reco"].num_entries
     tree = root_file["reco"].arrays(branches, library="np")
+    loop_storage.include_klf = include_klf
+    loop_storage.tree = tree
 
-    # If you want to manually limit the number of events to save.
-    limit_entries = True
-    total_num_entries = num_entries
-    if limit_entries:
-        max_num_entries = 250000
-        if max_num_entries > num_entries:
-            print('You are requesting more events than available in the file. Exiting...')
-            print('Number of events in the file: %d' % num_entries)
+    root_file.close()
+
+    return loop_storage
+
+def fill_storage(loop_storage, args, num_events_to_save = -1, range_to_save = [0,0]):
+    # ---------------------------------------------------
+    #               Count number of events to save
+    # ---------------------------------------------------
+    total_num_entries = loop_storage.n_events_in_tree
+    event_number = loop_storage.tree["eventNumber"]
+    n_even_events = 0
+    n_odd_events = 0
+    even_array = []
+    odd_array = []
+    whole_array = []
+    num_events_to_save = total_num_entries if num_events_to_save == -1 else num_events_to_save
+    
+    for i in tqdm(range(total_num_entries), desc='Counting events in HDF5 dataset', unit='events'):
+        if event_number[i] % 2 == 0:
+            n_even_events += 1
+            even_array.append(i)
+        if event_number[i] % 2 != 0:
+            n_odd_events += 1
+            odd_array.append(i)
+
+        whole_array.append(i)
+        
+    # Check that there are enough events to save.
+    if args.split:
+        if (num_events_to_save > n_even_events) or (num_events_to_save > n_odd_events):
+            print('Error:: You are requesting more events than available in the file.')
+            print('Info:: N even events = %d' % n_even_events)
+            print('Info:: N odd events = %d' % n_odd_events)
             exit(1)
-        num_entries = max_num_entries
+    else:
+        if num_events_to_save > total_num_entries:
+            print('Error:: You are requesting more events than available in the file.')
+            print('Info:: N events = %d' % total_num_entries)
+            exit(1)
+    
+    # Check that the range is valid if provided.
+    if range_to_save != [0,0]:
+        if range_to_save[1] - range_to_save[0] != num_events_to_save:
+            print('Error:: The range provided does not match the number of events to save.')
+            print('Info:: Range provided = [%d, %d]' % (range_to_save[0], range_to_save[1]))
+            exit(1)
+        # Check that upper limit is not greater than the total number of events.
+        if args.split:
+            if range_to_save[1] > n_even_events:
+                print('Error:: The upper limit of the range is greater than the number of even events.')
+                print('Info:: Upper limit = %d' % range_to_save[1])
+                print('Info:: N even events = %d' % n_even_events)
+                exit(1)
+            if range_to_save[1] > n_odd_events:
+                print('Error:: The upper limit of the range is greater than the number of odd events.')
+                print('Info:: Upper limit = %d' % range_to_save[1])
+                print('Info:: N odd events = %d' % n_odd_events)
+                exit(1)
+        else: 
+            if range_to_save[1] > total_num_entries:
+                print('Error:: The upper limit of the range is greater than the total number of events.')
+                print('Info:: Upper limit = %d' % range_to_save[1])
+                print('Info:: N events = %d' % total_num_entries)
+                exit(1)
+
+        
+
+    else:
+        range_to_save = [0, num_events_to_save]
+
+    loop_storage.n_events_to_save = num_events_to_save
+    loop_storage.whole_array = whole_array[range_to_save[0]:range_to_save[1]]
+    if args.split:
+        loop_storage.even_array = even_array[range_to_save[0]:range_to_save[1]]
+        loop_storage.odd_array = odd_array[range_to_save[0]:range_to_save[1]]
+
+    return loop_storage
+
+def MakeDatasetTtbarAllHad(args, loop_storage, output: str, split: bool = False, saveEven = True):
+    r"""Function to construct HyPER dataset.
+
+    Args:
+        input (str): input ROOT file.
+        output (str): output HyPER dataset in .h5 format.
+        split (bool): split dataset in two according to (eventNumber mod 2).
+    """
+    # Max number of objects (padding)
+    pad_to_jet = 20
+
+    if loop_storage == None:
+        print('Error:: Loop storage not provided.')
+        exit(1)
+
+    include_klf = loop_storage.include_klf
+    tree = loop_storage.tree
+    num_events_to_save = loop_storage.n_events_to_save
+    # Set the appropriate vector to loop over.
+    if split:
+        if saveEven:
+            loop_array = loop_storage.even_array
+        else:
+            loop_array = loop_storage.odd_array
+    else:
+        loop_array = loop_storage.whole_array
+
 
     # ---------------------------------------------------
     #                 Load data from ROOT
@@ -69,7 +157,6 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
     jet_phi   = tree["jet_Ordered_TLV_NOSYS/jet_Ordered_TLV_NOSYS.fCoordinates.fPhi"]
     jet_e     = tree["jet_Ordered_TLV_NOSYS/jet_Ordered_TLV_NOSYS.fCoordinates.fE"]
     jet_pt    = tree["jet_Ordered_TLV_NOSYS/jet_Ordered_TLV_NOSYS.fCoordinates.fPt"]
-    event_number = tree["eventNumber"]
     # ......
     njet      = tree["nJets_good_NOSYS"]
     # ...... labels
@@ -87,25 +174,7 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
         klf_lj2_from_top1 = tree["KLF_lj2_from_top1_jetIndex_NOSYS"]
         klf_lj2_from_top2 = tree["KLF_lj2_from_top2_jetIndex_NOSYS"]
 
-    # ---------------------------------------------------
-    #               Count number of events to save
-    # ---------------------------------------------------
-    num_events_to_save = num_entries
-    num_events_to_loop = num_entries
-    if split:
-        num_events_to_loop = 0
-        num_events_to_save = 0
-        for i in range(total_num_entries):
-            if saveEven:
-                if event_number[i] % 2 == 0:
-                    num_events_to_save += 1
-                num_events_to_loop += 1
-            else:
-                if event_number[i] % 2 != 0:
-                    num_events_to_save += 1
-                num_events_to_loop += 1
-            if num_events_to_save >= num_entries:
-                break
+    eventNumber = tree["eventNumber"]
 
     # ---------------------------------------------------
     #               Define Input Datatype
@@ -126,6 +195,9 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
     jet_indices = np.full((num_events_to_save, pad_to_jet), np.nan)  # use -9 for none filled values
     fully_matched = np.full(num_events_to_save, np.nan)
 
+    eventNumber_dt = np.dtype(np.int32)
+    eventNumber_data = np.full((num_events_to_save, 1), np.nan, dtype=eventNumber_dt)
+
     # ---------------------------------------------------
     #               Define HDF5 Structure
     # ---------------------------------------------------
@@ -136,19 +208,8 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
 
     print('Saving %d events' % num_events_to_save)
     save_index = 0
-    for i in tqdm(range(num_events_to_loop), desc='Creating HDF5 dataset', unit='events'):
-        # ---------------------------------------------------
-        #               Decide if event will be saved
-        # ---------------------------------------------------
-        if split:
-            if saveEven:
-                if event_number[i] % 2 != 0:
-                    continue
-            else:
-                if event_number[i] % 2 == 0:
-                    continue
-        # ---------------------------------------------------
-
+    for i in tqdm(loop_array, desc='Creating HDF5 dataset', unit='events'):
+        
         num_jets = njet[i]
         num_btags_90 = 0
         num_btags_85 = 0
@@ -192,6 +253,7 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
 
         jet_indices[save_index, :num_jets] = existent_jet_labels
         fully_matched[save_index] = True
+        eventNumber_data[save_index] = eventNumber[i]
         save_index += 1
         
 
@@ -203,11 +265,21 @@ def MakeDatasetTtbarAllHad(args, input_file: str, output: str, split: bool = Fal
     inputs_group.create_dataset("GLOBAL", data=global_data)
     labels_group.create_dataset("JET", data=jet_indices)
     metadata_group.create_dataset("FullyMatched", data=fully_matched)
+    metadata_group.create_dataset("eventNumber", data=eventNumber_data)
 
 
     # Close the HDF5 file
     h5_file.close()
-    root_file.close()
+
+# Inherits from LoopStorage
+class LoopStorageTtbarAllHad(LoopStorage):
+    def __init__(self):
+        super().__init__()
+        self.whole_array = []
+        self.even_array = []
+        self.odd_array = []
+        self.include_klf = False
+        self.include_hyper = False
 
 
 if __name__ == "__main__":
@@ -216,4 +288,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(MakeDatasetTtbarAllHad, args)
+    loop_storage = LoopStorageTtbarAllHad()
+
+    loop_storage = load_tree(args.input, loop_storage)
+
+    # INPUT!!!!! Define the number of events you want to save and the range.
+    num_events_to_save = -1
+    range_to_save = [0,0]
+    loop_storage = fill_storage(loop_storage, args, num_events_to_save, range_to_save)
+
+    main(MakeDatasetTtbarAllHad, args, loop_storage)
