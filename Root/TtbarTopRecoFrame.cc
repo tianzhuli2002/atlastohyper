@@ -140,6 +140,8 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////// Parton TLVs ////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Only the AllHadronic ntuples contain the parton history info.
+    if (jetTrigggerBranches.size() != 0){
 
     // W bosons
     mainNode = Variables::createPartonTLV(m_partonMatcher, mainNode, "Ttbar_History_MC_W_beforeFSR_from_t", "W_from_t_beforeFSR");
@@ -222,6 +224,8 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
                                             Variables::invariantMassTwo,
                                             {"q1_from_tbar_beforeFSR_TLV_NOSYS", "q2_from_tbar_beforeFSR_TLV_NOSYS"});
 
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////// HyPER performance ////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,6 +323,53 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
             Variables::recoInvariantMassTwo_HyPER<long>,
             {"hyper_TtbarAllHadronic_W2_Indices_NOSYS","jet_TLV_NOSYS"});
 
+    } else {
+
+        LOG(INFO) << "Adding variable: TopLep_Truth_Reco_Indices_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopLep_Truth_Reco_Indices_NOSYS",
+            HyPERPerformanceSingleLepton::getRecoIndicesTopLep,
+            {"event_jet_truth_idx", "event_electron_truth_idx", "event_muon_truth_idx",
+             "event_jet_truth_candidates", "event_electron_truth_candidates", "event_muon_truth_candidates",
+             "event_nLeptons"});
+
+        LOG(INFO) << "Adding variable: TopHad_Truth_Reco_Indices_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopHad_Truth_Reco_Indices_NOSYS",
+            HyPERPerformanceSingleLepton::getRecoIndicesTopHad,
+            {"event_jet_truth_idx", "event_electron_truth_idx", "event_muon_truth_idx",
+             "event_jet_truth_candidates", "event_electron_truth_candidates", "event_muon_truth_candidates",
+             "event_nLeptons"});
+
+        
+        LOG(INFO) << "Adding variable: TopLep_Truth_Lepton_Flavour_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopLep_Truth_Lepton_Flavour_NOSYS",
+            HyPERPerformanceSingleLepton::getTopLepLeptonFlavour,
+            {"event_electron_truth_idx", "event_muon_truth_idx",
+             "event_electron_truth_candidates", "event_muon_truth_candidates",
+             "event_nLeptons"});
+
+        LOG(INFO) << "Adding variable: HyPER_TopLep_Converged_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "HyPER_TopLep_Converged_NOSYS",
+            HyPERPerformanceSingleLepton::HyPERTopLepConverged,
+            {"hyper_TtbarLJets_TopLep_Indices_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS"});
+
+        LOG(INFO) << "Adding variable: HyPER_TopHad_Converged_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "HyPER_TopHad_Converged_NOSYS",
+            HyPERPerformanceSingleLepton::HyPERTopHadConverged,
+            {"hyper_TtbarLJets_TopHad_Indices_NOSYS", "hyper_TtbarLJets_TopHad_IDs_NOSYS"});
+
+        LOG(INFO) << "Adding variable: Two_Tops_Reco_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "Two_Tops_Reco_NOSYS",
+            HyPERPerformanceSingleLepton::HyPERConvergedTwoTops,
+            {"HyPER_TopLep_Converged_NOSYS", "HyPER_TopHad_Converged_NOSYS",
+             "hyper_TtbarLJets_TopLep_Indices_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS",
+             "hyper_TtbarLJets_TopHad_Indices_NOSYS", "hyper_TtbarLJets_TopHad_IDs_NOSYS",
+            "hyper_TtbarLJets_WHad_Indices_NOSYS"});
     }
 
     return mainNode;

@@ -1,0 +1,164 @@
+general:
+  debug_level: INFO
+  input_filelist_path: "../../metadataTopRecoSingleLepton/filelist.txt"
+  input_sumweights_path: "../../metadataTopRecoSingleLepton/sum_of_weights.txt"
+  output_path_histograms: "/home/dbaronmo/Work/resultsTopRecoSingleLepton"
+  output_path_ntuples: "/home/dbaronmo/Work/resultsTopRecoSingleLepton"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS"
+  default_reco_tree_name: "reco"
+  use_region_subfolders: True
+  luminosity:
+    mc23a: 26071.4
+    mc23d: 25767.5
+  xsection_files: 
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/2025-03-04/PMGxsecDB_mc23.txt
+  custom_frame_name: "PartonMatcher"
+  custom_options:
+    class_name: "TtbarTopRecoFrame"
+  automatic_systematics: False
+  nominal_only: True
+  create_tlorentz_vectors_for: ["jet"]
+  config_define_after_custom_class: True
+  number_of_cpus: 16
+  define_custom_columns:
+    - name: Electron_NOSYS
+      definition: "Passed_Any_Electron_Trigger_NOSYS && pass_ejets_NOSYS"
+    - name: Muon_NOSYS
+      definition: "Passed_Any_Muon_Trigger_NOSYS && pass_mujets_NOSYS"
+    - name: "Top_Score_Sum_NOSYS"
+      definition: "hyper_TtbarLJets_TopLep_Score_NOSYS + hyper_TtbarLJets_TopHad_Score_NOSYS"
+    - name: "Top_Score_Mul_NOSYS"
+      definition: "hyper_TtbarLJets_TopLep_Score_NOSYS * hyper_TtbarLJets_TopHad_Score_NOSYS"
+    - name: "Top_Score_Ratio_NOSYS"
+      definition: "hyper_TtbarLJets_TopLep_Score_NOSYS / (1+hyper_TtbarLJets_TopHad_Score_NOSYS)"
+    - name: "Top_Score_Stack_NOSYS"
+      definition: "std::vector<float>{hyper_TtbarLJets_TopLep_Score_NOSYS,hyper_TtbarLJets_TopHad_Score_NOSYS}"
+    - name: "Top_Score_Asymm_NOSYS"
+      definition: "(hyper_TtbarLJets_TopLep_Score_NOSYS - hyper_TtbarLJets_TopHad_Score_NOSYS) / (hyper_TtbarLJets_TopLep_Score_NOSYS + hyper_TtbarLJets_TopHad_Score_NOSYS)"
+
+regions:
+  - name: "4Jets"
+    selection: "nJets_good_NOSYS == 4 && (Electron_NOSYS || Muon_NOSYS)"
+    variables: &all_variables
+      - name: nJets
+        title: Number of jets; N Jets;Events
+        definition: nJets_good_NOSYS
+        type: int
+        binning:
+          min: 0
+          max: 10
+          number_of_bins: 10
+      - name: TopLep_Truth_Reco_Indices
+        title: TopLep_Truth_Reco_Indices; TopLep_Truth_Reco_Indices;Events
+        definition: TopLep_Truth_Reco_Indices_NOSYS
+        binning:
+          min: -1
+          max: 5
+          number_of_bins: 6
+      - name: TopHad_Truth_Reco_Indices
+        title: TopHad_Truth_Reco_Indices; TopHad_Truth_Reco_Indices;Events
+        definition: TopHad_Truth_Reco_Indices_NOSYS
+        binning:
+          min: -1
+          max: 5
+          number_of_bins: 6
+      - name: TopLep_Truth_Lepton_Flavour
+        title: TopLep_Truth_Lepton_Flavour; TopLep_Truth_Lepton_Flavour;Events
+        definition: TopLep_Truth_Lepton_Flavour_NOSYS
+        binning:
+          min: -1
+          max: 4
+          number_of_bins: 5
+      - name: HyPER_TopLep_Converged
+        title: HyPER_TopLep_Converged; HyPER_TopLep_Converged;Events
+        definition: HyPER_TopLep_Converged_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: HyPER_TopHad_Converged
+        title: HyPER_TopHad_Converged; HyPER_TopHad_Converged;Events
+        definition: HyPER_TopHad_Converged_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: Two_Tops_Reco
+        title: Two tops reconstructed by HyPER; HyPER(2T); Events
+        definition: Two_Tops_Reco_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+
+samples:
+# ttbar
+  - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: &no_beamspot_weight "weight_mc_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS "
+  - name: "ttbar_singlelep_2022" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2018"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2017"
+    dsids: [410470]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_nonallhad_2016"
+    dsids: [410470]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2023"
+    dsids: [601237]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2022"
+    dsids: [601237]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2018"
+    dsids: [410471]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2017"
+    dsids: [410471]
+    campaigns: ["mc20d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_allhad_2016"
+    dsids: [410471]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_dilep_2023"
+    dsids: [601230]
+    campaigns: ["mc23d"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight
+  - name: "ttbar_dilep_2022"
+    dsids: [601230]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim"
+    event_weights: *no_beamspot_weight

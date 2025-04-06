@@ -520,6 +520,12 @@ namespace HyPERPerformance{
         return false;
     }
 
+    template <typename T>
+    bool allElementsUnique(const std::vector<T>& vec){
+        std::set<T> uniqueElements(vec.begin(), vec.end());
+        return uniqueElements.size() == vec.size();
+    }
+
     /**
      * @brief Count the number of correctly reconstructed W bosons.
      * @param HyPER_W1_Indices The HyPER indices of the W1 jets.
@@ -627,4 +633,112 @@ namespace HyPERPerformance{
     };
     
     int FindBIndexInHyPER(const std::vector<long>& HyPER_W_indices, const std::vector<long>& HyPER_Top_indices);
+}
+
+namespace HyPERPerformanceSingleLepton{
+    /**
+     * @brief Form the Reco indices of TopLep and TopHad. 
+     * The indices will be [blep, lepton , met = 0 always, bhad, q1, q2]
+     * @param jetTruthIndices The vector with the truth indices of the jets.
+     * @param eTruthIndices The vector with the truth indices of the electrons.
+     * @param muTruthIndices The vector with the truth indices of the muons.
+     * @param nMatchedJets Vector with number of matched jets per truth object.
+     * @param nMatchedElectrons Vector with number of matched electrons per truth object.
+     * @param nMatchedMuons Vector with number of matched muons per truth object.
+     * @param nLeptons The number of truth leptons in the event. Always needs to be 1 for single lepton.
+     * @return std::vector<int> The vector with the locations of the truth objects.
+     */
+    std::vector<int> getRecoIndicesTopLep(const std::vector<int>& jetTruthIndices,
+                                        const std::vector<int>& eTruthIndices,
+                                        const std::vector<int>& muTruthIndices,
+                                        const std::vector<int>& nMatchedJets,
+                                        const std::vector<int>& nMatchedElectrons,
+                                        const std::vector<int>& nMatchedMuons,
+                                        int nLeptons);
+
+    /**
+     * @brief Form the Reco indices of TopHad.
+     * The indices will be [b, q1, q2]
+     * @param jetTruthIndices The vector with the truth indices of the jets.
+     * @param eTruthIndices The vector with the truth indices of the electrons.
+     * @param muTruthIndices The vector with the truth indices of the muons.
+     * @param nMatchedJets Vector with number of matched jets per truth object.
+     * @param nMatchedElectrons Vector with number of matched electrons per truth object.
+     * @param nMatchedMuons Vector with number of matched muons per truth object.
+     * @param nLeptons The number of truth leptons in the event. Always needs to be 1 for single lepton.
+     * @return std::vector<int> The vector with the locations of the truth objects.
+     */
+    std::vector<int> getRecoIndicesTopHad(const std::vector<int>& jetTruthIndices,
+                                        const std::vector<int>& eTruthIndices,
+                                        const std::vector<int>& muTruthIndices,
+                                        const std::vector<int>& nMatchedJets,
+                                        const std::vector<int>& nMatchedElectrons,
+                                        const std::vector<int>& nMatchedMuons,
+                                        int nLeptons);
+
+
+    /**
+     * @brief Get the TopLep lepton flavour. 
+     * The default/invalid value is -1. Electron = 2, Muon = 3.
+     * @param eTruthIndices The vector with the truth indices of the electrons.
+     * @param muTruthIndices The vector with the truth indices of the muons.
+     * @param nMatchedElectrons Vector with number of matched electrons per truth object.
+     * @param nMatchedMuons Vector with number of matched muons per truth object.
+     * @param nLeptons The number of truth leptons in the event. Always needs to be 1 for single lepton.
+    */
+   int getTopLepLeptonFlavour(const std::vector<int>& eTruthIndices,
+                                        const std::vector<int>& muTruthIndices,
+                                        const std::vector<int>& nMatchedElectrons,
+                                        const std::vector<int>& nMatchedMuons,
+                                        int nLeptons);
+
+    /**
+     * @brief Check if the HyPER result for the TopLep makes sense.
+     * @param HyPERTopLepIndices The HyPER indices of the TopLep.
+     * @param HyPERTopLepIDs The HyPER IDs of the TopLep indices.
+     */
+    bool HyPERTopLepConverged(const std::vector<long>& HyPERTopLepIndices,
+        const std::vector<long>& HyPERTopLepIDs);
+
+    /**
+     * @brief Check if the HyPER result for the TopHad makes sense.
+     * @param HyPERTopHadIndices The HyPER indices of the TopHad.
+     * @param HyPERTopHadIDs The HyPER IDs of the TopHad indices.
+     */
+    bool HyPERTopHadConverged(const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<long>& HyPERTopHadIDs);
+
+    /**
+     * @brief Check if we have two valid solutions for the tops.
+     * @param topLepConverged
+     * @param topHadConverged
+     * @param HyPERTopLepIndices The HyPER indices of the TopLep.
+     * @param HyPERTopLepIDs The HyPER IDs of the TopLep indices.
+     * @param HyPERTopHadIndices The HyPER indices of the TopHad.
+     * @param HyPERTopHadIDs The HyPER IDs of the TopHad indices.
+     */
+    bool HyPERConvergedTwoTops(const bool topLepConverged,
+        const bool topHadConverged,
+        const std::vector<long>& HyPERTopLepIndices,
+        const std::vector<long>& HyPERTopLepIDs,
+        const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<long>& HyPERTopHadIDs,
+        const std::vector<long>& HyPERWHadIndices);
+    
+    /** 
+     * @brief Check if the WHad is correctly reconstructed.
+     * @param TopHadTruthRecoIndices The indices of the TopHad partciles from the truth record. Constructed via getRecoIndicesTopHad.
+     * @param HyPERWHadIndices The HyPER indices of the WHad.
+    */
+    bool correctlyReconstructedWHad(std::vector<int> TopHadTruthRecoIndices,
+                                     const std::vector<long>& HyPERWHadIndices);
+
+    /** 
+     * @brief Check if the WHad is correctly reconstructed.
+     * @param TopLepTruthRecoIndices The indices of the TopLep particles from the truth record. Constructed via getRecoIndicesTopLep.
+     * @param HyPERWLepIndices The HyPER indices of the WLep.
+    */
+    bool correctlyReconstructedWLep(std::vector<int> TopLepTruthRecoIndices,
+                                     const std::vector<long>& HyPERWLepIndices);
+
 }

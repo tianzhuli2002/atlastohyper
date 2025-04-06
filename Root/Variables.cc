@@ -747,3 +747,295 @@ namespace HyPERPerformance{
             throw std::invalid_argument("The code should never get here!.");
         }
 }
+
+namespace HyPERPerformanceSingleLepton {
+    std::vector<int> getRecoIndicesTopLep(const std::vector<int>& jetTruthIndices,
+        const std::vector<int>& eTruthIndices,
+        const std::vector<int>& muTruthIndices,
+        const std::vector<int>& nMatchedJets,
+        const std::vector<int>& nMatchedElectrons,
+        const std::vector<int>& nMatchedMuons,
+        int nLeptons){
+        
+        std::vector<int> defaultIndices{-1,-1,-1};
+        // Check the sizes of the input vectors
+        if (jetTruthIndices.size() != 6 || nMatchedJets.size() != 6) return defaultIndices;
+        if (eTruthIndices.size() != 2 || nMatchedElectrons.size() != 2) return defaultIndices;
+        if (muTruthIndices.size() != 2 || nMatchedMuons.size() != 2) return defaultIndices;
+        if (nLeptons != 1) return defaultIndices;
+
+        // Check that the lepton indices make sense.
+        bool electronEvent = eTruthIndices.at(0) != -1 || eTruthIndices.at(1) != -1;
+        bool muonEvent = muTruthIndices.at(0) != -1 || muTruthIndices.at(1) != -1;
+        if (electronEvent && muonEvent) {
+            LOG(DEBUG) << "Event contains both electron and muon matched, but at the same time it is a single lepton event.";
+            return defaultIndices;
+        }
+        if (!electronEvent && !muonEvent) {
+            LOG(DEBUG) << "Event does not contain any lepton matched, but at the same time it is a single lepton event.";
+            return defaultIndices;
+        }
+
+        // Define the lepton flavour.
+        std::vector<int> leptonTruthIndices = electronEvent ? eTruthIndices : muTruthIndices;
+        std::vector<int> nMatchedLeptons = electronEvent ? nMatchedElectrons : nMatchedMuons;    
+
+        bool tDecay = leptonTruthIndices.at(0) != -1;
+        bool tBarDecay = leptonTruthIndices.at(1) != -1;
+        if (tDecay && tBarDecay) {
+            LOG(DEBUG) << "Event contains both t and tbar decay matched leptons. But at this point it should be Single-lepton event.";
+            return defaultIndices;
+        }
+
+        // Define which top to look for. Check that only one reco lepton is matched.
+        std::size_t decayIndex = tDecay ? 0 : 1;
+        if (nMatchedLeptons.at(decayIndex) != 1) return defaultIndices;
+
+        // At this point the W is matched correctly.
+        defaultIndices = {-1, leptonTruthIndices.at(decayIndex), 0};
+
+        // Now find the jet indices.
+        std::size_t jetIndex = tDecay ? 0 : 3;
+        if (jetTruthIndices.at(jetIndex) == -1) return defaultIndices;
+        if (nMatchedJets.at(jetIndex) != 1) return defaultIndices;
+
+        // Build the top and return it.
+        defaultIndices.at(0) = jetTruthIndices.at(jetIndex);
+        return defaultIndices;
+    }
+
+    std::vector<int> getRecoIndicesTopHad(const std::vector<int>& jetTruthIndices,
+        const std::vector<int>& eTruthIndices,
+        const std::vector<int>& muTruthIndices,
+        const std::vector<int>& nMatchedJets,
+        const std::vector<int>& nMatchedElectrons,
+        const std::vector<int>& nMatchedMuons,
+        int nLeptons){
+
+        // First part, try to figure out which is the hadronic top.
+        // Only return default indices if there is no way to find out.
+        std::vector<int> defaultIndices{-1,-1,-1};
+        // Check the sizes of the input vectors
+        if (jetTruthIndices.size() != 6 || nMatchedJets.size() != 6) return defaultIndices;
+        if (eTruthIndices.size() != 2 || nMatchedElectrons.size() != 2) return defaultIndices;
+        if (muTruthIndices.size() != 2 || nMatchedMuons.size() != 2) return defaultIndices;
+        if (nLeptons != 1) return defaultIndices;
+
+        // Check that the lepton indices make sense.
+        bool electronEvent = eTruthIndices.at(0) != -1 || eTruthIndices.at(1) != -1;
+        bool muonEvent = muTruthIndices.at(0) != -1 || muTruthIndices.at(1) != -1;
+        if (electronEvent && muonEvent) {
+            LOG(DEBUG) << "Event contains both electron and muon matched, but at the same time it is a single lepton event.";
+            return defaultIndices;
+        }
+        if (!electronEvent && !muonEvent) {
+            LOG(DEBUG) << "Event does not contain any lepton matched, but at the same time it is a single lepton event.";
+            return defaultIndices;
+        }
+
+        // Define the lepton flavour.
+        std::vector<int> leptonTruthIndices = electronEvent ? eTruthIndices : muTruthIndices;
+        std::vector<int> nMatchedLeptons = electronEvent ? nMatchedElectrons : nMatchedMuons;    
+
+        bool tDecayLeptonic = leptonTruthIndices.at(0) != -1;
+        bool tBarDecayLeptonic = leptonTruthIndices.at(1) != -1;
+        if (tDecayLeptonic && tBarDecayLeptonic) {
+            LOG(DEBUG) << "Event contains both t and tbar decay matched leptons. But at this point it should be Single-lepton event.";
+            return defaultIndices;
+        }
+
+        // Now find the jet indices.
+        std::size_t bJetIndex;
+        std::size_t q1JetIndex;
+        std::size_t q2JetIndex;
+        if (tDecayLeptonic){
+            bJetIndex = 3;
+            q1JetIndex = 4;
+            q2JetIndex = 5;
+        } else {
+            bJetIndex = 0;
+            q1JetIndex = 1;
+            q2JetIndex = 2;
+        } 
+        
+        // Form the W
+        if (jetTruthIndices.at(q1JetIndex) == -1 || jetTruthIndices.at(q2JetIndex) == -1) return defaultIndices;
+        if (nMatchedJets.at(q1JetIndex) != 1 || nMatchedJets.at(q2JetIndex) != 1) return defaultIndices;
+        defaultIndices = {-1, jetTruthIndices.at(q1JetIndex), jetTruthIndices.at(q2JetIndex)};
+
+        // Find the b-jet and form the top if possible.
+        if (jetTruthIndices.at(bJetIndex) == -1) return defaultIndices;
+        if (nMatchedJets.at(bJetIndex) != 1) return defaultIndices;
+        defaultIndices.at(0) = jetTruthIndices.at(bJetIndex);
+
+        return defaultIndices;
+    }
+
+    int getTopLepLeptonFlavour(const std::vector<int>& eTruthIndices,
+        const std::vector<int>& muTruthIndices,
+        const std::vector<int>& nMatchedElectrons,
+        const std::vector<int>& nMatchedMuons,
+        int nLeptons){
+
+        int defaultFlavour{-1};
+        // Check the sizes of the input vectors
+        if (eTruthIndices.size() != 2 || nMatchedElectrons.size() != 2) return defaultFlavour;
+        if (muTruthIndices.size() != 2 || nMatchedMuons.size() != 2) return defaultFlavour;
+        if (nLeptons != 1) return defaultFlavour;
+
+        // Check that the lepton indices make sense.
+        bool electronEvent = eTruthIndices.at(0) != -1 || eTruthIndices.at(1) != -1;
+        bool muonEvent = muTruthIndices.at(0) != -1 || muTruthIndices.at(1) != -1;
+        if (electronEvent && muonEvent) {
+            LOG(DEBUG) << "Event contains both electron and muon matched, but at the same time it is a single lepton event.";
+            return defaultFlavour;
+        }
+        if (!electronEvent && !muonEvent) {
+            LOG(DEBUG) << "Event does not contain any lepton matched, but at the same time it is a single lepton event.";
+            return defaultFlavour;
+        }
+
+        // Define the lepton flavour.
+        std::vector<int> leptonTruthIndices = electronEvent ? eTruthIndices : muTruthIndices;
+        std::vector<int> nMatchedLeptons = electronEvent ? nMatchedElectrons : nMatchedMuons;    
+
+        bool tDecay = leptonTruthIndices.at(0) != -1;
+        bool tBarDecay = leptonTruthIndices.at(1) != -1;
+        if (tDecay && tBarDecay) {
+            LOG(DEBUG) << "Event contains both t and tbar decay matched leptons. But at this point it should be Single-lepton event.";
+            return defaultFlavour;
+        }
+
+        // Define which top to look for. Check that only one reco lepton is matched.
+        std::size_t decayIndex = tDecay ? 0 : 1;
+        if (nMatchedLeptons.at(decayIndex) != 1) return defaultFlavour;
+
+        defaultFlavour = electronEvent ? 2 : 3;
+        return defaultFlavour;
+    }
+
+    bool HyPERTopLepConverged(const std::vector<long>& HyPERTopLepIndices,
+        const std::vector<long>& HyPERTopLepIDs){
+            // Check the sizes of the vectors are correct.
+            if (HyPERTopLepIndices.size() != 3 || HyPERTopLepIDs.size() != 3) return false;
+
+            // Check there is only one jet.
+            std::size_t nJets = 0;
+            for (const auto& ID : HyPERTopLepIDs){
+                if (ID == 1) nJets++;
+            }
+            if (nJets != 1) return false;
+
+            // Check there is only one MET.
+            std::size_t nMET = 0;
+            for (const auto& ID : HyPERTopLepIDs){
+                if (ID == 4) nMET++;
+            }
+            if (nMET != 1) return false;
+
+            // Check there is only one lepton.
+            std::size_t nLepton = 0;
+            for (const auto& ID : HyPERTopLepIDs){
+                if (ID == 2 || ID == 3) nLepton++;
+            }
+            if (nLepton != 1) return false;
+
+            // Check all indices are valid.
+            if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIndices)) return false;
+
+            return true;
+    }
+
+    bool HyPERTopHadConverged(const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<long>& HyPERTopHadIDs){
+
+            // Check the sizes of the vectors are correct.
+            if (HyPERTopHadIndices.size() != 3 || HyPERTopHadIDs.size() != 3) return false;
+
+            // Check all are jets.
+            for (const auto& ID : HyPERTopHadIDs){
+                if (ID != 1) return false;
+            }
+
+            // Check all indices are valid.
+            if (!HyPERPerformance::allValidIndices<long>(HyPERTopHadIndices)) return false;
+
+            // Check all indices are unique.
+            return HyPERPerformance::allElementsUnique<long>(HyPERTopHadIndices);
+    }
+
+    bool HyPERConvergedTwoTops(const bool topLepConverged,
+        const bool topHadConverged,
+        const std::vector<long>& HyPERTopLepIndices,
+        const std::vector<long>& HyPERTopLepIDs,
+        const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<long>& HyPERTopHadIDs,
+        const std::vector<long>& HyPERWHadIndices){
+
+        // If any of the two tops is not converged, return false.
+        if (!topLepConverged || !topHadConverged) return false;
+
+        // Check the sizes of the vectors are correct.
+        if (HyPERTopLepIndices.size() != 3 || HyPERTopLepIDs.size() != 3) return false;
+        if (HyPERTopHadIndices.size() != 3 || HyPERTopHadIDs.size() != 3) return false;
+        if (HyPERWHadIndices.size() != 2) return false;
+
+        // Look for the b-jet in the topLep indices.
+        int topLepBJetIndex = -1;
+        for (std::size_t i = 0; i < 3; i++){
+            if (HyPERTopLepIDs.at(i) == 1){
+                topLepBJetIndex = HyPERTopLepIndices.at(i);
+                break;
+            }
+        }
+        if (topLepBJetIndex == -1) {
+            LOG(ERROR) << "The topLep indices do not contain a b-jet. At this point they should.";
+            throw std::invalid_argument("");
+        }
+
+        // Look for the b-jet in the topHad indices.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERWHadIndices)){
+            LOG(ERROR) << "The WHad indices are not valid. While the TopHad indices are.";
+            throw std::invalid_argument("");
+        }
+
+        std::vector<int> topHadBJetCandidates {}; // This should only contain one element at the end.
+        // But we allow for more possibilites to be safe and check.
+        for (std::size_t tophad = 0; tophad < 3; tophad++){
+            bool matchFound = false;
+            int topHadBJetIndex = HyPERTopHadIndices.at(tophad);
+            for (std::size_t whad = 0; whad < 2; whad++){
+                if (HyPERTopHadIndices.at(tophad) == HyPERWHadIndices.at(whad)){
+                    matchFound = true;
+                    break;
+                }
+            }
+            if (!matchFound) topHadBJetCandidates.push_back(topHadBJetIndex);
+        }
+
+        if (topHadBJetCandidates.size() != 1) {
+            LOG(ERROR) << "There is more than one index in topHad that is not in WHad.";
+            throw std::invalid_argument("");
+        }
+        if (topHadBJetCandidates.at(0) == -1) {
+            LOG(ERROR) << "The topHad indices do not contain a b-jet. At this point they should.";
+            throw std::invalid_argument("");
+        }
+
+        // Check that both b-jets are different, if they are reconstruction was successful.
+        return (topLepBJetIndex != topHadBJetCandidates.at(0));
+
+    }
+
+    bool correctlyReconstructedWHad(std::vector<int> TopHadTruthRecoIndices,
+                                    const std::vector<long>& HyPERWHadIndices){ 
+
+                                        return TopHadTruthRecoIndices.size() == HyPERWHadIndices.size(); 
+    }
+
+    bool correctlyReconstructedWLep(std::vector<int> TopLepTruthRecoIndices,
+                                    const std::vector<long>& HyPERWLepIndices){ 
+
+                                        return TopLepTruthRecoIndices.size() == HyPERWLepIndices.size(); 
+    }
+}

@@ -13,12 +13,10 @@ general:
   xsection_files: 
     - campaigns: ["mc20a", "mc20d", "mc20e"]
       files:
-        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
         - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
     - campaigns: ["mc23a","mc23d"]
       files:
-        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
-        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/2025-03-04/PMGxsecDB_mc23.txt
   custom_frame_name: "PartonMatcher"
   custom_options:
     class_name: "TtbarTopRecoFrame"
