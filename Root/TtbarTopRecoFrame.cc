@@ -136,6 +136,18 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
                                         const std::vector<char>&)>(DefineHelpers::sortedPassedVector),
                                             {"jet_TLV_NOSYS", "jet_select_baselineJvt_NOSYS"}); 
 
+    LOG(INFO) << "Adding variable: nElectrons_tight_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                            "nElectrons_tight_NOSYS",
+                                            TtbarSingleLeptonVars::nGoodLeptons,
+                                            {"el_pt_NOSYS", "el_select_tight_NOSYS", "el_select_tight_NOSYS"});
+
+    LOG(INFO) << "Adding variable: nMuons_tight_NOSYS\n";
+    mainNode = m_partonMatcher->systematicDefine(mainNode,
+                                            "nMuons_tight_NOSYS",
+                                            TtbarSingleLeptonVars::nGoodLeptons,
+                                            {"mu_pt_NOSYS", "mu_select_tight_NOSYS", "mu_select_tight_NOSYS"});
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////// Parton TLVs ////////////////////////////////////////////////////
@@ -370,6 +382,33 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
              "hyper_TtbarLJets_TopLep_Indices_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS",
              "hyper_TtbarLJets_TopHad_Indices_NOSYS", "hyper_TtbarLJets_TopHad_IDs_NOSYS",
             "hyper_TtbarLJets_WHad_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: WLep_Correct_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "WLep_Correct_HyPER_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedWLep,
+            {"TopLep_Truth_Reco_Indices_NOSYS", "hyper_TtbarLJets_WLep_Indices_NOSYS",
+            "TopLep_Truth_Lepton_Flavour_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS"});
+
+        LOG(INFO) << "Adding variable: WHad_Correct_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "WHad_Correct_HyPER_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedWHad,
+            {"TopHad_Truth_Reco_Indices_NOSYS", "hyper_TtbarLJets_WHad_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: BHad_HyPER_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "BHad_HyPER_Index_NOSYS",
+            HyPERPerformanceSingleLepton::getHyPERBHadIndex,
+            {"hyper_TtbarLJets_TopHad_Indices_NOSYS", "hyper_TtbarLJets_TopHad_IDs_NOSYS",
+            "hyper_TtbarLJets_WHad_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: BLep_HyPER_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "BLep_HyPER_Index_NOSYS",
+            HyPERPerformanceSingleLepton::getHyPERBLepIndex,
+            {"hyper_TtbarLJets_TopLep_Indices_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS"});
+
     }
 
     return mainNode;

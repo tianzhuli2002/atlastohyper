@@ -749,6 +749,7 @@ namespace HyPERPerformance{
 }
 
 namespace HyPERPerformanceSingleLepton {
+
     std::vector<int> getRecoIndicesTopLep(const std::vector<int>& jetTruthIndices,
         const std::vector<int>& eTruthIndices,
         const std::vector<int>& muTruthIndices,
@@ -1030,12 +1031,132 @@ namespace HyPERPerformanceSingleLepton {
     bool correctlyReconstructedWHad(std::vector<int> TopHadTruthRecoIndices,
                                     const std::vector<long>& HyPERWHadIndices){ 
 
-                                        return TopHadTruthRecoIndices.size() == HyPERWHadIndices.size(); 
+        // Check the sizes of the vectors are correct.
+        if (TopHadTruthRecoIndices.size() != 3 || HyPERWHadIndices.size() != 2) return false;
+
+        // Check HyPER indices are valid.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERWHadIndices)) return false;
+        if (!HyPERPerformance::allElementsUnique<long>(HyPERWHadIndices)) return false;
+
+        // Check truth indices are valid.
+        if (!HyPERPerformance::allValidIndices<int>(TopHadTruthRecoIndices)) return false;
+        if (!HyPERPerformance::allElementsUnique<int>(TopHadTruthRecoIndices)) return false;
+        
+        // Select the truth W indices.
+        std::vector<long> truthWHadIndices{TopHadTruthRecoIndices.at(1),TopHadTruthRecoIndices.at(2)};
+
+        return HyPERPerformance::twoVectorsEqual<long,long>(truthWHadIndices,HyPERWHadIndices);
     }
 
     bool correctlyReconstructedWLep(std::vector<int> TopLepTruthRecoIndices,
-                                    const std::vector<long>& HyPERWLepIndices){ 
+                                    const std::vector<long>& HyPERWLepIndices,
+                                    int truthLeptonFlavour,
+                                    const std::vector<long>& HyPERTopLepIDs){ 
 
-                                        return TopLepTruthRecoIndices.size() == HyPERWLepIndices.size(); 
+         // Check the sizes of the vectors are correct.
+        if (TopLepTruthRecoIndices.size() != 3 || HyPERWLepIndices.size() != 2 || HyPERTopLepIDs.size() != 3) return false;
+        // Check HyPER indices are valid.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERWLepIndices)) return false;
+
+        // Check truth indices are valid.
+        if (!HyPERPerformance::allValidIndices<int>(TopLepTruthRecoIndices)) return false;
+
+        // Check the lepton flavour is correct.
+        if (truthLeptonFlavour != 2 && truthLeptonFlavour != 3) return false;
+        bool matchedFlavour = false;
+        int nMatches = 0;
+        for (const auto& ID : HyPERTopLepIDs){
+            if (ID == truthLeptonFlavour) {
+                matchedFlavour = true;
+                nMatches++;
+            }
+        }
+
+        if (!matchedFlavour) return false;
+        if (nMatches != 1) {
+            LOG(ERROR) << "The lepton flavour is not unique in the HyPERTopLepIDs.";
+            throw std::invalid_argument("");
+        }
+
+        // Select the truth W indices.
+        std::vector<long> truthWLepIndices{TopLepTruthRecoIndices.at(1),TopLepTruthRecoIndices.at(2)};
+
+        return HyPERPerformance::twoVectorsEqual<long,long>(truthWLepIndices,HyPERWLepIndices);
     }
+
+    int getHyPERBHadIndex(const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<long>& HyPERTopHadIDs,
+        const std::vector<long>& HyPERWHadIndices){
+
+        // Check the sizes of the vectors are correct.
+        if (HyPERTopHadIndices.size() != 3 || HyPERTopHadIDs.size() != 3) return -1;
+        if (HyPERWHadIndices.size() != 2) return -1;
+
+        // Check all indices are valid.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopHadIndices)) return -1;
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopHadIDs)) return -1;
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopHadIndices)) return -1;
+
+        // Check all IDs are equal to 1.
+        for (const auto& ID : HyPERTopHadIDs){
+            if (ID != 1) return -1;
+        }
+
+        std::vector<int> topHadBJetCandidates {}; // This should only contain one element at the end.
+        // But we allow for more possibilites to be safe and check.
+        for (std::size_t tophad = 0; tophad < 3; tophad++){
+            bool matchFound = false;
+            int topHadBJetIndex = HyPERTopHadIndices.at(tophad);
+            for (std::size_t whad = 0; whad < 2; whad++){
+                if (HyPERTopHadIndices.at(tophad) == HyPERWHadIndices.at(whad)){
+                    matchFound = true;
+                    break;
+                }
+            }
+            if (!matchFound) topHadBJetCandidates.push_back(topHadBJetIndex);
+        }
+
+        if (topHadBJetCandidates.size() != 1) {
+            LOG(ERROR) << "There is more than one index in topHad that is not in WHad.";
+            throw std::invalid_argument("");
+        }
+        if (topHadBJetCandidates.at(0) == -1) {
+            LOG(ERROR) << "The topHad indices do not contain a b-jet. At this point they should.";
+            throw std::invalid_argument("");
+        }
+        
+        return topHadBJetCandidates.at(0);
+    }
+
+    int getHyPERBLepIndex(const std::vector<long>& HyPERTopLepIndices,
+            const std::vector<long>& HyPERTopLepIDs){
+
+        // Check the sizes of the vectors are correct.
+        if (HyPERTopLepIndices.size() != 3 || HyPERTopLepIDs.size() != 3) return -1;
+        // Check all indices are valid.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIndices)) return -1;
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIDs)) return -1;
+
+        // Check the position of the jet in the IDs. Allow for more than one jet and throw error if found more than one.
+        int topLepBJetIndex = -1;
+        std::size_t nBJets = 0;
+        for (std::size_t i = 0; i < 3; i++){
+            if (HyPERTopLepIDs.at(i) == 1){
+                topLepBJetIndex = HyPERTopLepIndices.at(i);
+                nBJets++;
+            }
+        }
+
+        if (topLepBJetIndex == -1) {
+            LOG(ERROR) << "The topLep indices do not contain a b-jet. At this point they should.";
+            throw std::invalid_argument("");
+        }
+        if (nBJets != 1) {
+            LOG(ERROR) << "The topLep indices contain more than one b-jet. At this point they should.";
+            throw std::invalid_argument("");
+        }
+
+        return topLepBJetIndex;
+    }
+
 }

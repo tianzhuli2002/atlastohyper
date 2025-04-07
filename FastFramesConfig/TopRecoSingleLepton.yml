@@ -28,9 +28,9 @@ general:
   number_of_cpus: 16
   define_custom_columns:
     - name: Electron_NOSYS
-      definition: "Passed_Any_Electron_Trigger_NOSYS && pass_ejets_NOSYS"
+      definition: "Passed_Any_Electron_Trigger_NOSYS && pass_ejets_NOSYS && nElectrons_tight_NOSYS == 1"
     - name: Muon_NOSYS
-      definition: "Passed_Any_Muon_Trigger_NOSYS && pass_mujets_NOSYS"
+      definition: "Passed_Any_Muon_Trigger_NOSYS && pass_mujets_NOSYS && nMuons_tight_NOSYS == 1"
     - name: "Top_Score_Sum_NOSYS"
       definition: "hyper_TtbarLJets_TopLep_Score_NOSYS + hyper_TtbarLJets_TopHad_Score_NOSYS"
     - name: "Top_Score_Mul_NOSYS"
@@ -99,7 +99,39 @@ regions:
           min: 0
           max: 2
           number_of_bins: 2
-
+      - name: WLep_Correct_HyPER
+        title: WLep_Correct_HyPER; WLep_Correct_HyPER; Events
+        definition: WLep_Correct_HyPER_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: WHad_Correct_HyPER
+        title: WHad_Correct_HyPER; WHad_Correct_HyPER; Events
+        definition: WHad_Correct_HyPER_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: BHad_HyPER_Index
+        title: BHad_HyPER_Index; BHad_HyPER_Index; Events
+        definition: BHad_HyPER_Index_NOSYS
+        type: int
+        binning:
+          min: -1
+          max: 7
+          number_of_bins: 8
+      - name: BLep_HyPER_Index
+        title: BLep_HyPER_Index; BLep_HyPER_Index; Events
+        definition: BLep_HyPER_Index_NOSYS
+        type: int
+        binning:
+          min: -1
+          max: 7
+          number_of_bins: 8
+      
 samples:
 # ttbar
   - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.

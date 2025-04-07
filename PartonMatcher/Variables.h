@@ -739,6 +739,51 @@ namespace HyPERPerformanceSingleLepton{
      * @param HyPERWLepIndices The HyPER indices of the WLep.
     */
     bool correctlyReconstructedWLep(std::vector<int> TopLepTruthRecoIndices,
-                                     const std::vector<long>& HyPERWLepIndices);
+                                     const std::vector<long>& HyPERWLepIndices,
+                                     int truthLeptonFlavour,
+                                     const std::vector<long>& HyPERTopLepIDs);
+
+    /** 
+     * @brief Check if the WHad is correctly reconstructed.
+     * @param TopHadTruthRecoIndices The indices of the TopHad partciles from the truth record. Constructed via getRecoIndicesTopHad.
+     * @param HyPERWHadIndices The HyPER indices of the WHad.
+    */
+   bool correctlyReconstructedWHad(std::vector<int> TopHadTruthRecoIndices,
+    const std::vector<long>& HyPERWHadIndices);
+    
+    // These function return -1 if no valid solution is found.
+    int getHyPERBHadIndex(const std::vector<long>& HyPERTopHadIndices,
+                          const std::vector<long>& HyPERTopHadIDs,
+                          const std::vector<long>& HyPERWHadIndices);
+
+    int getHyPERBLepIndex(const std::vector<long>& HyPERTopLepIndices,
+                          const std::vector<long>& HyPERTopLepIDs);
+
+    /**
+     * @brief Check if the TopLep was reconstructed correctly by HyPER.
+     * @param correctWLep True if the WLep was reconstructed correctly.
+     * @param HyPERWLepIndices The HyPER indices of the WLep.
+     * @param HyPERTopLepIndices The HyPER indices of the TopLep.
+     * @param TopLepTruthRecoIndices The indices of the TopLep particles from the truth record. Constructed via getRecoIndicesTopLep.
+     */
+    bool correctlyReconstructedTopLep(const bool correctWLep,
+        const std::vector<long>& HyPERWLepIndices,
+        const std::vector<long>& HyPERTopLepIndices,
+
+        const std::vector<int>& TopLepTruthRecoIndices);
+
+    /**
+     * @brief Check if the TopHad was reconstructed correctly by HyPER.
+     * @param correctWHad True if the WHad was reconstructed correctly.
+     * @param HyPERWHadIndices The HyPER indices of the WHad.
+     * @param HyPERTopHadIndices The HyPER indices of the TopHad.
+     * @param TopHadTruthRecoIndices The indices of the TopHad particles from the truth record. Constructed via getRecoIndicesTopHad.
+     */
+    bool correctlyReconstructedTopHad(const bool correctWHad,
+        const std::vector<long>& HyPERWHadIndices,
+        const std::vector<long>& HyPERTopHadIndices,
+        const std::vector<int>& TopHadTruthRecoIndices);
+
+    
 
 }
