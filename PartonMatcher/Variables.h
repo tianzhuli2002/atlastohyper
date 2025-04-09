@@ -678,6 +678,13 @@ namespace HyPERPerformanceSingleLepton{
 
 
     /**
+     * @brief Functions to check whether the TopLep and TopHad are reconstrutable.
+     * @param TruthIndices
+     */
+    bool isTopLepReconstructable(const std::vector<int>& TruthIndices);
+    bool isTopHadReconstructable(const std::vector<int>& TruthIndices);
+    
+    /**
      * @brief Get the TopLep lepton flavour. 
      * The default/invalid value is -1. Electron = 2, Muon = 3.
      * @param eTruthIndices The vector with the truth indices of the electrons.
@@ -762,28 +769,20 @@ namespace HyPERPerformanceSingleLepton{
     /**
      * @brief Check if the TopLep was reconstructed correctly by HyPER.
      * @param correctWLep True if the WLep was reconstructed correctly.
-     * @param HyPERWLepIndices The HyPER indices of the WLep.
-     * @param HyPERTopLepIndices The HyPER indices of the TopLep.
+     * @param HyPERBLepIndex The HyPER index of the BLep.
      * @param TopLepTruthRecoIndices The indices of the TopLep particles from the truth record. Constructed via getRecoIndicesTopLep.
      */
     bool correctlyReconstructedTopLep(const bool correctWLep,
-        const std::vector<long>& HyPERWLepIndices,
-        const std::vector<long>& HyPERTopLepIndices,
-
+        int HyPERBLepIndex,
         const std::vector<int>& TopLepTruthRecoIndices);
 
     /**
      * @brief Check if the TopHad was reconstructed correctly by HyPER.
      * @param correctWHad True if the WHad was reconstructed correctly.
-     * @param HyPERWHadIndices The HyPER indices of the WHad.
-     * @param HyPERTopHadIndices The HyPER indices of the TopHad.
+     * @param HyPERBHadIndex The HyPER indicex of the BHad.
      * @param TopHadTruthRecoIndices The indices of the TopHad particles from the truth record. Constructed via getRecoIndicesTopHad.
      */
     bool correctlyReconstructedTopHad(const bool correctWHad,
-        const std::vector<long>& HyPERWHadIndices,
-        const std::vector<long>& HyPERTopHadIndices,
+        int HyPERBHadIndex,
         const std::vector<int>& TopHadTruthRecoIndices);
-
-    
-
 }

@@ -353,6 +353,17 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
              "event_jet_truth_candidates", "event_electron_truth_candidates", "event_muon_truth_candidates",
              "event_nLeptons"});
 
+        LOG(INFO) << "Adding variable: TopLep_Reconstructable_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopLep_Reconstructable_NOSYS",
+            HyPERPerformanceSingleLepton::isTopLepReconstructable,
+            {"TopLep_Truth_Reco_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: TopHad_Reconstructable_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopHad_Reconstructable_NOSYS",
+            HyPERPerformanceSingleLepton::isTopHadReconstructable,
+            {"TopHad_Truth_Reco_Indices_NOSYS"});
         
         LOG(INFO) << "Adding variable: TopLep_Truth_Lepton_Flavour_NOSYS\n";
         mainNode = m_partonMatcher->systematicDefine(mainNode,
@@ -408,6 +419,21 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
             "BLep_HyPER_Index_NOSYS",
             HyPERPerformanceSingleLepton::getHyPERBLepIndex,
             {"hyper_TtbarLJets_TopLep_Indices_NOSYS", "hyper_TtbarLJets_TopLep_IDs_NOSYS"});
+
+        LOG(INFO) << "Adding variable: TopLep_Correct_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopLep_Correct_HyPER_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedTopLep,
+            {"WLep_Correct_HyPER_NOSYS", "BLep_HyPER_Index_NOSYS",
+            "TopLep_Truth_Reco_Indices_NOSYS"});
+
+        LOG(INFO) << "Adding variable: TopHad_Correct_HyPER_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopHad_Correct_HyPER_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedTopHad,
+            {"WHad_Correct_HyPER_NOSYS", "BHad_HyPER_Index_NOSYS",
+            "TopHad_Truth_Reco_Indices_NOSYS"});
+
 
     }
 

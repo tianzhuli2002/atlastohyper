@@ -31,6 +31,8 @@ general:
       definition: "Passed_Any_Electron_Trigger_NOSYS && pass_ejets_NOSYS && nElectrons_tight_NOSYS == 1"
     - name: Muon_NOSYS
       definition: "Passed_Any_Muon_Trigger_NOSYS && pass_mujets_NOSYS && nMuons_tight_NOSYS == 1"
+    - name: Event_Reconstructable_NOSYS
+      definition: TopLep_Reconstructable_NOSYS && TopHad_Reconstructable_NOSYS
     - name: "Top_Score_Sum_NOSYS"
       definition: "hyper_TtbarLJets_TopLep_Score_NOSYS + hyper_TtbarLJets_TopHad_Score_NOSYS"
     - name: "Top_Score_Mul_NOSYS"
@@ -44,7 +46,7 @@ general:
 
 regions:
   - name: "4Jets"
-    selection: "nJets_good_NOSYS == 4 && (Electron_NOSYS || Muon_NOSYS)"
+    selection: nJets_good_NOSYS == 4 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
     variables: &all_variables
       - name: nJets
         title: Number of jets; N Jets;Events
@@ -131,7 +133,60 @@ regions:
           min: -1
           max: 7
           number_of_bins: 8
+      - name: TopLep_Correct_HyPER
+        title: TopLep_Correct_HyPER; TopLep_Correct_HyPER; Events
+        definition: TopLep_Correct_HyPER_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TopHad_Correct_HyPER
+        title: TopHad_Correct_HyPER; TopHad_Correct_HyPER; Events
+        definition: TopHad_Correct_HyPER_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TopHad_Reconstructable
+        title: TopHad_Reconstructable; TopHad_Reconstructable; Events
+        definition: TopHad_Reconstructable_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TopLep_Reconstructable
+        title: TopLep_Reconstructable; TopLep_Reconstructable; Events
+        definition: TopLep_Reconstructable_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: Event_Reconstructable
+        title: Event_Reconstructable; Event_Reconstructable; Events
+        definition: Event_Reconstructable_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
       
+  - name: "5Jets"
+    selection: nJets_good_NOSYS == 5 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+    variables: *all_variables
+  - name: "6Jets"
+    selection: nJets_good_NOSYS == 6 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+    variables: *all_variables
+  - name: "7Jets"
+    selection: nJets_good_NOSYS == 7 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+    variables: *all_variables
+  - name: "8pJets"
+    selection: nJets_good_NOSYS >= 8 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+    variables: *all_variables
+
 samples:
 # ttbar
   - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.

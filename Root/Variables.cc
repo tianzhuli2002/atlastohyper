@@ -872,6 +872,30 @@ namespace HyPERPerformanceSingleLepton {
         return defaultIndices;
     }
 
+    bool isTopLepReconstructable(const std::vector<int>& TruthIndices){
+        // Check the sizes of the input vectors
+        if (TruthIndices.size() != 3) return false;
+
+        // Check that the lepton indices are all valid.
+        return HyPERPerformance::allValidIndices<int>(TruthIndices);
+    }
+
+    bool isTopHadReconstructable(const std::vector<int>& TruthIndices){
+        //std::cout << "Hello World!" << std::endl;
+        // Check the sizes of the input vectors
+        if (TruthIndices.size() != 3) return false;
+
+       //std::cout<< "TruthIndices: " << TruthIndices.at(0) << " " << TruthIndices.at(1) << " " << TruthIndices.at(2) << std::endl;
+
+        // Check that the lepton indices are all valid.
+        if (!HyPERPerformance::allValidIndices<int>(TruthIndices)) return false;
+
+        //std::cout<< "All indices are valid." << std::endl;
+
+        // Check that the indices are unique.
+        return HyPERPerformance::allElementsUnique<int>(TruthIndices);
+    }
+
     int getTopLepLeptonFlavour(const std::vector<int>& eTruthIndices,
         const std::vector<int>& muTruthIndices,
         const std::vector<int>& nMatchedElectrons,
@@ -1158,5 +1182,38 @@ namespace HyPERPerformanceSingleLepton {
 
         return topLepBJetIndex;
     }
+
+    bool correctlyReconstructedTopLep(const bool correctWLep,
+        int HyPERBLepIndex,
+        const std::vector<int>& TopLepTruthRecoIndices){
+
+            // Check the W is correctly reconstructed.
+            if (!correctWLep) return false;
+
+            // Check the size of the array are correct.
+            if (TopLepTruthRecoIndices.size() != 3) return false;
+
+            if (HyPERBLepIndex == -1) return false;
+
+            // Check the b-jet is correctly matched.
+            return HyPERBLepIndex == TopLepTruthRecoIndices.at(0);
+
+    }
+
+    bool correctlyReconstructedTopHad(const bool correctWHad,
+        int HyPERBHadIndex,
+        const std::vector<int>& TopHadTruthRecoIndices){
+
+            // Check the W is correctly reconstructed.
+            if (!correctWHad) return false;
+
+            // Check the size of the array are correct.
+            if (TopHadTruthRecoIndices.size() != 3) return false;
+
+            if (HyPERBHadIndex == -1) return false;
+
+            // Check the b-jet is correctly matched.
+            return HyPERBHadIndex == TopHadTruthRecoIndices.at(0);
+        }
 
 }
