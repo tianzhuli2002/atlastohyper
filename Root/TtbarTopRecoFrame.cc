@@ -434,6 +434,50 @@ ROOT::RDF::RNode TtbarTopRecoFrame::defineVariables(ROOT::RDF::RNode mainNode,
             {"WHad_Correct_HyPER_NOSYS", "BHad_HyPER_Index_NOSYS",
             "TopHad_Truth_Reco_Indices_NOSYS"});
 
+        // The KLF variables
+
+        LOG(INFO) << "Adding variable: KLF_BHad_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "KLF_BHad_Index_NOSYS",
+            Variables::convertOneElementRVectorToIntegerType<unsigned int, int>,
+            {"klfitter_bhad_jetIndex_NOSYS"});
+
+        LOG(INFO) << "Adding variable: KLF_BLep_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "KLF_BLep_Index_NOSYS",
+            Variables::convertOneElementRVectorToIntegerType<unsigned int, int>,
+            {"klfitter_blep_jetIndex_NOSYS"});
+
+        LOG(INFO) << "Adding variable: KLF_W1_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "KLF_W1_Index_NOSYS",
+            Variables::convertOneElementRVectorToIntegerType<unsigned int, int>,
+            {"klfitter_lq1_jetIndex_NOSYS"});
+
+        LOG(INFO) << "Adding variable: KLF_W2_Index_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "KLF_W2_Index_NOSYS",
+            Variables::convertOneElementRVectorToIntegerType<unsigned int, int>,
+            {"klfitter_lq2_jetIndex_NOSYS"});
+
+        LOG(INFO) << "Adding variable: WHad_Correct_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "WHad_Correct_KLF_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedWHad_KLF,
+            {"TopHad_Truth_Reco_Indices_NOSYS", "KLF_W1_Index_NOSYS", "KLF_W2_Index_NOSYS"});
+
+        LOG(INFO) << "Adding variable: TopHad_Correct_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopHad_Correct_KLF_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedTopHad_KLF,
+            {"WHad_Correct_KLF_NOSYS", "KLF_BHad_Index_NOSYS","TopHad_Truth_Reco_Indices_NOSYS"});
+
+        
+        LOG(INFO) << "Adding variable: TopLep_Correct_KLF_NOSYS\n";
+        mainNode = m_partonMatcher->systematicDefine(mainNode,
+            "TopLep_Correct_KLF_NOSYS",
+            HyPERPerformanceSingleLepton::correctlyReconstructedTopLep_KLF,
+            {"KLF_BLep_Index_NOSYS", "TopLep_Truth_Reco_Indices_NOSYS"});
 
     }
 

@@ -10,12 +10,15 @@ def load_results(root_file , categories : list[str], histogram_names : list[str]
 
     # First, create the dictionary templates
     base_dictionary = {'Bad': 0.0, 'Good': 0.0, 'BadError': 0.0, 'GoodError': 0.0}
-    results_dictionary_one_category = {'TopLep': copy.deepcopy(base_dictionary), 'TopHad' : copy.deepcopy(base_dictionary), 'WHad': copy.deepcopy(base_dictionary)}
+    results_dictionary_one_category = {'TopLep': copy.deepcopy(base_dictionary),
+                                       'TopHad' : copy.deepcopy(base_dictionary),
+                                       'WHad': copy.deepcopy(base_dictionary),
+                                       'TwoTop': copy.deepcopy(base_dictionary)}
     results_dictionary = {category: copy.deepcopy(results_dictionary_one_category) for category in categories}
 
     # Adaptor dictionaries from plotting script to ROOT data.
-    categories_adaptor_dictionary = {'4 jets': '4Jets', '5 jets': '5Jets', '6 jets': '6Jets', '7 jets': '7Jets', '8+ jets': '8pJets'}
-    histograms_adaptor_dictionary = {'TopLep_Correct': 'TopLep', 'TopHad_Correct': 'TopHad', 'WHad_Correct': 'WHad'}
+    categories_adaptor_dictionary = {'4 jets': '4Jets', '5 jets': '5Jets', '6 jets': '6Jets', '7 jets': '7Jets', '8 jets': '8Jets', '9+ jets': '9pJets'}
+    histograms_adaptor_dictionary = {'TopLep_Correct': 'TopLep', 'TopHad_Correct': 'TopHad', 'WHad_Correct': 'WHad', 'TwoTop_Correct': 'TwoTop'}
 
     # Load the results from the ROOT fil
     
@@ -111,16 +114,16 @@ def plot_eff(efficiencies_dict_hyper, efficiencies_dict_klf, run_nb, btagged, ca
 
     ax.set_ylabel('Reconstruction efficiency [%]', fontsize=14)
     plt.yticks(fontsize=12)
-    ax.set_ylim(0, 100)
+    ax.set_ylim(0, 130)
 
     ax.set_xlim(0., n_categories)
     ax.set_xticks(x)
     ax.set_xticklabels(categories, fontsize=14)
 
     if btagged:
-        ax.legend(loc='center left', bbox_to_anchor=(0., 0.7), fontsize=14, frameon=True, edgecolor='black',)
+        ax.legend(loc='lower left', bbox_to_anchor=(0., 0.8), fontsize=14, frameon=True, edgecolor='black',)
     else:
-        ax.legend(loc='upper left', fontsize=14, frameon=True, edgecolor='black',)
+        ax.legend(loc='lower left', fontsize=14, frameon=True, edgecolor='black',)
 
     # Add value above each point
     for i, v in enumerate(HyPER_overall_eff):
@@ -133,13 +136,13 @@ def plot_eff(efficiencies_dict_hyper, efficiencies_dict_klf, run_nb, btagged, ca
         ax.axvline(pos, color='gray', alpha=0.7, linestyle='-', linewidth=0.5)
 
     # Place error bar and dataset information within the plot, above the x-axis
-    ax.text(3., 95., 'Training dataset:\nEvaluated dataset:', 
+    ax.text(3., 120., 'Training dataset:\nEvaluated dataset:', 
             ha='center', va='top', fontsize=14, fontweight='bold')
-    ax.text(5., 95, 'All fully matched events\nAll fully matched events', 
+    ax.text(5., 120, 'All fully matched events\nAll fully matched events', 
             ha='center', va='top', fontsize=14)
-    ax.text(4., 80, 'error bars multiplied by 10', ha='center', fontsize=12, fontstyle='italic')
+    ax.text(4., 105, 'error bars multiplied by 10', ha='center', fontsize=12, fontstyle='italic')
 
-    ax.set_title(f'Run {run_nb}, ttbar SL', fontsize=16, fontweight='bold')
+    ax.set_title(f'Run {run_nb}, {key_to_plot}, ttbar SL', fontsize=16, fontweight='bold')
 
     # Save the plot as an image file
     plt.tight_layout()
@@ -153,16 +156,21 @@ def main(args):
     btagged = args.wasbtagged
     eff_to_plot = args.eff_to_plot
     
-    categories = ['4 jets', '5 jets', '6 jets', '7 jets', '8+ jets']
+    categories = ['4 jets', '5 jets', '6 jets', '7 jets', '8 jets', '9+ jets']
     
     # Load the results...
     base_path = '/home/dbaronmo/Work/resultsTopRecoSingleLepton/'
-    histograms = ['TopLep_Correct', 'TopHad_Correct','WHad_Correct']
-    hyper_results = load_results(base_path + 'ttbar_nonallhad_run2.root', categories, histograms)
+    root_file = 'ttbar_nonallhad_run%d.root' % (run_nb)
+    histograms = ['TopLep_Correct', 'TopHad_Correct','WHad_Correct','TwoTop_Correct']
 
+    # HyPER results
+    hyper_results = load_results(base_path + root_file, categories, histograms)
     hyper_efficiencies = calculate_efficiencies(hyper_results)
+    # KLFitter results
+    klf_results = load_results(base_path + root_file, categories, histograms, 'KLF')
+    klf_efficiencies = calculate_efficiencies(klf_results)
 
-    plot_eff(hyper_efficiencies, hyper_efficiencies, run_nb, btagged, categories, eff_to_plot)
+    plot_eff(hyper_efficiencies, klf_efficiencies, run_nb, btagged, categories, eff_to_plot)
 
     
 if __name__ == '__main__':

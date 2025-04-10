@@ -43,7 +43,10 @@ general:
       definition: "std::vector<float>{hyper_TtbarLJets_TopLep_Score_NOSYS,hyper_TtbarLJets_TopHad_Score_NOSYS}"
     - name: "Top_Score_Asymm_NOSYS"
       definition: "(hyper_TtbarLJets_TopLep_Score_NOSYS - hyper_TtbarLJets_TopHad_Score_NOSYS) / (hyper_TtbarLJets_TopLep_Score_NOSYS + hyper_TtbarLJets_TopHad_Score_NOSYS)"
-
+    - name: "TwoTop_Correct_KLF_NOSYS"
+      definition: TopLep_Correct_KLF_NOSYS && TopHad_Correct_KLF_NOSYS
+    - name: "TwoTop_Correct_HyPER_NOSYS"
+      definition: TopLep_Correct_HyPER_NOSYS && TopHad_Correct_HyPER_NOSYS
 regions:
   - name: "4Jets"
     selection: nJets_good_NOSYS == 4 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
@@ -173,6 +176,85 @@ regions:
           min: 0
           max: 2
           number_of_bins: 2
+      - name: WHad_Correct_KLF
+        title: WHad_Correct_KLF; WHad_Correct_KLF; Events
+        definition: WHad_Correct_KLF_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TopLep_Correct_KLF
+        title: TopLep_Correct_KLF; TopLep_Correct_KLF; Events
+        definition: TopLep_Correct_KLF_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TopHad_Correct_KLF
+        title: TopHad_Correct_KLF; TopHad_Correct_KLF; Events
+        definition: TopHad_Correct_KLF_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TwoTop_Correct_KLF
+        title: TwoTop_Correct_KLF; TwoTop_Correct_KLF; Events
+        definition: TwoTop_Correct_KLF_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: TwoTop_Correct_HyPER
+        title: TwoTop_Correct_HyPER; TwoTop_Correct_HyPER; Events
+        definition: TwoTop_Correct_HyPER_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
+      - name: Top_Score_Sum
+        title: Top score sum; Top score sum; Events
+        definition: Top_Score_Sum_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 100
+      - name: Top_Score_Mul
+        title: Top score multiplication; Top score multiplication; Events
+        definition: Top_Score_Mul_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 100
+      - name: Top_Score_Ratio
+        title: Top score ratio; Top score ratio; Events
+        definition: Top_Score_Ratio_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 100
+      - name: Top_Score_Stack
+        title: Top score stack; Top score stack; Events
+        definition: Top_Score_Stack_NOSYS
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 100
+      - name: Top_Score_Asymm
+        title: Top score asymmetry; Top score asymmetry; Events
+        definition: Top_Score_Asymm_NOSYS
+        type: float
+        binning:
+          min: -1
+          max: 1
+          number_of_bins: 100
       
   - name: "5Jets"
     selection: nJets_good_NOSYS == 5 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
@@ -183,8 +265,11 @@ regions:
   - name: "7Jets"
     selection: nJets_good_NOSYS == 7 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
     variables: *all_variables
-  - name: "8pJets"
-    selection: nJets_good_NOSYS >= 8 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+  - name: "8Jets"
+    selection: nJets_good_NOSYS == 8 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
+    variables: *all_variables
+  - name: "9pJets"
+    selection: nJets_good_NOSYS >= 9 && (Electron_NOSYS || Muon_NOSYS) && Event_Reconstructable_NOSYS
     variables: *all_variables
 
 samples:

@@ -1214,6 +1214,31 @@ namespace HyPERPerformanceSingleLepton {
 
             // Check the b-jet is correctly matched.
             return HyPERBHadIndex == TopHadTruthRecoIndices.at(0);
-        }
+    }
 
+    bool correctlyReconstructedTopLep_KLF(int KLFBLepIndex,
+                                          const std::vector<int>& TopLepTruthRecoIndices){
+
+        // Use HyPER function.
+        return correctlyReconstructedTopLep(true,KLFBLepIndex,TopLepTruthRecoIndices);
+    }
+
+    bool correctlyReconstructedWHad_KLF(std::vector<int> TopHadTruthRecoIndices,
+                                        int KLW1Index,
+                                        int KLW2Index){
+
+        // Form the indices.
+        std::vector<long> KLFWHadIndices{KLW1Index,KLW2Index};
+        
+        // Use HyPER function.
+        return correctlyReconstructedWHad(TopHadTruthRecoIndices, KLFWHadIndices);
+    }
+
+    bool correctlyReconstructedTopHad_KLF(const bool correctWHad,
+    int KLFBHadIndex,
+    const std::vector<int>& TopHadTruthRecoIndices){
+
+        // Use HyPER function.
+        return correctlyReconstructedTopHad(correctWHad,KLFBHadIndex,TopHadTruthRecoIndices);
+    }
 }

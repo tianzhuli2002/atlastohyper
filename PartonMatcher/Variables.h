@@ -7,6 +7,7 @@
 #include "ROOT/RDataFrame.hxx"
 #include "Math/Vector4D.h"
 #include "Math/VectorUtil.h"
+#include "ROOT/RVec.hxx"
 
 // Variables used in both channels
 namespace Variables{
@@ -360,6 +361,20 @@ namespace Variables{
      * @param myVariable variable that should be used as boolean
      */
     bool charToBool(Char_t myVariable);
+
+    /** 
+     * @brief Convert a one-element RVector of type T to a simple type of type V.
+     * @param InputVector The input vector.
+     */
+    template <typename T, typename V>
+    V convertOneElementRVectorToIntegerType(const ROOT::VecOps::RVec<T>& InputVector){
+        if (InputVector.size() == 0) return -1;
+        else if (InputVector.size() == 1) return static_cast<V>(InputVector[0]);
+        else {
+            LOG(ERROR) << "The input vector has more than one element." << std::endl;
+            throw std::runtime_error("");
+        }
+    }
 
 }
 
@@ -784,5 +799,20 @@ namespace HyPERPerformanceSingleLepton{
      */
     bool correctlyReconstructedTopHad(const bool correctWHad,
         int HyPERBHadIndex,
+        const std::vector<int>& TopHadTruthRecoIndices);
+    
+    /**
+     * @brief These are the KLF versions of the functions above. 
+     * The idea is to build the same inputs and use the HyPER logic.
+     */
+    bool correctlyReconstructedTopLep_KLF(int KLFBLepIndex,
+                                          const std::vector<int>& TopLepTruthRecoIndices);
+
+    bool correctlyReconstructedWHad_KLF(std::vector<int> TopHadTruthRecoIndices,
+                                        int KLW1Index,
+                                        int KLW2Index);
+
+    bool correctlyReconstructedTopHad_KLF(const bool correctWHad,
+        int KLFBHadIndex,
         const std::vector<int>& TopHadTruthRecoIndices);
 }
