@@ -409,7 +409,7 @@ ROOT::RDF::RNode TtbarAllHadFrame::defineVariables(ROOT::RDF::RNode mainNode,
                                            HyPERPerformance::ConvertHyPERIndexToPtIndex(1),
                                            {"hyper_TtbarAllHadronic_W2_Indices_NOSYS", "jets_ptOrderIndex_NOSYS"});
 
-
+    
 
   }
 

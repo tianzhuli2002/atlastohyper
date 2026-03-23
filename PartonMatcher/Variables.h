@@ -481,6 +481,13 @@ namespace TtbarSingleLeptonVars{
         // Basic selection with number of good objects, triggers and correct ntuple branch.
         bool basic(const char& nTupleFlag, int numberOfMuons,
                    int numberOfJets,bool triggered, bool triggerMatched);
+        // Events firing any of the available muon triggers
+    bool triggersnew(const bool& mu24, const bool& mu50);
+
+    // Basic selection with number of good objects, triggers and correct ntuple branch.
+    bool basicnew(const char& nTupleFlag, int numberOfMuons, int numberOfJets,
+               bool triggered, bool triggerMatched);
+           
     }
 
     // Selection cuts for the electron channel
@@ -492,6 +499,14 @@ namespace TtbarSingleLeptonVars{
         // Basic selection with number of good objects, triggers and correct ntuple branch.
         bool basic(const char& nTupleFlag, int numberOfElectrons,
                    int numberOfJets,bool triggered, bool triggerMatched);
+        // Events firing any of the available electron triggers
+
+    bool triggersnew(const bool& e26, const bool& e60, const bool& e140);
+
+    // Basic selection with number of good objects, triggers and correct ntuple branch.
+    bool basicnew(const char& nTupleFlag, int numberOfElectrons, int numberOfJets,
+               bool triggered, bool triggerMatched);
+           
     }
 
     //Selection cuts on jets
@@ -500,7 +515,443 @@ namespace TtbarSingleLeptonVars{
     }
 }
 
+namespace TtbarDileptonVars{
+    /**
+     * @brief Function to get the sum of the charges of the leptons.
+     * @param chargeV Vector of charges of the leptons.
+     * @return float Sum of the charges.
+     */
+    float sumOfCharges( const ROOT::VecOps::RVec<float>& chargeV);
 
+    /**
+     * @brief Function to get the pt-sorted vector of charges of the leptons that pass a selection.
+     * And have a pT > 7 GeV.
+     * @param chargeV Vector of charges of the leptons.
+     * @param ptV Vector of pT of the leptons.
+     * @param selection Vector of selection flags for the leptons.
+     * @return ROOT::VecOps::RVec<float> Vector of charges of the leptons that pass the selection, sorted by pt.
+     */
+    ROOT::VecOps::RVec<float> sortedPassedChargeVector25(
+        const ROOT::VecOps::RVec<float>& chargeV,
+        const ROOT::VecOps::RVec<float>& ptV,
+        const ROOT::VecOps::RVec<char>& selection);
+
+    /**
+     * @brief Function to determine the region based on the pT of the leading lepton
+     * and the number of leptons of each type.
+     * @param nElectrons Number of electrons.
+     * @param nMuons Number of muons.
+     * @param elTLV Vector of TLorentzVectors of the electrons (pt-sorted).
+     * @param muTLV Vector of TLorentzVectors of the muons (pt-sorted).
+     * @return std::string Region name.
+     */
+    std::string regionName(
+        std::size_t nElectrons,
+        std::size_t nMuons,
+        const ROOT::VecOps::RVec<TLV>& elTLV,
+        const ROOT::VecOps::RVec<TLV>& muTLV);
+
+    /**
+     * @brief Functor class to create a TLorentzVector for a truth particle that must have a given particle ID.
+     * If the truth particle does not have the given ID, it returns a TLorentzVector with zero values.
+     * @param particleID Particle ID of the truth particle.
+     */
+    class makeTruthTLV {
+    using TLV = ROOT::Math::PtEtaPhiMVector;
+    public:
+        makeTruthTLV(int particleID) : m_particleID(particleID) {}
+
+        TLV operator() (float pt,
+                    float eta,
+                    float phi,
+                    float m,
+                    int pdgId) const {
+            // Create a vector to hold the TLorentzVectors
+            TLV tlv(0,0,0,0);
+
+            // Check if the particle ID matches the given ID
+            if (pdgId != m_particleID) return tlv;
+
+            // If it matches, fill the TLorentzVector with the given values.
+            tlv.SetCoordinates(pt, eta, phi, m);
+            return tlv;
+        }
+
+    private:
+        int m_particleID;
+    };
+    
+    /**
+     * @brief Function to get the index of the reco tagged b-jet that matches the truth b-jet.
+     * Returns -1 if no match is found.
+     * @param recoBJets Vector of TLorentzVectors of the reco b-jets.
+     * @param truthBJet TLorentzVector of the truth b-jet.
+     * @return int Index of the reco b-jet that matches the truth b-jet.
+     */
+    int recoIndexTruthBJet(const ROOT::VecOps::RVec<TLV>& recoBJets,
+                        const ROOT::Math::PtEtaPhiMVector& truthBJet);
+
+    /**
+     * @brief Invariant mass of the ttbar lepton pair.
+     * -1 if no pair is found.
+     * @param regionName Name of the region.
+     * @param muonTLV Vector of TLorentzVectors of the muons.
+     * @param electronTLV Vector of TLorentzVectors of the electrons.
+     * @return float Invariant mass of the ttbar lepton pair.
+     */
+    float ttbarLeptonPairInvariantMass(
+        const std::string& regionName,
+        const ROOT::VecOps::RVec<TLV>& muonTLV,
+        const ROOT::VecOps::RVec<TLV>& electronTLV
+        );
+    /**
+     * @brief Minimum invariant mass of lepton-jet pairs in the event.
+     * @param sorted_el_TLV Vector of TLorentzVectors of the electrons (pt
+     * sorted).
+     * @param sorted_mu_TLV Vector of TLorentzVectors of the muons (pt
+     * sorted).
+     * @param sorted_bjet_TLV Vector of TLorentzVectors of the b-jets (pt
+     * sorted).
+     * @param jet_TLV Vector of TLorentzVectors of the jets.
+     * @param jet_GN2v01_FixedCutBEff_85_select Vector of selection flags for the jets.
+     * @param n_electrons Number of electrons.
+     * @param n_muons Number of muons.
+     * @return float Minimum invariant mass of lepton-jet pairs in the event.
+     */
+    /**
+     * @brief Minimum invariant mass of lepton-jet pairs in the event.
+     * @param sorted_el_TLV Vector of TLorentzVectors of the electrons (pt
+     * sorted).
+     * @param sorted_mu_TLV Vector of TLorentzVectors of the muons (
+     *  pt sorted).
+     * @param sorted_bjet_TLV Vector of TLorentzVectors of the b-jets (pt
+     * sorted).
+     * @param jet_TLV Vector of TLorentzVectors of the jets.        
+     * @param jet_GN2v01_FixedCutBEff_85_select Vector of selection flags for the jets.
+     * @param n_electrons Number of electrons.
+     * @param n_muons Number of muons.
+     * @return float Minimum invariant mass of lepton-jet pairs in the event.
+     */
+    float minimumLeptonJetPairInvariantMass(
+        const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+        const ROOT::VecOps::RVec<TLV>& jet_TLV,
+        const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_85_select,
+        unsigned long n_electrons,
+        unsigned long n_muons);
+    
+        /**
+     * @brief Minimum invariant mass of lepton-jet pairs in the event.
+     * @param sorted_el_TLV Vector of TLorentzVectors of the electrons (pt
+     * sorted).
+     * @param sorted_mu_TLV Vector of TLorentzVectors of the muons (
+     *  pt sorted).
+     * @param sorted_bjet_TLV Vector of TLorentzVectors of the b-jets (pt
+     * sorted).
+     * @param jet_TLV Vector of TLorentzVectors of the jets.        
+     * @param jet_GN2v01_FixedCutBEff_85_select Vector of selection flags for the jets.
+     * @param n_electrons Number of electrons.
+     * @param n_muons Number of muons.
+     * @return float Minimum invariant mass of lepton-jet pairs in the event.
+     */
+ROOT::VecOps::RVec<int> selectTwoJetIndices_BtagPriority(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                                 const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_77_select);
+
+                                 
+     int SelectedJetsMatchTruthBPair(
+    const ROOT::VecOps::RVec<int>& selected_jet_indices,
+    const std::vector<int>& event_jet_truth_idx,
+    const std::vector<int>& event_jet_truth_candidates);
+
+
+    bool pass_min_lb_invar_mass(
+        const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+        const ROOT::VecOps::RVec<TLV>& jet_TLV,
+        const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_85_select,
+        unsigned long n_electrons,
+        unsigned long n_muons);
+
+
+    /**
+     * @brief Determine if the event is fully matched.
+     * @param jet_TLVs Vector of TLorentzVectors of the jets.
+     * @param el_TLVs Vector of TLorentzVectors of the electrons.
+     * @param mu_TLVs Vector of TLorentzVectors of the muons.
+     * @param el_ChargeV Vector of charges of the electrons.
+     * @param mu_ChargeV Vector of charges of the muons.
+     * @param event_jet_truth_idx Vector of truth indices of the jets.
+     * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+     * @return ROOT::VecOps::RVec<float> Vector with the invariant mass of the truth matched lepton+b-jet pairs, 
+     * as well as many other variables witht the truth matching information.
+     */
+    ROOT::VecOps::RVec<float> FullyMatched_MLB(
+        const ROOT::VecOps::RVec<TLV>& jet_TLVs,
+        const ROOT::VecOps::RVec<TLV>& el_TLVs,
+        const ROOT::VecOps::RVec<TLV>& mu_TLVs,
+        const ROOT::VecOps::RVec<float>& el_ChargeV,
+        const ROOT::VecOps::RVec<float>& mu_ChargeV,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_candidates
+    );
+
+    /** 
+     * @brief Invariant mass of the llbb system.
+     * @param sorted_el_TLV Vector of TLorentzVectors of the electrons (pt
+     * sorted).
+     * @param sorted_mu_TLV Vector of TLorentzVectors of the muons (
+     *  pt sorted).
+     * @param sorted_bjet_TLV Vector of TLorentzVectors of the b-jets (pt
+     * sorted).
+     * @param jet_TLV Vector of TLorentzVectors of the jets.    
+     * @param jet_GN2v01_FixedCutBEff_85_select Vector of selection flags for the jets.
+     * @param n_electrons Number of electrons.
+     * @param n_muons Number of muons.
+     * @return float Invariant mass of the llbb system. 
+    */
+    float invariantMassllbb(
+        const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+        const ROOT::VecOps::RVec<TLV>& jet_TLV,
+        const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_85_select,
+        unsigned long n_electrons,
+        unsigned long n_muons);    
+    /**
+     *@brief Determines whether region is Signal or not
+     * @param elChargeV Vector of electron charges
+     * @param muChargeV Vector of muon charges
+     * @param ttbar_mass_NOSYS Invariant mass of the ttbar system without systematic variations
+     * @return float 1 if the event is in the signal region, 0 otherwise
+     */
+    // float Signal(
+    //     const ROOT::VecOps::RVec<float>& elChargeV,
+    //     const ROOT::VecOps::RVec<float>& muChargeV,
+    //     float ttbar_mass_NOSYS,
+    //     float lepton_bjet_invariant_mass,
+    //     unsigned long nElectrons,
+    //     unsigned long nMuons,
+    //     float met_met_NOSYS
+    // );
+    float Signal(
+    const ROOT::VecOps::RVec<TLV>& elTLV,
+    const ROOT::VecOps::RVec<TLV>& muTLV,
+    const ROOT::VecOps::RVec<float>& elChargeV,
+    const ROOT::VecOps::RVec<float>& muChargeV,
+    unsigned long nJets,
+    unsigned long nBJets,
+    float dilepton_mass_NOSYS,
+    float lepton_bjet_invariant_mass,
+    float met_met_NOSYS
+);
+    /**
+     * @brief Check if the event is fully matched.
+     * @param event_jet_truth_idx Vector of truth indices of the jets.
+     * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+     * @return int 1 if the event is fully matched, 0 otherwise.
+     */
+    int FullyMatched(const std::vector<int>& event_jet_truth_idx,
+                     const std::vector<int>& event_jet_truth_candidates
+    );
+
+    /**
+     * @brief Get index of true b hadron
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @param event_jet_truth_candidates vector of int describing the topology-dependent parton-level object corresponding to a detector-level jet index
+     * @return Int_t index of true b hadron
+     */
+    Int_t getTruthIndexBHad(const std::vector<int>& event_jet_truth_idx,
+    const std::vector<int>& event_jet_truth_candidates);
+
+    /**
+     * @brief Get index of true bbar hadron
+     * @param event_jet_truth_idx  vector of int describing the detector-level jet index corresponding to a topology-dependent parton-level object 
+     * @param event_jet_truth_candidates vector of int describing the topology-dependent parton-level object corresponding to a detector-level jet index
+     * @return Int_t index of true bbar hadron
+     */
+    Int_t getTruthIndexBbarHad(const std::vector<int>& event_jet_truth_idx,
+    const std::vector<int>& event_jet_truth_candidates);
+
+    /**
+     * @brief Calculate the transverse mass of a system given its visible TLV and the MET.
+     * @param vis The visible TLV of the system.
+     * @param met_pt The MET pT.
+     * @param met_phi The MET phi.
+     * @return float The transverse mass of the system.
+     */
+    float transverseMassSystem_safe(const TLV& vis, float met_pt, float met_phi
+    );
+    /**
+     * @brief Calculate the transverse mass of the ttbar system using truth matching information.
+     * @param jet_TLVs Vector of TLorentzVectors of the jets.
+     * @param el_TLVs Vector of TLorentzVectors of the electrons.
+     * @param mu_TLVs Vector of TLorentzVectors of the muons.
+     * @param event_jet_truth_idx Vector of truth indices of the jets.
+     * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+     * @param el_charge Vector of charges of the electrons.
+     * @param mu_charge Vector of charges of the muons.
+     * @param met_pt The MET pT.
+     * @param met_phi The MET phi.
+     * @return float The transverse mass of the ttbar system.
+     */
+    float mT_ttbar_truth_from_truthIndices(
+    const ROOT::VecOps::RVec<TLV>& jet_TLVs,
+    const ROOT::VecOps::RVec<TLV>& el_TLVs,
+    const ROOT::VecOps::RVec<TLV>& mu_TLVs,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    float met_pt,
+    float met_phi
+);
+    
+ /**
+  * @brief Calculate deltaPhi between two TLVs.
+  * @param a The first TLV.
+  * @param b The second TLV.
+  * @return float The deltaPhi between the two TLVs.
+  */
+inline float deltaPhi(const TLV& a,
+                           const TLV& b
+                        );
+
+/**
+ * @brief Calculate deltaR between two TLVs.
+ * @param a The first TLV.
+ * @param b The second TLV.
+ * @return float The deltaR between the two TLVs.
+ */
+inline float deltaR(const TLV &a, const TLV &b);
+
+/** 
+ * @brief Pair leptons to jets by minimizing the sum of deltaR between lepton and jet.
+ * @param el_TLV Vector of TLorentzVectors of the electrons.
+ * @param mu_TLV Vector of TLorentzVectors of the muons.
+ * @param jet_TLV Vector of TLorentzVectors of the jets.
+ * @param event_jet_truth_idx Vector of truth indices of the jets.
+ * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+ * @param el_charge Vector of charges of the electrons.
+ * @param mu_charge Vector of charges of the muons.
+ * @param n_electrons Number of electrons.
+ * @param n_muons Number of muons.
+ * @return ROOT::VecOps::RVec<float> Vector with the sum of deltaR between lepton and jet for the best pairing.
+*/
+ROOT::VecOps::RVec<float> PairLeptonsToJets_MinSumDeltaR(
+    const ROOT::VecOps::RVec<TLV>& el_TLV,
+    const ROOT::VecOps::RVec<TLV>& mu_TLV,
+    const ROOT::VecOps::RVec<TLV>& jet_TLV,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    unsigned long n_electrons,
+    unsigned long n_muons
+); 
+/** 
+ * @brief Pair leptons to top jets by minimizing the sum of squared differences between reconstructed and true top masses.
+ * @param el_TLV Vector of TLorentzVectors of the electrons.
+ * @param mu_TLV Vector of TLorentzVectors of the muons.
+ * @param jet_TLV Vector of TLorentzVectors of the jets.
+ * @param event_jet_truth_idx Vector of truth indices of the jets.  
+ * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+ * @param el_charge Vector of charges of the electrons.
+ * @param mu_charge Vector of charges of the muons.
+ * @param n_electrons Number of electrons.
+ * @param n_muons Number of muons.
+ * @return ROOT::VecOps::RVec<float> if whether pairing was successful (1.0) or not (0.0).
+ */
+    ROOT::VecOps::RVec<float> PairLeptonsToTopJets_MinSumSq(
+    const ROOT::VecOps::RVec<TLV>& el_TLV,
+    const ROOT::VecOps::RVec<TLV>& mu_TLV,
+    const ROOT::VecOps::RVec<TLV>& jet_TLV,
+    //const ROOT::VecOps::RVec<char>& jet_btag_select,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    unsigned long n_electrons,
+    unsigned long n_muons);               
+
+    /** 
+     * @brief Pair leptons to jets by minimizing a Chi2 based on m_lb.
+     * @param el_TLV Vector of TLorentzVectors of the electrons.
+     * @param mu_TLV Vector of TLorentzVectors of the muons.
+     * @param jet_TLV Vector of TLorentzVectors of the jets.
+     * @param met_met MET magnitude.
+     * @param met_phi MET phi.
+     * @param event_jet_truth_idx Vector of truth indices of the jets.
+     * @param event_jet_truth_candidates Vector of truth candidates of the jets.
+     * @param el_charge Vector of charges of the electrons.
+     * @param mu_charge Vector of charges of the muons.
+     * @param n_electrons Number of electrons.
+     * @param n_muons Number of muons.
+     * @return ROOT::VecOps::RVec<float> Vector with the Chi2 value for the best pairing.
+    */
+    // Chi2-based pairing that searches jet->lepton assignments and minimizes
+    // sum( (m_lb - mean)^2 / sigma^2 ). Defaults for mean/sigma are in MeV.
+    ROOT::VecOps::RVec<float> PairLeptonsToJets_Chi2TruthAll(
+        const ROOT::VecOps::RVec<TLV>& el_TLV,
+        const ROOT::VecOps::RVec<TLV>& mu_TLV,
+        const ROOT::VecOps::RVec<TLV>& jet_TLV,
+        float met_met,
+        float met_phi,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+        const ROOT::VecOps::RVec<float>& el_charge,
+        const ROOT::VecOps::RVec<float>& mu_charge,
+        unsigned long n_electrons,
+        unsigned long n_muons
+    );
+        /**
+     * @brief Create a TLV for a parton from the four momentum branches.
+     * @return ROOT::RDF::RNode The node with the new TLV branch.
+     * @param mainFrame The main frame.
+     * @param mainNode The current main node.
+     * @param partonBaseName The base name of the parton branches.
+     * @param newBranchName The name of the new TLV branch.
+     */
+    ROOT::RDF::RNode createNeutrinoTLV(MainFrame* mainFrame ,ROOT::RDF::RNode mainNode, const std::string& partonBaseName, const std::string& newBranchName);
+
+
+    struct TruthNuInfo {
+    ROOT::Math::PtEtaPhiMVector nu_from_t;
+    ROOT::Math::PtEtaPhiMVector nu_from_tbar;
+    int pdg_from_t;
+    int pdg_from_tbar;
+};
+TruthNuInfo ExtractTruthNeutrinos(
+    float t_w1_pt,    float t_w1_eta,    float t_w1_phi,    float t_w1_m,    int t_w1_pdg,
+    float t_w2_pt,    float t_w2_eta,    float t_w2_phi,    float t_w2_m,    int t_w2_pdg,
+    float tb_w1_pt,   float tb_w1_eta,   float tb_w1_phi,   float tb_w1_m,   int tb_w1_pdg,
+    float tb_w2_pt,   float tb_w2_eta,   float tb_w2_phi,   float tb_w2_m,   int tb_w2_pdg
+);
+
+struct NuFlavourInfo {
+    ROOT::Math::PtEtaPhiMVector nu_e;
+    ROOT::Math::PtEtaPhiMVector nu_mu;
+
+    int pdg_e;   // ±12
+    int pdg_mu;  // ±14
+};
+
+NuFlavourInfo ExtractNeutrinoFlavours(
+    float t_w1_pt,    float t_w1_eta,    float t_w1_phi,    float t_w1_m,    int t_w1_pdg,
+    float t_w2_pt,    float t_w2_eta,    float t_w2_phi,    float t_w2_m,    int t_w2_pdg,
+    float tb_w1_pt,   float tb_w1_eta,   float tb_w1_phi,   float tb_w1_m,   int tb_w1_pdg,
+    float tb_w2_pt,   float tb_w2_eta,   float tb_w2_phi,   float tb_w2_m,   int tb_w2_pdg
+);
+
+}
+namespace ZllCalibrationVars{
+       std::string regionName(
+        const ROOT::VecOps::RVec<TLV>& sorted_elTLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_muTLV,
+        const ROOT::VecOps::RVec<float>& sorted_elCharge,
+        const ROOT::VecOps::RVec<float>& sorted_muCharge);
+}
 namespace HyPERPerformance{
     template <typename T>
     bool allValidIndices(const std::vector<T>& indices){

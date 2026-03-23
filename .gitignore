@@ -6,7 +6,7 @@ install/
 # Do not track things related to the conversion of ROOT -> HDF5
 *.h5
 H5Converters/.env/*
-
+*.root
 # Skip Validation outputs
 Validation/*.png
 Plot/*.png

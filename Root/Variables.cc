@@ -402,6 +402,18 @@ namespace TtbarSingleLeptonVars{
         bool basic(const char& nTupleFlag, int numberOfMuons, int numberOfJets,bool triggered, bool triggerMatched){
             return nTupleFlag && numberOfMuons == 1 && triggered && triggerMatched && numberOfJets >= 4;//numberOfJets == 4;
         }
+        // Events firing any of the available muon triggers
+    bool triggersnew(const bool& mu24, const bool& mu50){
+        // Just OR the available triggers
+        return mu24 || mu50;
+    }
+
+    // Basic selection with number of good objects, triggers and correct ntuple branch.
+    bool basicnew(const char& nTupleFlag, int numberOfMuons, int numberOfJets,
+               bool triggered, bool triggerMatched){
+        return nTupleFlag && numberOfMuons == 1 && triggered && triggerMatched && numberOfJets >= 4;
+    }
+
     }
 
     // Selection cuts for the electron channel
@@ -419,6 +431,18 @@ namespace TtbarSingleLeptonVars{
         bool basic(const char& nTupleFlag, int numberOfElectrons, int numberOfJets,bool triggered, bool triggerMatched){
             return nTupleFlag && numberOfElectrons == 1 && triggered && triggerMatched && numberOfJets >= 4;//numberOfJets == 4;
         }
+        // Events firing any of the available electron triggers
+    bool triggersnew(const bool& e26, const bool& e60, const bool& e140){
+        // OR all available triggers
+        return e26 || e60 || e140;
+    }
+
+    // Basic selection with number of good objects, triggers and correct ntuple branch.
+    bool basicnew(const char& nTupleFlag, int numberOfElectrons, int numberOfJets,
+               bool triggered, bool triggerMatched){
+        return nTupleFlag && numberOfElectrons == 1 && triggered && triggerMatched && numberOfJets >= 4;
+    }
+
    }
 
    //Selection cuts on jets
@@ -516,6 +540,1250 @@ namespace TtbarSingleLeptonVars{
         
         return myIndex;
     }
+}
+
+
+namespace TtbarDileptonVars{
+    float sumOfCharges( const ROOT::VecOps::RVec<float>& chargeV) { return ROOT::VecOps::Sum(chargeV); }
+  
+    ROOT::VecOps::RVec<float> sortedPassedChargeVector25(
+        const ROOT::VecOps::RVec<float>& chargeV,
+        const ROOT::VecOps::RVec<float>& ptV,
+        const ROOT::VecOps::RVec<char>& selection){
+
+        // Create a vector of decisions to test pT > 25 GeV.
+        ROOT::VecOps::RVec<char> gt25 = ptV > 25000;
+
+        // Get the pt-sorted indices of the leptons that pass the selection
+        auto passedIndices = DefineHelpers::sortedPassedIndices(ptV, gt25 ,selection);
+        // Create a vector to hold the sorted charges
+        ROOT::VecOps::RVec<float> sortedCharges;
+
+        // Loop over the passed indices and fill the sorted charges vector
+        for (const auto& index : passedIndices) {
+            sortedCharges.push_back(chargeV[index]);
+        }
+
+        return sortedCharges;
+    }
+
+    std::string regionName(
+        std::size_t nElectrons,
+        std::size_t nMuons,
+        const ROOT::VecOps::RVec<TLV>& sorted_elTLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_muTLV) {
+
+            // Get the leading lepton pT. Note: params are (nElectrons, nMuons, elTLV, muTLV)
+            float leadingMuonPt = nMuons > 0 ? sorted_muTLV.at(0).Pt() : 0.0f;
+            float leadingElectronPt = nElectrons > 0 ? sorted_elTLV.at(0).Pt() : 0.0f;
+            float leadingLeptonPt = std::max(leadingMuonPt, leadingElectronPt);
+            if (leadingLeptonPt < 28000 ) return "other";
+            if (nMuons + nElectrons == 2) return "2l";
+            return "other";
+    }
+
+    
+
+    int recoIndexTruthBJet(const ROOT::VecOps::RVec<TLV>& recoBJets,
+        const ROOT::Math::PtEtaPhiMVector& truthBJet) {
+
+        // Check the inputs are not empty
+        if (recoBJets.size() == 0 || truthBJet.Pt() == 0) {
+        return -1;
+        }
+
+        // Initialize the index to -1 (no match)
+        int index = -1;
+        double maxDeltaR = 0.4;
+
+        // Loop over the reco b-jets
+        for (std::size_t i = 0; i < recoBJets.size(); ++i) {
+        // Calculate the deltaR between the reco b-jet and the truth b-jet
+        double deltaR = ROOT::Math::VectorUtil::DeltaR(recoBJets[i], truthBJet);
+        // Check if the deltaR is less than the maximum allowed
+        if (deltaR < maxDeltaR) {
+        index = i;
+        maxDeltaR = deltaR;
+        }
+        }
+
+        return index;
+    }
+
+    float ttbarLeptonPairInvariantMass(
+        const std::string& regionName,
+        const ROOT::VecOps::RVec<TLV>& muonTLV,
+        const ROOT::VecOps::RVec<TLV>& electronTLV){
+
+        // If region is other, return 0.0f
+        if (regionName == "other") return 0.0f;
+        
+        if (muonTLV.size() + electronTLV.size() == 2) {
+            // For the 2l region, just return the invariant mass of the two leptons.
+            if (muonTLV.size() == 2 && electronTLV.size() == 0) {
+                return ROOT::Math::VectorUtil::InvariantMass(muonTLV[0], muonTLV[1]);
+            }
+            if (electronTLV.size() == 2 && muonTLV.size() == 0) {
+                return ROOT::Math::VectorUtil::InvariantMass(electronTLV[0], electronTLV[1]);
+            }
+            if (muonTLV.size() == 1 && electronTLV.size() == 1) {
+                return ROOT::Math::VectorUtil::InvariantMass(muonTLV[0], electronTLV[0]);
+            }
+        }
+        return 0.0f;
+        }
+
+
+
+    float minimumLeptonJetPairInvariantMass(const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                                            const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_77_select,
+                                            unsigned long n_electrons,
+                                            unsigned long n_muons) {
+                                           //ROOT::VecOps::RVec<float> out(4, 999999.0f);
+                                            float out = -1.0f;//999999.0f;
+                                           // Build the lepton pair in a consistent order.
+                                           ROOT::VecOps::RVec<TLV> leps;
+                                           if (n_electrons == 2 && n_muons == 0) {
+                                             // two electrons
+                                             if (sorted_el_TLV.size() < 2) return out;
+                                             leps = {sorted_el_TLV[0], sorted_el_TLV[1]};
+                                           } else if (n_muons == 2 && n_electrons == 0) {
+                                             // two muons
+                                             if (sorted_mu_TLV.size() < 2) return out;
+                                             leps = {sorted_mu_TLV[0], sorted_mu_TLV[1]};
+                                           } else if (n_muons == 1 && n_electrons == 1) {
+                                             // e+mu: keep electron first then muon to be consistent with previous usages
+                                             if (sorted_el_TLV.size() < 1 || sorted_mu_TLV.size() < 1) return out;
+                                             leps = {sorted_el_TLV[0], sorted_mu_TLV[0]};
+                                           } else {
+                                             // Not a dilepton event we care about
+                                             return out;
+                                           }
+
+                                           // Choose the two b-jet candidates per spec:
+                                           // - if >=2 b-tagged jets, take the two highest-pT b-tagged jets (sorted_bjet_TLV assumed pT-sorted)
+                                           // - if only one b-tagged jet, take that b-tagged jet and the highest-pT non-b-tagged jet
+                                           ROOT::VecOps::RVec<TLV> bjets;
+                                           if (sorted_bjet_TLV.size() >= 2) {
+                                             bjets = {sorted_bjet_TLV[0], sorted_bjet_TLV[1]};
+                                           } else if (sorted_bjet_TLV.size() == 1) {
+                                             // find highest-pt non-b-tagged jet from jet_TLV using the provided btag selector
+                                             TLV highestNonB; bool found=false;
+                                             for (size_t i=0;i<jet_TLV.size();++i) {
+                                               if (i >= jet_GN2v01_FixedCutBEff_77_select.size()) continue;
+                                               if (jet_GN2v01_FixedCutBEff_77_select.at(i)) continue; // skip b-tagged
+                                               if (!found || jet_TLV[i].Pt() > highestNonB.Pt()) { highestNonB = jet_TLV[i]; found = true; }
+                                             }
+                                             if (!found) return out; // no non-b jet found
+                                             bjets = {sorted_bjet_TLV[0], highestNonB};
+                                           } else {
+                                             // fewer than 1 b-jet -> cannot form mlb pairs
+                                             return out;
+                                           }
+
+                                           // Compute the four mlb values for the two possible assignments.
+                                           float mlb_A_0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], bjets[0]);
+                                           float mlb_A_1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], bjets[1]);
+                                           float mlb_B_0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], bjets[1]);
+                                           float mlb_B_1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], bjets[0]);
+
+                                           float Amax = std::max(mlb_A_0, mlb_A_1);
+                                           float Bmax = std::max(mlb_B_0, mlb_B_1);
+                                           return std::min(Amax, Bmax);
+                                           //return out;
+                                         }
+ROOT::VecOps::RVec<int> selectTwoJetIndices_BtagPriority(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                                 const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_77_select)
+{
+  ROOT::VecOps::RVec<int> bjet_indices;
+  bjet_indices.reserve(jet_TLV.size());
+
+  // Collect b-tagged jet indices
+  for (size_t i = 0; i < jet_TLV.size(); ++i) {
+    if (i >= jet_GN2v01_FixedCutBEff_77_select.size()) continue;
+    if (jet_GN2v01_FixedCutBEff_77_select[i])
+      bjet_indices.push_back(i);
+  }
+
+  // Sort b-tagged jets by pT (descending)
+  std::sort(bjet_indices.begin(), bjet_indices.end(),
+            [&](int a, int b) {
+              return jet_TLV[a].Pt() > jet_TLV[b].Pt();
+            });
+
+  ROOT::VecOps::RVec<int> out;
+
+  // Case 1: ≥2 b-tagged jets
+  if (bjet_indices.size() >= 2) {
+    out.push_back(bjet_indices[0]);
+    out.push_back(bjet_indices[1]);
+    return out;
+  }
+
+  // Case 2: exactly 1 b-tagged jet
+  if (bjet_indices.size() == 1) {
+    int bidx = bjet_indices[0];
+
+    int best_nonb = -1;
+    float best_pt = -1.0f;
+
+    for (size_t i = 0; i < jet_TLV.size(); ++i) {
+      if (i >= jet_GN2v01_FixedCutBEff_77_select.size()) continue;
+      if (jet_GN2v01_FixedCutBEff_77_select[i]) continue; // skip b-tagged
+
+      float pt = jet_TLV[i].Pt();
+      if (pt > best_pt) {
+        best_pt = pt;
+        best_nonb = static_cast<int>(i);
+      }
+    }
+
+    if (best_nonb < 0) return ROOT::VecOps::RVec<int>{};
+
+    out.push_back(bidx);
+    out.push_back(best_nonb);
+    return out;
+  }
+
+  // Case 3: no b-tagged jets
+  return ROOT::VecOps::RVec<int>{};
+}
+
+int SelectedJetsMatchTruthBPair(
+    const ROOT::VecOps::RVec<int>& selected_jet_indices,
+    const std::vector<int>& event_jet_truth_idx,
+    const std::vector<int>& event_jet_truth_candidates)
+{
+  if (selected_jet_indices.size() != 2)
+    return 0;
+
+  // Inline truth-match validity check
+  auto jet_ok = [&](size_t idx) -> bool {
+    return event_jet_truth_idx.size() > idx &&
+           event_jet_truth_candidates.size() > idx &&
+           event_jet_truth_idx[idx] != -1 &&
+           event_jet_truth_candidates[idx] == 1;
+  };
+
+  // Truth b and b̄ availability
+  bool b_ok    = jet_ok(0);
+  bool bbar_ok = jet_ok(3);
+
+  // No valid truth b jets
+  if (!b_ok && !bbar_ok)
+    return 0;
+
+  int sel0 = selected_jet_indices[0];
+  int sel1 = selected_jet_indices[1];
+
+  int t0 = event_jet_truth_idx[sel0];
+  int t1 = event_jet_truth_idx[sel1];
+
+  bool sel0_is_b    = b_ok    && (t0 == event_jet_truth_idx[0]);
+  bool sel0_is_bbar = bbar_ok && (t0 == event_jet_truth_idx[3]);
+  bool sel1_is_b    = b_ok    && (t1 == event_jet_truth_idx[0]);
+  bool sel1_is_bbar = bbar_ok && (t1 == event_jet_truth_idx[3]);
+
+  int n_matches =
+      sel0_is_b + sel0_is_bbar +
+      sel1_is_b + sel1_is_bbar;
+
+  // Correct b–b̄ pair (any order)
+  if (n_matches == 2)
+    return 1;
+
+  // No match at all
+  if (n_matches == 0)
+    return 0;
+
+  // Partial or ambiguous match
+  return -1;
+}
+
+                                     
+//     float compute_mllbb(const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+//                     const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+//                     const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+//                     const ROOT::VecOps::RVec<TLV>& jet_TLV,
+//                     const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_77_select,
+//                     unsigned long n_electrons,
+//                     unsigned long n_muons)
+// {
+//   // Build dilepton system
+//   ROOT::VecOps::RVec<TLV> leps;
+
+//   if (n_electrons == 2 && n_muons == 0) {
+//     if (sorted_el_TLV.size() < 2) return -1.0f;
+//     leps = {sorted_el_TLV[0], sorted_el_TLV[1]};
+//   } else if (n_muons == 2 && n_electrons == 0) {
+//     if (sorted_mu_TLV.size() < 2) return -1.0f;
+//     leps = {sorted_mu_TLV[0], sorted_mu_TLV[1]};
+//   } else if (n_muons == 1 && n_electrons == 1) {
+//     if (sorted_el_TLV.size() < 1 || sorted_mu_TLV.size() < 1) return -1.0f;
+//     leps = {sorted_el_TLV[0], sorted_mu_TLV[0]};
+//   } else {
+//     return -1.0f;
+//   }
+
+// //   // Select the two jets (b-tag priority)
+// //   ROOT::VecOps::RVec<TLV> jets =
+// //     selectTwoJets_BtagPriority(sorted_bjet_TLV,
+// //                                jet_TLV,
+// //                                jet_GN2v01_FixedCutBEff_85_select);
+
+// //   if (jets.size() != 2) return -1.0f;
+//   auto jet_idx = selectTwoJetIndices_BtagPriority(jet_TLV, jet_GN2v01_FixedCutBEff_77_select);
+// if (jet_idx.size() == 2) {
+//   TLV llbb = leps[0] + leps[1] + jet_TLV[jet_idx[0]] + jet_TLV[jet_idx[1]];
+//   // Build llbb four-vector
+//   //TLV llbb = leps[0] + leps[1] + jets[0] + jets[1];
+// } else {
+//   return -1.0f;
+// }
+
+//   return llbb.M();
+// }                                     
+        
+
+    bool pass_min_lb_invar_mass(const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+                                            const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                                            const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_85_select,
+                                            unsigned long n_electrons,
+                                            unsigned long n_muons) {
+                                           //ROOT::VecOps::RVec<float> out(4, 999999.0f);
+                                            float out = -1.0f;//999999.0f;
+                                           // Build the lepton pair in a consistent order.
+                                           ROOT::VecOps::RVec<TLV> leps;
+                                           if (n_electrons == 2 && n_muons == 0) {
+                                             // two electrons
+                                             if (sorted_el_TLV.size() < 2) return out;
+                                             leps = {sorted_el_TLV[0], sorted_el_TLV[1]};
+                                           } else if (n_muons == 2 && n_electrons == 0) {
+                                             // two muons
+                                             if (sorted_mu_TLV.size() < 2) return out;
+                                             leps = {sorted_mu_TLV[0], sorted_mu_TLV[1]};
+                                           } else if (n_muons == 1 && n_electrons == 1) {
+                                             // e+mu: keep electron first then muon to be consistent with previous usages
+                                             if (sorted_el_TLV.size() < 1 || sorted_mu_TLV.size() < 1) return out;
+                                             leps = {sorted_el_TLV[0], sorted_mu_TLV[0]};
+                                           } else {
+                                             // Not a dilepton event we care about
+                                             return out;
+                                           }
+
+                                           // Choose the two b-jet candidates per spec:
+                                           // - if >=2 b-tagged jets, take the two highest-pT b-tagged jets (sorted_bjet_TLV assumed pT-sorted)
+                                           // - if only one b-tagged jet, take that b-tagged jet and the highest-pT non-b-tagged jet
+                                           ROOT::VecOps::RVec<TLV> bjets;
+                                           if (sorted_bjet_TLV.size() >= 2) {
+                                             bjets = {sorted_bjet_TLV[0], sorted_bjet_TLV[1]};
+                                           } else if (sorted_bjet_TLV.size() == 1) {
+                                             // find highest-pt non-b-tagged jet from jet_TLV using the provided btag selector
+                                             TLV highestNonB; bool found=false;
+                                             for (size_t i=0;i<jet_TLV.size();++i) {
+                                               if (i >= jet_GN2v01_FixedCutBEff_85_select.size()) continue;
+                                               if (jet_GN2v01_FixedCutBEff_85_select.at(i)) continue; // skip b-tagged
+                                               if (!found || jet_TLV[i].Pt() > highestNonB.Pt()) { highestNonB = jet_TLV[i]; found = true; }
+                                             }
+                                             if (!found) return out; // no non-b jet found
+                                             bjets = {sorted_bjet_TLV[0], highestNonB};
+                                           } else {
+                                             // fewer than 1 b-jet -> cannot form mlb pairs
+                                             return out;
+                                           }
+
+                                           // Compute the four mlb values for the two possible assignments.
+                                           float mlb_A_0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], bjets[0]);
+                                           float mlb_A_1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], bjets[1]);
+                                           float mlb_B_0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], bjets[1]);
+                                           float mlb_B_1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], bjets[0]);
+
+                                           float Amax = std::max(mlb_A_0, mlb_A_1);
+                                           float Bmax = std::max(mlb_B_0, mlb_B_1);
+                                           if (std::min(Amax, Bmax) < 150000) return true;
+                                             return false;
+                                           //return out;
+                                         }
+                                         
+        ROOT::VecOps::RVec<float> FullyMatched_MLB(
+        const ROOT::VecOps::RVec<TLV>& jet_TLVs,
+        const ROOT::VecOps::RVec<TLV>& el_TLVs,
+        const ROOT::VecOps::RVec<TLV>& mu_TLVs,
+        const ROOT::VecOps::RVec<float>& el_charge,
+        const ROOT::VecOps::RVec<float>& mu_charge,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+        const ROOT::VecOps::RVec<int>& event_jet_truth_candidates
+        ){
+            ROOT::VecOps::RVec<float> out(9, -1.0f); // [0]=true pairing sum, [1]=alt pairing sum
+
+            int idx_b    = event_jet_truth_idx[0];
+            int idx_bbar = event_jet_truth_idx[3];
+
+            if (idx_b < 0 || idx_bbar < 0) return out;
+            if (event_jet_truth_candidates[0] != 1 || event_jet_truth_candidates[3] != 1) return out;
+            if (idx_b >= (int)jet_TLVs.size() || idx_bbar >= (int)jet_TLVs.size()) return out;
+            if (idx_b == idx_bbar) return out; // must be distinct reco jets
+
+            TLV jet_b    = jet_TLVs[idx_b];
+            TLV jet_bbar = jet_TLVs[idx_bbar];
+
+            // require opposite-sign leptons
+            float total_charge = 0;
+            if (!el_charge.empty()) total_charge += el_charge[0];
+            if (!mu_charge.empty()) total_charge += mu_charge[0];
+            if (total_charge != 0.0f) return out;
+
+            // assign lepton1 and lepton2 consistently
+            TLV leptonplus, leptonminus;
+            if (!el_charge.empty() && el_charge[0] > 0) {
+                leptonplus = el_TLVs[0];
+                //std::cout << "el_TLVs Pt: " << el_TLVs << "\n";
+                leptonminus = mu_TLVs[0];
+            } else if (!mu_charge.empty() && mu_charge[0] > 0) {
+                leptonplus = mu_TLVs[0];
+                leptonminus = el_TLVs[0];
+            } else {
+                // fallback: just assign in order if positive/negative not known
+                if (!el_TLVs.empty() && !mu_TLVs.empty()) { return out; }
+                //     lepton1 = el_TLVs[0];
+                //     lepton2 = mu_TLVs[0];
+                // } else {
+                //     return out; // sanity check
+                // }
+            }
+
+            // Compute sums of mlb for the true pairing (lepton1->b, lepton2->bbar)
+            // and the alternative pairing (swap b/bbar). Units follow VectorUtil::InvariantMass.
+            
+            float mlb_true_b = ROOT::Math::VectorUtil::InvariantMass(leptonplus, jet_b);
+            float mlb_true_bbar = ROOT::Math::VectorUtil::InvariantMass(leptonminus, jet_bbar);
+
+            float pTvis0 = (leptonplus + jet_b).Pt();
+            float pTvis1 = (leptonminus + jet_bbar).Pt();
+            float pTdiff_true = pTvis0 - pTvis1; // MeV
+            float sum_deltaR_true = ROOT::Math::VectorUtil::DeltaR(leptonplus, jet_b)
+                              + ROOT::Math::VectorUtil::DeltaR(leptonminus, jet_bbar);
+            
+            float mlb_alt_b = ROOT::Math::VectorUtil::InvariantMass(leptonplus, jet_bbar);
+            float mlb_alt_bbar = ROOT::Math::VectorUtil::InvariantMass(leptonminus, jet_b);
+            
+            out[0] = mlb_true_b;
+            out[1] = mlb_true_bbar;
+            out[2] = mlb_alt_b;
+            out[3] = mlb_alt_bbar;
+            out[4] = pTdiff_true;
+            out[5] = sum_deltaR_true;
+            out[6] = jet_b.Pt();
+            out[7] = jet_bbar.Pt();
+            out[8] = deltaPhi(jet_b, jet_bbar);
+            return out;
+    }          
+
+    float invariantMassllbb(
+        const ROOT::VecOps::RVec<TLV>& sorted_el_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_mu_TLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_bjet_TLV,
+        const ROOT::VecOps::RVec<TLV>& jet_TLV,
+        const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_77_select,
+        unsigned long n_electrons,
+        unsigned long n_muons)
+    {
+        float mllbb = -1.0f;
+
+        // --- build the lepton pair ---
+        ROOT::VecOps::RVec<TLV> leps;
+        if (n_electrons == 2 && n_muons == 0) {
+            if (sorted_el_TLV.size() < 2) return mllbb;
+            leps = {sorted_el_TLV[0], sorted_el_TLV[1]};
+        } else if (n_muons == 2 && n_electrons == 0) {
+            if (sorted_mu_TLV.size() < 2) return mllbb;
+            leps = {sorted_mu_TLV[0], sorted_mu_TLV[1]};
+        } else if (n_muons == 1 && n_electrons == 1) {
+            if (sorted_el_TLV.size() < 1 || sorted_mu_TLV.size() < 1) return mllbb;
+            leps = {sorted_el_TLV[0], sorted_mu_TLV[0]};
+        } else {
+            return mllbb;
+        }
+
+        // --- select two b-jet candidates ---
+        ROOT::VecOps::RVec<TLV> bjets;
+        if (sorted_bjet_TLV.size() >= 2) {
+            bjets = {sorted_bjet_TLV[0], sorted_bjet_TLV[1]};
+        } else if (sorted_bjet_TLV.size() == 1) {
+            TLV highestNonB; bool found = false;
+            for (size_t i = 0; i < jet_TLV.size(); ++i) {
+                if (i >= jet_GN2v01_FixedCutBEff_77_select.size()) continue;
+                // skip b-tagged jets
+                if (jet_GN2v01_FixedCutBEff_77_select.at(i)) continue;
+                // also skip the matched b-jet index if it was found (defensive)
+                //if (matchedBJetIndex != -1 && static_cast<int>(i) == matchedBJetIndex) continue;
+                if (!found || jet_TLV[i].Pt() > highestNonB.Pt()) {
+                    highestNonB = jet_TLV[i];
+                    found = true;
+                }
+            }
+            if (!found) return mllbb;
+            bjets = {sorted_bjet_TLV[0], highestNonB};
+        } else {
+            return mllbb;
+        }
+
+        // --- compute invariant mass of system ---
+        TLV total = leps[0] + leps[1] + bjets[0] + bjets[1];
+        mllbb = total.M();
+        return mllbb;
+    }
+float Signal(
+    const ROOT::VecOps::RVec<TLV>& elTLV,
+    const ROOT::VecOps::RVec<TLV>& muTLV,
+    const ROOT::VecOps::RVec<float>& elChargeV,
+    const ROOT::VecOps::RVec<float>& muChargeV,
+    unsigned long nJets,
+    unsigned long nBJets,
+    float dilepton_mass_NOSYS,
+    float lepton_bjet_invariant_mass,
+    float met_met_NOSYS
+) {
+    const unsigned long nElectrons = elTLV.size();
+    const unsigned long nMuons     = muTLV.size();
+
+    // --------------------------------------------------
+    // Exactly two leptons
+    // --------------------------------------------------
+    if (nElectrons + nMuons != 2) return 0;
+
+    // --------------------------------------------------
+    // Opposite-sign leptons
+    // --------------------------------------------------
+    float sumCharge = 0.0f;
+    for (float q : elChargeV) sumCharge += q;
+    for (float q : muChargeV) sumCharge += q;
+    if (sumCharge != 0.0f) return 0;
+
+    // --------------------------------------------------
+    // Lepton pT cuts (TLVs are pT-sorted)
+    // --------------------------------------------------
+    float pt0 = 0.0f;
+    float pt1 = 0.0f;
+
+    if (nElectrons == 2) {
+        pt0 = elTLV[0].Pt();
+        pt1 = elTLV[1].Pt();
+    }
+    else if (nMuons == 2) {
+        pt0 = muTLV[0].Pt();
+        pt1 = muTLV[1].Pt();
+    }
+    else {
+        // eμ channel
+        pt0 = std::max(elTLV[0].Pt(), muTLV[0].Pt());
+        pt1 = std::min(elTLV[0].Pt(), muTLV[0].Pt());
+    }
+
+    // both leptons pT > 25 GeV
+    if (pt0 < 25000 || pt1 < 25000) return 0;
+
+    // leading lepton pT > 28 GeV
+    if (pt0 < 28000) return 0;
+
+    // --------------------------------------------------
+    // Jet and b-tag requirements
+    // --------------------------------------------------
+    if (nJets < 2) return 0;
+    if (nBJets < 1) return 0;
+
+    // --------------------------------------------------
+    // Dilepton mass cuts
+    // --------------------------------------------------
+    if (dilepton_mass_NOSYS < 15000) return 0;
+
+    bool isSF = (nElectrons == 2 || nMuons == 2);
+    if (isSF) {
+        // MET > 45 GeV
+        if (met_met_NOSYS < 45000) return 0;
+
+        // Z veto
+        if (dilepton_mass_NOSYS > 81000 &&
+            dilepton_mass_NOSYS < 101000)
+            return 0;
+    }
+
+    // --------------------------------------------------
+    // m_lb cut
+    // --------------------------------------------------
+    if (lepton_bjet_invariant_mass > 150000) return 0;
+
+    return 1;
+}
+
+
+
+    // matched under the strict criteria, 0 otherwise.
+    int FullyMatched(const std::vector<int>& event_jet_truth_idx,
+                 const std::vector<int>& event_jet_truth_candidates){
+    // Helper for safe access
+    auto jet_ok = [&](size_t idx)->bool{
+        return event_jet_truth_idx.size() > idx &&
+               event_jet_truth_candidates.size() > idx &&
+               event_jet_truth_idx[idx] != -1 &&
+               event_jet_truth_candidates[idx] == 1;
+    };
+
+    // Require both b and b̄ jets to be well-matched
+    bool b_matched = jet_ok(0);
+    bool bbar_matched = jet_ok(3);
+    //if (!(b_matched && bbar_matched)) return 0;
+     if (!b_matched && !bbar_matched)
+        return 0;
+
+    // Case 2: Exactly one matched → -1
+    if (b_matched ^ bbar_matched)
+        return -1;
+
+    // Case 3: Both matched → check if they match different truth jets
+    if (event_jet_truth_idx[0] == event_jet_truth_idx[3])
+        return 0;  // both match the *same* truth jet → invalid
+
+    return 1;  // fully matched
+}
+
+// Compute transverse mass for vis-system + MET:
+// mT = sqrt( (Et_vis + MET)^2 - |pT_vis + MET_vec|^2 )
+float transverseMassSystem_safe(const TLV& vis, float met_pt, float met_phi) {
+    float m_vis = vis.M();
+    float pT_vis = vis.Pt();
+    float Et_vis = std::sqrt(std::max(0.0f, m_vis*m_vis + pT_vis*pT_vis));
+
+    float met_px = met_pt * std::cos(met_phi);
+    float met_py = met_pt * std::sin(met_phi);
+
+    float pvis_px = vis.Px();
+    float pvis_py = vis.Py();
+
+    float px_sum = pvis_px + met_px;
+    float py_sum = pvis_py + met_py;
+    float sumEt = Et_vis + met_pt;
+
+    float arg = sumEt*sumEt - (px_sum*px_sum + py_sum*py_sum);
+    if (arg <= 0.0f) return 0.0f; // guard numerical noise -> return 0 rather than NaN
+    return std::sqrt(arg);
+}
+
+
+Int_t getTruthIndexBHad(const std::vector<int>& event_jet_truth_idx,
+                        const std::vector<int>& event_jet_truth_candidates){
+
+        Int_t myIndex = -1;
+
+        if (event_jet_truth_idx.size() > 3 && event_jet_truth_candidates.size() > 3) {
+            if (event_jet_truth_idx[0] != -1  && event_jet_truth_candidates[0] == 1) {
+                myIndex = event_jet_truth_idx[0];
+            }
+        }
+
+        return myIndex;
+    }
+
+Int_t getTruthIndexBbarHad(const std::vector<int>& event_jet_truth_idx,
+const std::vector<int>& event_jet_truth_candidates){
+
+        Int_t myIndex = -1;
+
+        if (event_jet_truth_idx.size() > 3 && event_jet_truth_candidates.size() > 3) {
+            if (event_jet_truth_idx[3] != -1  && event_jet_truth_candidates[3] == 1) {
+                myIndex = event_jet_truth_idx[3];
+            }
+        }
+        return myIndex;
+    }
+
+// Compute mT_ttbar using truth-matched b and bbar (no ΔR). Returns -1 on failure.
+float mT_ttbar_truth_from_truthIndices(
+    const ROOT::VecOps::RVec<TLV>& jet_TLVs,
+    const ROOT::VecOps::RVec<TLV>& el_TLVs,
+    const ROOT::VecOps::RVec<TLV>& mu_TLVs,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    float met_pt,
+    float met_phi)
+{
+    // Validate truth arrays: expecting b at slot 0 and bbar at slot 3, candidate==1
+    if (event_jet_truth_idx.size() <= 3 || event_jet_truth_candidates.size() <= 3) return -1.0f;
+    if (event_jet_truth_idx[0] == -1 || event_jet_truth_idx[3] == -1) return -1.0f;
+    if (event_jet_truth_candidates[0] != 1 || event_jet_truth_candidates[3] != 1) return -1.0f;
+
+    int idx_b    = event_jet_truth_idx[0];
+    int idx_bbar = event_jet_truth_idx[3];
+
+    if (idx_b < 0 || idx_bbar < 0) return -1.0f;
+    if (idx_b >= static_cast<int>(jet_TLVs.size()) || idx_bbar >= static_cast<int>(jet_TLVs.size())) return -1.0f;
+    if (idx_b == idx_bbar) return -1.0f;
+
+    // require we have opposite-sign leptons (same check used in FullyMatched_MLB)
+    float total_charge = 0.0f;
+    if (!el_charge.empty()) total_charge += el_charge[0];
+    if (!mu_charge.empty()) total_charge += mu_charge[0];
+    if (total_charge != 0.0f) return -1.0f;
+
+    // Build lepton TLVs in the same consistent ordering used elsewhere (electron first if positive)
+    TLV lep0, lep1;
+    if (!el_TLVs.empty() && !mu_TLVs.empty()) {
+        if (el_charge[0] > 0) { lep0 = el_TLVs[0]; lep1 = mu_TLVs[0]; }
+        else { lep0 = mu_TLVs[0]; lep1 = el_TLVs[0]; }
+    } else {
+        return -1.0f;
+    }
+
+    TLV jet_b    = jet_TLVs[idx_b];
+    TLV jet_bbar = jet_TLVs[idx_bbar];
+
+    TLV vis = lep0 + lep1 + jet_b + jet_bbar;
+
+    // Important: keep units consistent. If TLVs are MeV, pass met_pt in MeV too.
+    float mT = transverseMassSystem_safe(vis, met_pt, met_phi);
+    return mT;
+}
+
+#include <limits>
+
+// Helper: compute deltaPhi in range (-pi, +pi]
+inline float deltaPhi(const TLV& a,
+                           const TLV& b) {
+    return std::fabs(ROOT::Math::VectorUtil::DeltaPhi(a, b)); // [-pi, pi]
+}
+
+inline float deltaR(const TLV &a, const TLV &b) {
+    return ROOT::Math::VectorUtil::DeltaR(a, b);
+}
+
+// Returns: [ jet_for_lep0, jet_for_lep1, dR_lep0, dR_lep1, sum_dR, correctness_flag ]
+ROOT::VecOps::RVec<float> PairLeptonsToJets_MinSumDeltaR(
+    const ROOT::VecOps::RVec<TLV>& el_TLV,
+    const ROOT::VecOps::RVec<TLV>& mu_TLV,
+    const ROOT::VecOps::RVec<TLV>& jet_TLV,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    unsigned long n_electrons,
+    unsigned long n_muons
+) {
+    const float SENTINEL_NEG = -1.0f;
+    ROOT::VecOps::RVec<float> out(6, SENTINEL_NEG);
+    // out[0] = jet index for lep0
+    // out[1] = jet index for lep1
+    // out[2] = dR(lepton0, jet_for_lep0)
+    // out[3] = dR(lepton1, jet_for_lep1)
+    // out[4] = sum dR
+    // out[5] = correctness: -1 no truth, 0 wrong, 1 correct
+
+    // require 1 electron + 1 muon (as in your previous code)
+    if (!(n_muons == 1 && n_electrons == 1)) return out;
+    if (el_TLV.empty() || mu_TLV.empty()) return out;
+    if (jet_TLV.size() < 2) return out;
+
+    // order leptons so leps[0] = positive, leps[1] = negative (same convention as before)
+    ROOT::VecOps::RVec<TLV> leps;
+    if (el_charge[0] > 0) leps = {el_TLV[0], mu_TLV[0]};
+    else                  leps = {mu_TLV[0], el_TLV[0]};
+
+    // If exactly two jets, just compare the two possible assignments
+    float best_sum = std::numeric_limits<float>::infinity();
+    int best_i = -1, best_j = -1;
+    float best_dR0 = -1.0f, best_dR1 = -1.0f;
+
+    const size_t nj = jet_TLV.size();
+    // loop over ordered pairs i != j (we preserve ordering because lepton0/lepton1 are distinct)
+    for (size_t i = 0; i < nj; ++i) {
+        for (size_t j = 0; j < nj; ++j) {
+            if (i == j) continue;
+            float dR0 = deltaR(leps[0], jet_TLV[i]);
+            float dR1 = deltaR(leps[1], jet_TLV[j]);
+            float sum = dR0 + dR1;
+            if (sum < best_sum) {
+                best_sum = sum;
+                best_i = static_cast<int>(i);
+                best_j = static_cast<int>(j);
+                best_dR0 = dR0;
+                best_dR1 = dR1;
+            }
+        }
+    }
+
+    if (best_i < 0 || best_j < 0) return out;
+
+    out[0] = static_cast<float>(best_i);
+    out[1] = static_cast<float>(best_j);
+    out[2] = best_dR0;
+    out[3] = best_dR1;
+    out[4] = best_sum;
+
+    // --- truth matching: accept swapped order as correct by default ---
+    int truth_b = -1, truth_bbar = -1;
+    bool haveTruth = false;
+    if (event_jet_truth_idx.size() > 3 && event_jet_truth_candidates.size() > 3) {
+        if (event_jet_truth_idx[0] != -1 && event_jet_truth_idx[3] != -1
+            && event_jet_truth_candidates[0] == 1 && event_jet_truth_candidates[3] == 1) {
+            truth_b = event_jet_truth_idx[0];
+            truth_bbar = event_jet_truth_idx[3];
+            if (truth_b >= 0 && truth_b < static_cast<int>(nj) &&
+                truth_bbar >= 0 && truth_bbar < static_cast<int>(nj) &&
+                truth_b != truth_bbar) {
+                haveTruth = true;
+            }
+        }
+    }
+
+    if (!haveTruth) {
+        out[5] = -1.0f; // no truth info
+        return out;
+    }
+
+    int reco_j0 = static_cast<int>(out[0]);
+    int reco_j1 = static_cast<int>(out[1]);
+    bool correct = (reco_j0 == truth_b && reco_j1 == truth_bbar); //||(reco_j0 == truth_bbar && reco_j1 == truth_b));
+    out[5] = correct ? 1.0f : 0.0f;
+
+    return out;
+}
+
+
+ ROOT::VecOps::RVec<float> PairLeptonsToTopJets_MinSumSq(
+    const ROOT::VecOps::RVec<TLV>& el_TLV,
+    const ROOT::VecOps::RVec<TLV>& mu_TLV,
+    const ROOT::VecOps::RVec<TLV>& jet_TLV,
+    //const ROOT::VecOps::RVec<char>& jet_btag_select,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    unsigned long n_electrons,
+    unsigned long n_muons)
+{
+    const float SENTINEL_NEG = -1.0f;
+    ROOT::VecOps::RVec<float> out(7, SENTINEL_NEG);
+
+    // Build lepton pair in consistent order (same convention used elsewhere)
+    ROOT::VecOps::RVec<TLV> leps;
+    if (!(n_muons == 1 && n_electrons == 1)) return out;
+    if (el_TLV.empty() || mu_TLV.empty()) return out;
+    if (el_charge[0] > 0) {
+    // electron is positive → assign as lepton 0
+    leps = {el_TLV[0], mu_TLV[0]};
+} else {
+    // muon must then be positive → assign as lepton 0
+    leps = {mu_TLV[0], el_TLV[0]};
+}    
+    // Need at least two jets
+    if (jet_TLV.size() < 2) return out;
+
+    // Find indices of the two highest-pT jets
+    size_t i0 = 0, i1 = 1;
+    if (jet_TLV.size() > 2) {
+        // simple top-2 selection
+        if (jet_TLV[1].Pt() > jet_TLV[0].Pt()) { i0 = 1; i1 = 0; }
+        for (size_t i = 2; i < jet_TLV.size(); ++i) {
+            if (jet_TLV[i].Pt() > jet_TLV[i0].Pt()) { i1 = i0; i0 = i; }
+            else if (jet_TLV[i].Pt() > jet_TLV[i1].Pt()) { i1 = i; }
+        }
+    } else {
+        // exactly two jets
+        if (jet_TLV[1].Pt() > jet_TLV[0].Pt()) { i0 = 1; i1 = 0; }
+        else { i0 = 0; i1 = 1; }
+    }
+
+    // compute the two pairing objectives (sum of squared masses)
+    float mA0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], jet_TLV[i0]) ; // A pairing: (lep0->i0)
+    float mA1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], jet_TLV[i1]) ; // (lep1->i1)
+    float objA = mA0*mA0 + mA1*mA1;
+
+    float mB0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], jet_TLV[i1]) ; // B pairing: swap
+    float mB1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], jet_TLV[i0]) ;
+    float objB = mB0*mB0 + mB1*mB1;
+
+    // choose minimal-sum-of-squares pairing
+    size_t jet_for_lep0 = (objA <= objB) ? i0 : i1;
+    size_t jet_for_lep1 = (objA <= objB) ? i1 : i0;
+    float   m_jl0 = (objA <= objB) ? mA0 : mB0;
+    float   m_jl1 = (objA <= objB) ? mA1 : mB1;
+
+    // Fill output: cast jet indices to float for compatibility with RVec<float>
+    out[0] = static_cast<float>(jet_for_lep0);
+    out[1] = static_cast<float>(jet_for_lep1);
+    out[2] = m_jl0;
+    out[3] = m_jl1;
+    out[6] = m_jl0 + m_jl1;
+    // out[4] = regionCode;
+
+    // If truth vectors are not present or malformed, set -1.
+    // event_jet_truth_idx layout expected to have b at slot 0 and bbar at slot 3.
+    int truth_b = -1;
+    int truth_bbar = -1;
+    bool haveTruth = false;
+    if (event_jet_truth_idx.size() > 3 && event_jet_truth_candidates.size() > 3) {
+        if (event_jet_truth_idx[0] != -1 && event_jet_truth_idx[3] != -1
+            && event_jet_truth_candidates[0] == 1 && event_jet_truth_candidates[3] == 1) {
+            truth_b = event_jet_truth_idx[0];
+            truth_bbar = event_jet_truth_idx[3];
+            // sanity: indices must be within reco jets
+            if (truth_b >= 0 && truth_b < static_cast<int>(jet_TLV.size()) &&
+                truth_bbar >= 0 && truth_bbar < static_cast<int>(jet_TLV.size()) &&
+                truth_b != truth_bbar) {
+                haveTruth = true;
+            }
+        }
+    }
+    if (!haveTruth) {
+        //out[5] = -1.0f; // no truth info / not evaluable
+        return out;
+    }
+    
+    int reco_j0 = static_cast<int>(out[0]);
+    int reco_j1 = static_cast<int>(out[1]);
+    bool correct = ((reco_j0 == truth_b && reco_j1 == truth_bbar )); // (reco_j0 == truth_bbar && reco_j1 == truth_b));
+    out[5] = correct ? 1.0f : 0.0f;
+    return out;
+} 
+
+ROOT::VecOps::RVec<float> PairLeptonsToJets_Chi2TruthAll(
+    const ROOT::VecOps::RVec<TLV>& el_TLV,
+    const ROOT::VecOps::RVec<TLV>& mu_TLV,
+    const ROOT::VecOps::RVec<TLV>& jet_TLV,
+    float met_met,
+    float met_phi,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_idx,
+    const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+    const ROOT::VecOps::RVec<float>& el_charge,
+    const ROOT::VecOps::RVec<float>& mu_charge,
+    unsigned long n_electrons,
+    unsigned long n_muons
+) {
+    
+    float mean_mlb  = 92000.0f;  // Default
+    float sigma_mlb = 21000.0f;
+
+    if (jet_TLV.size() == 2) {
+        mean_mlb  = 96374.0f;
+        sigma_mlb = 27445.0f;
+    }
+    else if (jet_TLV.size() == 3) {
+        mean_mlb  = 93600.0f;
+        sigma_mlb = 21131.0f;
+    }
+    else if (jet_TLV.size() == 4) {
+        mean_mlb  = 93000.0f;
+        sigma_mlb = 26653.0f;
+    }
+    else if (jet_TLV.size() >= 5) {
+        mean_mlb  = 90600.0f;
+        sigma_mlb = 24341.0f;
+    }
+
+    const float mean_mllbb  = 357000.0f;  // MeV
+    const float sigma_mllbb = 140000.0f;  // MeV
+
+    const float mean_pTdiff = -363.5f;       // MeV
+    const float sigma_pTdiff = 65000.0f;  // MeV
+
+    const float mean_mT     = 389760.0f;  // MeV
+    const float sigma_mT    = 88627.1f;  // MeV
+
+    const float mean_deltaR = 3.567f;
+    const float sigma_deltaR = 1.211f;
+
+    const float w_mlb   = 1.0f;
+    const float w_mllbb = 0.0f;
+    const float w_pT    = 1.0f;
+    const float w_mT    = 1.0f;
+    const float w_deltaR = 1.0f;
+
+    // Output layout:
+    // 0: jet index for lepton 0 (positive lepton)
+    // 1: jet index for lepton 1 (negative lepton)
+    // 2: m(l0, j0)
+    // 3: m(l1, j1)
+    // 4: chi2 of chosen assignment
+    // 5: correctness flag  (-1 no truth, 0 wrong, 1 correct)
+    // 6: chi2 of truth (b, bbar) assignment (if available)
+    // 7: delta chi2 (chosen - truth)  (if truth available)
+    // 8: chi2 of swapped truth (bbar, b) assignment (if available)
+    const float SENTINEL_NEG = -1.0f;
+    ROOT::VecOps::RVec<float> out(9, SENTINEL_NEG);
+
+    // Require exactly one e and one mu.
+    if (!(n_electrons == 1 && n_muons == 1)) return out;
+    if (el_TLV.empty() || mu_TLV.empty()) return out;
+    if (jet_TLV.size() < 2) return out;
+
+    // Charge vectors must be present; require opposite sign.
+    if (el_charge.size() < 1 || mu_charge.size() < 1) return out;
+    if (el_charge[0] * mu_charge[0] >= 0.0f) {
+        // Same-sign or zero charge; leave sentinels.
+        return out;
+    }
+
+    // Order leptons so leps[0] is positive (defines our convention).
+    ROOT::VecOps::RVec<TLV> leps(2);
+    if (el_charge[0] > 0.0f) {
+        leps[0] = el_TLV[0];
+        leps[1] = mu_TLV[0];
+    } else {
+        leps[0] = mu_TLV[0];
+        leps[1] = el_TLV[0];
+    }
+
+    // Precompute MET components (assumed MeV).
+    const float met_px = met_met * std::cos(met_phi);
+    const float met_py = met_met * std::sin(met_phi);
+
+    struct Chi2Terms {
+        float chi2;
+        float mlb0;
+        float mlb1;
+        float mllbb;
+        float pTdiff;
+        float mT_ttbar;
+        float sum_deltaR;
+    };
+
+    // Helper to compute chi2 (and keep terms) for assignment (ii, jj).
+    auto evaluate_pair = [&](size_t ii, size_t jj) -> Chi2Terms {
+        Chi2Terms info{};
+        info.mlb0 = ROOT::Math::VectorUtil::InvariantMass(leps[0], jet_TLV[ii]);
+        info.mlb1 = ROOT::Math::VectorUtil::InvariantMass(leps[1], jet_TLV[jj]);
+
+        const TLV vis0 = leps[0] + jet_TLV[ii];
+        const TLV vis1 = leps[1] + jet_TLV[jj];
+        info.pTdiff = vis0.Pt() - vis1.Pt();
+        info.sum_deltaR = deltaR(leps[0], jet_TLV[ii]) + deltaR(leps[1], jet_TLV[jj]);
+
+        const TLV vis = leps[0] + leps[1] + jet_TLV[ii] + jet_TLV[jj];
+        info.mllbb = vis.M();
+        const float m_vis = vis.M();
+        const float pT_vis = vis.Pt();
+        const float Et_vis = std::sqrt(std::max(0.0f, m_vis * m_vis + pT_vis * pT_vis));
+        const float px_sum = vis.Px() + met_px;
+        const float py_sum = vis.Py() + met_py;
+        const float arg = (Et_vis + met_met) * (Et_vis + met_met) - (px_sum * px_sum + py_sum * py_sum);
+        info.mT_ttbar = (arg > 0.0f) ? std::sqrt(arg) : 0.0f;
+
+        const float term_mlb0 = (info.mlb0 - mean_mlb) / sigma_mlb;
+        const float term_mlb1 = (info.mlb1 - mean_mlb) / sigma_mlb;
+        const float term_mllbb = (info.mllbb - mean_mllbb) / sigma_mllbb;
+        const float term_pT = (info.pTdiff - mean_pTdiff) / sigma_pTdiff;
+        const float term_mT = (info.mT_ttbar - mean_mT) / sigma_mT;
+        const float term_deltaR = (info.sum_deltaR - mean_deltaR) / sigma_deltaR;
+
+        info.chi2 = w_mlb   * (term_mlb0 * term_mlb0 + term_mlb1 * term_mlb1)
+                  + w_mllbb * (term_mllbb * term_mllbb)
+                  + w_pT    * (term_pT * term_pT)
+                  + w_mT    * (term_mT * term_mT)
+                  + w_deltaR * (term_deltaR * term_deltaR);
+        return info;
+    };
+
+    // Scan all ordered jet pairs.
+    float best_chi2 = std::numeric_limits<float>::infinity();
+    int best_i = -1;
+    int best_j = -1;
+    Chi2Terms best_terms{};
+
+    const size_t nj = jet_TLV.size();
+    for (size_t i = 0; i < nj; ++i) {
+        for (size_t j = 0; j < nj; ++j) {
+            if (i == j) continue;
+            Chi2Terms info = evaluate_pair(i, j);
+            if (info.chi2 < best_chi2) {
+                best_chi2 = info.chi2;
+                best_i = static_cast<int>(i);
+                best_j = static_cast<int>(j);
+                best_terms = info;
+            }
+        }
+    }
+
+    if (best_i < 0 || best_j < 0) {
+        // No valid pair found.
+        return out;
+    }
+
+    out[0] = static_cast<float>(best_i);
+    out[1] = static_cast<float>(best_j);
+    out[2] = best_terms.mlb0;
+    out[3] = best_terms.mlb1;
+    out[4] = best_terms.chi2;
+
+    // --- Truth handling (assumed: event_jet_truth_idx already in the same ordering as jet_TLV) ---
+    int truth_b = -1;
+    int truth_bbar = -1;
+    bool haveTruth = false;
+
+    if (event_jet_truth_idx.size() >= 4 && event_jet_truth_candidates.size() >= 4) {
+        const bool validB    = (event_jet_truth_idx[0] != -1 && event_jet_truth_candidates[0] == 1);
+        const bool validBbar = (event_jet_truth_idx[3] != -1 && event_jet_truth_candidates[3] == 1);
+        if (validB && validBbar) {
+            truth_b    = event_jet_truth_idx[0];
+            truth_bbar = event_jet_truth_idx[3];
+            // NOTE: this assumes truth indices already correspond to positions in jet_TLV.
+            if (truth_b >= 0 && truth_bbar >= 0 &&
+                truth_b < static_cast<int>(nj) &&
+                truth_bbar < static_cast<int>(nj) &&
+                truth_b != truth_bbar) {
+                haveTruth = true;
+            }
+        }
+    }
+
+    if (!haveTruth) {
+        // out[5], out[6], out[7], out[8] remain sentinel -1.
+        return out;
+    }
+
+    // Compute chi2 for truth orientations.
+    const Chi2Terms truth_terms = evaluate_pair(static_cast<size_t>(truth_b),
+                                                static_cast<size_t>(truth_bbar));
+    const Chi2Terms truth_terms_swapped = evaluate_pair(static_cast<size_t>(truth_bbar),
+                                                        static_cast<size_t>(truth_b));
+
+    out[6] = truth_terms.chi2;
+    out[7] = best_terms.chi2 - truth_terms.chi2;
+    out[8] = truth_terms_swapped.chi2;
+
+    const bool correct =
+        (best_i == truth_b && best_j == truth_bbar);
+        //(best_i == truth_bbar && best_j == truth_b);
+    out[5] = correct ? 1.0f : 0.0f;
+
+    return out;
+}
+/**
+     * @brief Create a TLV for a parton from the four momentum branches.
+     * @return ROOT::RDF::RNode The node with the new TLV branch.
+     * @param mainFrame The main frame.
+     * @param mainNode The current main node.
+     * @param partonBaseName The base name of the parton branches.
+     * @param newBranchName The name of the new TLV branch.
+     */
+    ROOT::RDF::RNode createNeutrinoTLV(MainFrame* mainFrame ,ROOT::RDF::RNode mainNode, const std::string& partonBaseName, const std::string& newBranchName){
+        std::vector<std::string> kinematics{"_pt","_eta","_phi"};
+        
+        auto buildTLV = [] (float pt, float eta, float phi) {
+            return ROOT::Math::PtEtaPhiMVector(pt,eta,phi,0);
+        };
+        
+        std::string variableName = newBranchName + "_TLV";
+        std::string ptName = partonBaseName + kinematics[0];
+        std::string etaName = partonBaseName + kinematics[1];
+        std::string phiName = partonBaseName + kinematics[2];
+        //std::string mName = partonBaseName + kinematics[3];
+
+        LOG(INFO) << "Adding variable: " << variableName << "\n";
+        mainNode = mainNode.Define(variableName,
+                                         buildTLV,
+                                         std::vector<std::string>{ptName,etaName,phiName});
+        return mainNode;
+    }
+
+//     struct TruthNuInfo {
+//     ROOT::Math::PtEtaPhiMVector nu_from_t;
+//     ROOT::Math::PtEtaPhiMVector nu_from_tbar;
+//     int pdg_from_t;
+//     int pdg_from_tbar;TtbarDileptonVars::
+// };TtbarDileptonVars::
+TruthNuInfo ExtractTruthNeutrinos(
+    float t_w1_pt,    float t_w1_eta,    float t_w1_phi,    float t_w1_m,    int t_w1_pdg,
+    float t_w2_pt,    float t_w2_eta,    float t_w2_phi,    float t_w2_m,    int t_w2_pdg,
+    float tb_w1_pt,   float tb_w1_eta,   float tb_w1_phi,   float tb_w1_m,   int tb_w1_pdg,
+    float tb_w2_pt,   float tb_w2_eta,   float tb_w2_phi,   float tb_w2_m,   int tb_w2_pdg
+) {
+    TruthNuInfo out;
+
+    auto makeTLV = [](float pt, float eta, float phi, float m) {
+        return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, m);
+    };
+
+    auto isNu = [](int pdg) {
+        return std::abs(pdg) == 12 || std::abs(pdg) == 14 || std::abs(pdg) == 16;
+    };
+
+    // ---- From top ----
+    if (isNu(t_w1_pdg)) {
+        out.nu_from_t  = makeTLV(t_w1_pt, t_w1_eta, t_w1_phi, t_w1_m);
+        out.pdg_from_t = t_w1_pdg;
+    } else if (isNu(t_w2_pdg)) {
+        out.nu_from_t  = makeTLV(t_w2_pt, t_w2_eta, t_w2_phi, t_w2_m);
+        out.pdg_from_t = t_w2_pdg;
+    } else {
+        out.nu_from_t  = makeTLV(0,0,0,0);
+        out.pdg_from_t = 0;
+    }
+
+    // ---- From antitop ----
+    if (isNu(tb_w1_pdg)) {
+        out.nu_from_tbar  = makeTLV(tb_w1_pt, tb_w1_eta, tb_w1_phi, tb_w1_m);
+        out.pdg_from_tbar = tb_w1_pdg;
+    } else if (isNu(tb_w2_pdg)) {
+        out.nu_from_tbar  = makeTLV(tb_w2_pt, tb_w2_eta, tb_w2_phi, tb_w2_m);
+        out.pdg_from_tbar = tb_w2_pdg;
+    } else {
+        out.nu_from_tbar  = makeTLV(0,0,0,0);
+        out.pdg_from_tbar = 0;
+    }
+
+    return out;
+}
+
+
+NuFlavourInfo ExtractNeutrinoFlavours(
+    float t_w1_pt,    float t_w1_eta,    float t_w1_phi,    float t_w1_m,    int t_w1_pdg,
+    float t_w2_pt,    float t_w2_eta,    float t_w2_phi,    float t_w2_m,    int t_w2_pdg,
+    float tb_w1_pt,   float tb_w1_eta,   float tb_w1_phi,   float tb_w1_m,   int tb_w1_pdg,
+    float tb_w2_pt,   float tb_w2_eta,   float tb_w2_phi,   float tb_w2_m,   int tb_w2_pdg
+) {
+    NuFlavourInfo out;
+
+    auto makeTLV = [](float pt, float eta, float phi, float m) {
+        return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, m);
+    };
+
+    // Helper to process any daughter
+    auto process = [&](float pt, float eta, float phi, float m, int pdg) {
+        int apdg = std::abs(pdg);
+        if (apdg == 12 ) { //&& out.pdg_e == 0
+            out.nu_e  = makeTLV(pt, eta, phi, m);
+            out.pdg_e = pdg;
+        } else if (apdg == 14 ) { //&& out.pdg_mu == 0
+            out.nu_mu  = makeTLV(pt, eta, phi, m);
+            out.pdg_mu = pdg;
+        }
+    };
+
+    // Process all W daughters (top and antitop)
+    process(t_w1_pt,  t_w1_eta,  t_w1_phi,  t_w1_m,  t_w1_pdg);
+    process(t_w2_pt,  t_w2_eta,  t_w2_phi,  t_w2_m,  t_w2_pdg);
+    process(tb_w1_pt, tb_w1_eta, tb_w1_phi, tb_w1_m, tb_w1_pdg);
+    process(tb_w2_pt, tb_w2_eta, tb_w2_phi, tb_w2_m, tb_w2_pdg);
+
+    // Fill zeros if absent
+    if (out.pdg_e == 0) {
+        out.nu_e = makeTLV(0,0,0,0);
+    }
+    if (out.pdg_mu == 0) {
+        out.nu_mu = makeTLV(0,0,0,0);
+    }
+
+    return out;
+}
+
+
+
 }
 
 namespace HyPERPerformance{
@@ -748,6 +2016,36 @@ namespace HyPERPerformance{
         }
 }
 
+namespace ZllCalibrationVars{
+
+   std::string regionName(
+        const ROOT::VecOps::RVec<TLV>& sorted_elTLV,
+        const ROOT::VecOps::RVec<TLV>& sorted_muTLV,
+        const ROOT::VecOps::RVec<float>& sorted_elCharge,
+        const ROOT::VecOps::RVec<float>& sorted_muCharge) {
+            std::size_t nMuons = sorted_muTLV.size();
+            std::size_t nElectrons = sorted_elTLV.size();
+
+            // Get the leading lepton pT. Note: params are (nElectrons, nMuons, elTLV, muTLV)
+            float leadingMuonPt = nMuons > 0 ? sorted_muTLV.at(0).Pt() : 0.0f;
+            float leadingElectronPt = nElectrons > 0 ? sorted_elTLV.at(0).Pt() : 0.0f;
+            float leadingLeptonPt = std::max(leadingMuonPt, leadingElectronPt);
+            if (leadingLeptonPt < 28000 ) return "other";
+            if (nMuons + nElectrons == 2) {
+                int totalCharge = 0;
+
+                // Sum muon charges
+                for (auto& mu : sorted_muCharge) totalCharge += mu;
+                // Sum electron charges
+                for (auto& el : sorted_elCharge) totalCharge += el;
+
+                // Require charge = 0 (opposite-sign)
+                if (totalCharge == 0) return "2l";
+            }
+            return "other";
+    }
+
+}
 namespace HyPERPerformanceSingleLepton {
 
     std::vector<int> getRecoIndicesTopLep(const std::vector<int>& jetTruthIndices,

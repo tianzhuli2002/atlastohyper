@@ -7,7 +7,16 @@ if( NOT ${CMAKE_VERSION} VERSION_LESS 3.9 )
 endif()
 
 set(CMAKE_INSTALL_PREFIX "" CACHE PATH "Path to the install directory")
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+# Use a relative RPATH at install time to avoid embedding absolute, system-specific
+# library paths (which can create cycles when multiple external installs are involved).
+# Use the literal string "$ORIGIN" so the installed shared object resolves libraries
+# relative to its own location at runtime.
+set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+# Avoid automatically adding link-path-derived directories into the install RPATH
+# (this is what causes CMake to try to order /eos/... and /cvmfs/... entries and
+# report a cycle). We'll control the install RPATH explicitly above.
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH OFF)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
 
 # Set the project's name and version.
 project( PartonMatcher )

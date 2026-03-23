@@ -1,0 +1,561 @@
+general:
+  debug_level: INFO # Logger level
+  input_filelist_path: "../metadata_vyper/filelist.txt" # Path to the metadata relative to fastframes directory
+  input_sumweights_path: "../metadata_vyper/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
+  output_path_histograms: "../output_histograms_vyper/" # Path to the output histograms relative to fastframes directory
+  output_path_ntuples: "../output_ntuples_vyper_new/" # Path to the output ntuples relative to fastframes directory
+  default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" # * weight_ftag_effSF_GN2v01_Continuous_NOSYS"
+  default_reco_tree_name: "reco" # Name of the reco tree in the input files.
+  xsection_files: # Location of the cross-section, k-factor, filter-efficiency medatada split per campaign.
+    - files: ["/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt"]
+      campaigns: [ "mc23e", "mc23d"] #"mc23a", "mc23d",
+  luminosity: # Luminosity for the campaigns
+    # mc23a: 29049.3 # update?
+    mc23d: 27239.9 # update?
+    mc23e: 25000.0
+  automatic_systematics: False
+  nominal_only: True # Run with/without systematics.
+  #config_define_after_custom_class : True
+
+  use_rvec: True # Use ROOT::RVec instead of std::vector.
+  number_of_cpus: 16 # CPU cores to use for the analysis.
+  use_region_subfolders: False # Save the histograms in subfolders per region.
+  custom_frame_name: "PartonMatcher"
+  custom_options:
+    class_name: "TtbarDileptonFramevyper"
+  #custom_frame_name: "TtbarDileptonFrame" # Name of the custom class.
+  create_tlorentz_vectors_for: ["jet", "el", "mu"] # Create TLorentzVectors for the specified objects.
+  # custom_options: # Use this to pass custom options to the custom class.
+  #   metadata_histogram_name: metadata_ttbardilepton
+  #   run_tag: ttbarDilepton_v1
+  #   runner: Tim
+
+# truth_processing:
+#   - name: particle
+#     produce_unfolding: True
+#     samples: ["ttll"]
+#     truth_tree_name: "particleLevel"
+#     event_weight: "weight_mc_NOSYS"
+#     variables:
+#       # - name: "particle_met"
+#       #   definition: "met_met"
+#       #   type: "float"
+#       #   binning:
+#       #     min: 0
+#       #     max: 500000
+#       #    number_of_bins: 10
+#       - name: "neutrino e"
+#         definition: "PL_nu_eta"
+#         type: "unsigned long"
+#         binning:
+#           min: 0
+#           max: 6
+#           number_of_bins: 6
+#       - name: "neutrino phi"
+#         definition: "PL_nu_phi"
+#         type: "float"
+#         binning:
+#           min: -3.14159
+#           max: 3.14159
+#           number_of_bins: 60
+#       - name: "neutrino pt"
+#         definition: "PL_nu_pt"
+#         type: "float"
+#         binning:
+#           min: 0
+#           max: 500000
+#           number_of_bins: 10
+#     # match_variables:
+#     #   - reco: "reco_met"
+#     #     truth: "particle_met"
+
+regions: # All the regions (defined by a selection criteria) to be used in the analysis.
+  - name: ttll_signal_fully_matched
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    variables: &ttll_signal_vars
+      - name: n_jet
+        type: unsigned long
+        title : "Number of Jets ; nJets ; Events"
+        definition: n_jets_NOSYS
+        binning:
+          min: -0.5
+          max: 7.5
+          number_of_bins: 8
+      - name: True_bjet_pt 
+        title : "Jet p_{T} [GeV]; p_{T}^{jet} [GeV]; Jets"
+        definition: true_b_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      - name: True_bbarjet_pt
+        title : "Jet p_{T} [GeV]; p_{T}^{jet} [GeV]; Jets"
+        definition: true_bbar_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      - name: True_jet_deltaphi
+        title : "Delta Phi between true b and bbar jets; #Delta#phi (b, bbar); Events"
+        definition: true_jet_deltaphi_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 3.5
+          number_of_bins: 70
+      - name: nu_from_t_pt
+        title : "Neutrino from t p_{T} [GeV]; p_{T}^{#nu from t} [GeV]; Events"
+        definition: nu_from_t_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      - name: nu_from_tbar_pt
+        title : "Neutrino from tbar p_{T} [GeV]; p_{T}^{#nu from tbar} [GeV]; Events"
+        definition: nu_from_tbar_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      # - name: nu_from_t_eta
+      #   title : "Neutrino from t #eta; #eta^{#nu from t}; Events"
+      #   definition: nu_from_t_eta_NOSYS
+      #   type: float
+      #   binning:
+      #     min: -5
+      #     max: 5
+      #     number_of_bins: 50
+      # - name: nu_from_tbar_eta
+      #   title : "Neutrino from tbar #eta; #eta^{#nu from tbar}; Events"
+      #   definition: nu_from_tbar_eta_NOSYS
+      #   type: float
+      #   binning:
+      #     min: -5
+      #     max: 5
+      #     number_of_bins: 50
+      # - name: nu_from_t_phi
+      #   title : "Neutrino from t #phi; #phi^{#nu from t}; Events"
+      #   definition: nu_from_t_phi_NOSYS
+      #   type: float
+      #   binning:
+      #     min: -3.14159
+      #     max: 3.14159
+      #     number_of_bins: 60
+      # - name: nu_from_tbar_phi
+      #   title : "Neutrino from tbar #phi; #phi^{#nu from tbar}; Events"
+      #   definition: nu_from_tbar_phi_NOSYS
+      #   type: float
+      #   binning:
+      #     min: -3.14159
+      #     max: 3.14159
+      #     number_of_bins: 60
+      # - name: nu_from_t_m
+      #   title : "Neutrino from t mass [GeV]; m_{#nu from t} [GeV]; Events"
+      #   definition: nu_from_t_m_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 100
+      # - name: nu_from_tbar_m
+      #   title : "Neutrino from tbar mass [GeV]; m_{#nu from tbar} [GeV]; Events"
+      #   definition: nu_from_tbar_m_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 100
+      # - name: n_bjet_GN2v01_100
+      # - name: n_bjet_GN2v01_77
+      # - name: n_mu
+      #   type: unsigned long
+      #   title : "Number of Muons ; nMuons ; Events"
+      #   definition: n_muons_NOSYS
+      #   binning:
+      #     min: 0
+      #     max: 3
+      #     number_of_bins: 3
+      # - name: n_el
+      #   type: unsigned long
+      #   title : "Number of Electrons ; nElectrons ; Events"
+      #   definition: n_electrons_NOSYS
+      #   binning:
+      #     min: 0
+      #     max: 3
+      #     number_of_bins: 3
+      # - name: n_bjet
+      #   type: unsigned long
+      #   title : "Number of b-jets ; nBJets ; Events"
+      #   definition: n_bjets_NOSYS
+      #   binning:
+      #     min: -0.5
+      #     max: 8.5
+      #     number_of_bins: 9
+      # - name: met_met
+      #   title : "Missing ET [GeV]; E_{T}^{miss} [GeV]; Events"
+      #   definition: met_met_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 15
+      # - name: ttbar_mass
+      #   title : "ttbar mass [GeV]; m_{tt} [GeV]; Events"
+      #   definition: ttbar_mass_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 10
+      - name: llbb_mass
+        title : "llbb mass [GeV]; m_{llbb} [GeV]; Events"
+        definition: invariant_mass_llbb_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 100
+      - name: mlb_truth_b
+        title : "mlb truth b [GeV]; m_{mlb truth b} [GeV]; Events"
+        definition: mlb_truth_b_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 100
+      - name: mlb_truth_bbar
+        title: "mlb truth bbar [GeV]; m_{mlb truth bbar} [GeV]; Events"
+        definition: mlb_truth_bbar_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 100
+      # - name: mlb_alt_b
+      #   title: "mlb alt b [GeV]; m_{mlb alt b} [GeV]; Events"
+      #   definition: mlb_alt_b_NOSYS
+      #   #definition: mlb_altB_truth_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 100
+      # - name: mlb_alt_bbar
+      #   title: "mlb alt bbar [GeV]; m_{mlb alt bbar} [GeV]; Events"
+      #   definition: mlb_alt_bbar_NOSYS
+      #   #definition: mlb_altB_truth_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 100   
+      - name: mlb_sum_deltaR_true
+        title: "mlb sum deltaR true; sum DeltaR (lepton, true b-jet); Events"
+        definition: mlb_sum_deltaR_true_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 10
+          number_of_bins: 50
+      - name: deltaR_pairing_correct
+        title: "deltaR pairing correct; Pairing correct; Events"
+        definition: pairing_deltaR_correct_NOSYS
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: baseline_pairing_correct
+        title: "Baseline pairing correct; Pairing correct; Events"
+        definition: pairing_correct_NOSYS
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: baseline_b_pairing_mjl0
+        title: "Baseline b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+        definition: "pairing_mjl0_NOSYS"
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: baseline_bbar_pairing_mjl1
+        title: "Baseline bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+        definition: "pairing_mjl1_NOSYS"
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: chisquared_pairing_correct_all
+        title: "Chi2 pairing correct; Pairing correct; Events"
+        definition: "pairing_chi2_correct_all_NOSYS"
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: chisquared_b_pairing_mjl0_all
+        title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+        definition: pairing_chi2_mjl0_all_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: chisquared_bbar_pairing_mjl1_all
+        title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+        definition: pairing_chi2_mjl1_all_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      # - name: chisquared_truth_value
+      #   title: "Chi2 truth value; Chi2 value for the truth matching; Events"
+      #   definition: "pairing_chi2_truthvalue_all_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -0
+      #     max: 20
+      #     number_of_bins: 500
+      # - name: chisquared_found_value_diff
+      #   title: "Chi2 found - truth value; Difference between found and truth chi2 values; Events"
+      #   definition: "pairing_chi2_foundvaluediff_all_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -20
+      #     max: 5
+      #     number_of_bins: 500
+      # - name: chisquared_pairing_correct_top2
+      #   title: "Chi2 pairing correct; Pairing correct; Events"
+      #   definition: "pairing_chi2_correct_top2_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -1.5
+      #     max: 1.5
+      #     number_of_bins: 3
+      # - name: chisquared_b_pairing_mjl0_top2
+      #   title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+      #   definition: pairing_chi2_mjl0_top2_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: chisquared_bbar_pairing_mjl1_top2
+      #   title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+      #   definition: pairing_chi2_mjl1_top2_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: Min_sum_invar_mass_all_jets_chisquared_pairing_correct_RedoneAll
+      #   title: "Chi2 pairing correct; Pairing correct; Events"
+      #   definition: "pairing_chi2_correct_RedoneAll_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -1.5
+      #     max: 1.5
+      #     number_of_bins: 3
+      # - name: Min_sum_invar_mass_all_jets_chisquared_b_pairing_mjl0_RedoneAll
+      #   title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+      #   definition: pairing_chi2_mjl0_RedoneAll_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: Min_sum_invar_mass_all_jets_chisquared_bbar_pairing_mjl1_RedoneAll
+      #   title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+      #   definition: pairing_chi2_mjl1_RedoneAll_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      - name: mT_ttbar 
+        title: "Transverse mass of ttbar system [GeV]; m_{T}^{tt} [GeV]; Events"
+        definition: mT_ttbar_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+          
+      - name: mlb_pTdiff_true
+        title: "mlb pT difference (truth) [GeV]; p_{T}^{mlb true b} - p_{T}^{mlb true bbar} [GeV]; Events"
+        definition: mlb_pTdiff_true_NOSYS
+        type: float
+        binning:
+          min: -200000
+          max: 200000
+          number_of_bins: 80
+
+  # - name: ttll_signal_fully_matched_2jets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() == 2 #n_jets_NOSYS == 2 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_3jets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS == 3 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_4jets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS == 4 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_5plusjets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 5 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == ("signal") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
+    variables: *ttll_signal_vars
+  # - name: ttll_background
+  #   selection: 
+ntuples: # Use this block to define the ntuples to be created.
+  regions: # Only events passing the selection of one of the regions will be saved in the ntuple.
+    #- ttll_common_selection
+    #- ttll_signal
+    - ttll_signal_fully_matched
+    #- ttll_signal_paper_selection
+  branches: # These branches will be saved in the ntuple.
+    - eventNumber
+    - Electron_pt
+    - Electron_eta
+    - Electron_phi
+    - Electron_e
+    - Electron_q
+    - Muon_pt
+    - Muon_eta
+    - Muon_phi
+    - Muon_e
+    - Muon_q
+    - Jet_pt
+    - Jet_eta
+    - Jet_phi
+    - Jet_e
+    - Jet_GN2v01_score
+    - Jet_SVmass
+    - Jet_GN2v01_PCBT_quantile_NOSYS
+    - nBjets_GN2v01_.+
+    - Met_pt
+    - Met_phi
+    - Truth_.+_index
+
+    - nu_e_px
+    - nu_e_py
+    - nu_e_pz
+    - nu_mu_px
+    - nu_mu_py
+    - nu_mu_pz
+
+    # - nu_from_t_eta
+    # - nu_from_t_phi
+    # - nu_from_t_pt
+    # - nu_from_tbar_eta
+    # - nu_from_tbar_phi
+    # - nu_from_tbar_pt
+    # - nu_from_t_e
+    # - nu_from_tbar_e
+    # - invariant_mass_llbb_NOSYS
+    # - pairing_mlb_sum_NOSYS
+    # - pairing_mjl0_NOSYS
+    # - pairing_mjl1_NOSYS
+    # - truth_ttbar_mass_beforeFSR_NOSYS
+    # - truth_ttbar_mass_afterFSR_NOSYS
+    # - truth_t_mass_afterFSR_NOSYS
+    # - truth_tbar_mass_afterFSR_NOSYS
+    - is_fully_matched_NOSYS
+    #- KLF_.+_index
+
+    # - .*_pt_NOSYS # You can use regular expressions. This will select e, mu and jet pt.
+    # - jet_eta
+    # - jet_phi
+    # - mu_eta
+    # - mu_phi
+    # - el_eta
+    # - el_phi
+    # - met_met_NOSYS
+    # - met_phi_NOSYS
+    # - nBjets_GN2v01_100_NOSYS
+    # - nBjets_GN2v01_90_NOSYS
+    # - nBjets_GN2v01_85_NOSYS
+    # - nBjets_GN2v01_77_NOSYS
+    # - nBjets_GN2v01_70_NOSYS
+    # - nBjets_GN2v01_65_NOSYS
+    # #- .*_NOSYS
+    # - ttbar_mass_NOSYS
+    # - invariant_mass_llbb_NOSYS
+    # - min_mlb_pair_masses_NOSYS
+    # - el_charge 
+    # - mu_charge
+    # - .*e_NOSYS 
+    # - invariant_mass_llbb_NOSYS
+    # - n_jets_NOSYS
+    # - n_bjets_NOSYS
+    # - n_muons_NOSYS
+    # - n_electrons_NOSYS
+    # - Jet_GN2v01_score
+    # - Jet_SVmass
+    # - Jet_GN2v01_PCBT_quantile_NOSYS
+    # - mlb_truth_b_NOSYS
+    # - mlb_truth_bbar_NOSYS
+    # - mlb_alt_b_NOSYS
+    # - mlb_alt_bbar_NOSYS
+    # - pairing_correct_NOSYS
+    # - eventNumber
+    # - Truth_.+_index
+    # #- region_name_NOSYS
+    # #- signal_NOSYS
+
+
+samples: # All the samples to be used in the analysis.
+  - name: "ttll" # Name given to the sample.
+    dsids: [601230] # For data, this is always 0.
+    campaigns: ["mc23d"] # "mc23e" , The corresponding campaing or campaigns.
+    simulation_type: "fullsim" # Type of simulation.
+    # exclude_variables: &truth_excluded
+    #   - reco_index_truth_b
+    # truth:
+    #   - name: neutrino
+    #     truth_tree_name: "particleLevel" # The name of the tree you want to inspect.
+    #     event_weight: "weight_mc_NOSYS"
+    #     pair_reco_and_truth_trees: True # This allows you to access the truth variables in the reco tree.
+    #     variables: # Truth variables to be saved for the sample.
+    #       - name: n_nu
+    #         title : "Number of Neutrinos ; nNeutrinos ; Events"
+    #         definition: "nu_TLV.size()"
+    #         type: unsigned long
+    #         binning:
+    #           min: 0
+    #           max: 5
+    #           number_of_bins: 5
+    #       - name: nu_pt
+    #         title : "Truth Neutrino p_{T} [GeV]; p_{T} [GeV]; Events"
+    #         definition: "nu_TLV.Pt()"
+    #         type: float
+    #         binning:
+    #           min: 0
+    #           max: 200000
+    #           number_of_bins: 10
+    #       - name: nu_eta
+    #         title : "Truth Neutrino #eta; #eta; Events"
+    #         definition: "nu_TLV.Eta()"
+    #         type: float
+    #         binning:
+    #           min: -5
+    #           max: 5
+    #           number_of_bins: 10
+    #       - name: nu_phi
+    #         title : "Truth Neutrino #phi; #phi; Events"
+    #         definition: "nu_TLV.Phi()"
+    #         type: float
+    #         binning:
+    #           min: -3.14159
+    #           max: 3.14159
+    #           number_of_bins: 10   

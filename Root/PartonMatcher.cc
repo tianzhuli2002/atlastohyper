@@ -2,7 +2,9 @@
 #include "PartonMatcher/TtbarAllHadFrame.h"
 #include "PartonMatcher/TtbarSingleLeptonFrame.h"
 #include "PartonMatcher/TtbarTopRecoFrame.h"
-
+#include "PartonMatcher/TtbarDileptonFrame.h"
+#include "PartonMatcher/TtbarDileptonFramevyper.h"
+#include "PartonMatcher/ZllCalibrationFrame.h"
 void PartonMatcher::classFactory(){
     const std::string className = m_config->customOptions().getOption<std::string>("class_name","");
     LOG(INFO) << "Class name: " << className << std::endl;
@@ -18,6 +20,12 @@ void PartonMatcher::classFactory(){
       m_channelFrame = std::make_unique<TtbarSingleLeptonFrame>(this);
     } else if (className == "TtbarTopRecoFrame") {
       m_channelFrame = std::make_unique<TtbarTopRecoFrame>(this);
+    } else if (className == "TtbarDileptonFrame") {
+      m_channelFrame = std::make_unique<TtbarDileptonFrame>(this);
+    } else if (className == "TtbarDileptonFramevyper") {
+      m_channelFrame = std::make_unique<TtbarDileptonFramevyper>(this);
+    } else if (className == "ZllCalibrationFrame") {
+      m_channelFrame = std::make_unique<ZllCalibrationFrame>(this);
     } else {
       LOG(ERROR) << "Invalid class name provided";
       throw std::invalid_argument("");
