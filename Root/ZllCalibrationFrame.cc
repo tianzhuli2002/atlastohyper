@@ -510,9 +510,7 @@ ROOT::RDF::RNode ZllCalibrationFrame::defineVariablesNtuple(ROOT::RDF::RNode mai
                               TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(1000.0f),
                               {"jet_e_NOSYS","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Jet_SVmass\n";
-  mainNode = mainNode.Define("Jet_SVmass",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
-                              {"jet_SV1_masssvx","jets_ptOrderIndex_NOSYS"});
+  LOG(INFO) << "Jet_SVmass ntuple branch disabled for this config" << std::endl;
 
   //btag  
   LOG(INFO) << "Adding variable: Jet_GN2v01_score\n";

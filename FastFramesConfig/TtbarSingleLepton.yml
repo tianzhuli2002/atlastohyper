@@ -145,7 +145,7 @@ ntuples:
     - Jet_phi
     - Jet_e
     - Jet_GN2v01_score
-    - Jet_SVmass
+    # - Jet_SVmass
     - Jet_GN2v01_PCBT_quantile
     - nBjets_GN2v01_.+
     - Met_pt

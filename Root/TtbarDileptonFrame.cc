@@ -12,6 +12,17 @@ ROOT::RDF::RNode TtbarDileptonFrame::defineVariables(ROOT::RDF::RNode mainNode,
   // Add all the variables needed for the analysisx
   LOG(INFO) << "You are running custom class: TtbarDileptonFrame" << std::endl;
 
+  // Ensure fallback SV mass column exists to avoid missing-column errors
+  {
+    auto cols = mainNode.GetColumnNames();
+    bool hasSVcol = false;
+    for (const auto &c : cols) if (c == "jet_SV1_masssvx") { hasSVcol = true; break; }
+    if (!hasSVcol) {
+      LOG(INFO) << "Defining fallback jet_SV1_masssvx (empty) in base frame" << std::endl;
+      mainNode = mainNode.Define("jet_SV1_masssvx", [](){ ROOT::VecOps::RVec<float> out; return out; });
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Char to bool ////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -672,7 +683,14 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
   LOG(INFO) << "Adding variable: HyPER_Top1_Indices_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                               "HyPER_Top1_Indices_NOSYS",
-                              Variables::getSelecHyPERIndices,
+                              [](const std::vector<int>& HyPER_indices,
+                                 const std::vector<int>& HyPER_IDs,
+                                 const std::vector<size_t>& jet_idx,
+                                 const std::vector<size_t>& el_idx,
+                                 const std::vector<size_t>& mu_idx,
+                                 const std::vector<size_t>& tau_idx){
+                                  return Variables::getSelecHyPERIndices(HyPER_indices, HyPER_IDs, jet_idx, el_idx, mu_idx, tau_idx);
+                              },
                               { "hyper_TtbarDiLepton_Top1_Indices_NOSYS",
                                 "hyper_TtbarDiLepton_Top1_IDs_NOSYS",
                                 "jets_ptOrderIndex_NOSYS",
@@ -683,7 +701,14 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
   LOG(INFO) << "Adding variable: HyPER_Top2_Indices_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                               "HyPER_Top2_Indices_NOSYS",
-                              Variables::getSelecHyPERIndices,
+                              [](const std::vector<int>& HyPER_indices,
+                                 const std::vector<int>& HyPER_IDs,
+                                 const std::vector<size_t>& jet_idx,
+                                 const std::vector<size_t>& el_idx,
+                                 const std::vector<size_t>& mu_idx,
+                                 const std::vector<size_t>& tau_idx){
+                                  return Variables::getSelecHyPERIndices(HyPER_indices, HyPER_IDs, jet_idx, el_idx, mu_idx, tau_idx);
+                              },
                               { "hyper_TtbarDiLepton_Top2_Indices_NOSYS",
                                 "hyper_TtbarDiLepton_Top2_IDs_NOSYS",
                                 "jets_ptOrderIndex_NOSYS",
@@ -785,9 +810,7 @@ ROOT::RDF::RNode TtbarDileptonFrame::defineVariablesNtuple(ROOT::RDF::RNode main
                               TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(1000.0f),
                               {"jet_e_NOSYS","jets_ptOrderIndex_NOSYS"});
   LOG(INFO) << "Adding variable: Jet_SVmass\n";
-  mainNode = mainNode.Define("Jet_SVmass",
-                              TtbarSingleLeptonVars::CreatePtOrderedContainer<float>(),
-                              {"jet_SV1_masssvx","jets_ptOrderIndex_NOSYS"});
+  LOG(INFO) << "Jet_SVmass ntuple branch disabled for this config" << std::endl;
 
   //btag  
   LOG(INFO) << "Adding variable: Jet_GN2v01_score\n";

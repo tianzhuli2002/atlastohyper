@@ -4,6 +4,7 @@
 #include "PartonMatcher/TtbarTopRecoFrame.h"
 #include "PartonMatcher/TtbarDileptonFrame.h"
 #include "PartonMatcher/TtbarDileptonFramevyper.h"
+#include "PartonMatcher/TtbarDileptonFrameReco.h"
 #include "PartonMatcher/ZllCalibrationFrame.h"
 void PartonMatcher::classFactory(){
     const std::string className = m_config->customOptions().getOption<std::string>("class_name","");
@@ -22,6 +23,8 @@ void PartonMatcher::classFactory(){
       m_channelFrame = std::make_unique<TtbarTopRecoFrame>(this);
     } else if (className == "TtbarDileptonFrame") {
       m_channelFrame = std::make_unique<TtbarDileptonFrame>(this);
+    } else if (className == "TtbarDileptonFrameReco") {
+      m_channelFrame = std::make_unique<TtbarDileptonFrameReco>(this);
     } else if (className == "TtbarDileptonFramevyper") {
       m_channelFrame = std::make_unique<TtbarDileptonFramevyper>(this);
     } else if (className == "ZllCalibrationFrame") {

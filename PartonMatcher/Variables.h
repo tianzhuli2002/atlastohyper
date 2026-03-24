@@ -355,6 +355,13 @@ namespace Variables{
                                         const std::vector<size_t>& el_idx,
                                         const std::vector<size_t>& mu_idx,
                                         const std::vector<size_t>& tau_idx);
+    // Overload to accept integer-typed HyPER branches (some inputs provide vector<int>)
+    std::vector<long> getSelecHyPERIndices(const std::vector<int>& HyPER_indices,
+                                        const std::vector<int>& HyPER_IDs,
+                                        const std::vector<size_t>& jet_idx,
+                                        const std::vector<size_t>& el_idx,
+                                        const std::vector<size_t>& mu_idx,
+                                        const std::vector<size_t>& tau_idx);
 
     /**
      * @brief Turn Char_t variable to bool.
@@ -719,6 +726,60 @@ ROOT::VecOps::RVec<int> selectTwoJetIndices_BtagPriority(const ROOT::VecOps::RVe
         const ROOT::VecOps::RVec<char>& jet_GN2v01_FixedCutBEff_85_select,
         unsigned long n_electrons,
         unsigned long n_muons);    
+
+    // Unified mttbar reconstruction helpers
+    struct Assignment {
+        int bjet1_idx = -1;
+        int bjet2_idx = -1;
+        int lep1_idx  = -1;
+        int lep2_idx  = -1;
+        bool valid    = false;
+    };
+
+    enum class Method { HYPER=0, CHI2=1, PT=2, DELTAR=3 };
+
+    float compute_mttbar(const ROOT::Math::PtEtaPhiMVector& lep1,
+                         const ROOT::Math::PtEtaPhiMVector& lep2,
+                         const ROOT::Math::PtEtaPhiMVector& bjet1,
+                         const ROOT::Math::PtEtaPhiMVector& bjet2,
+                         const ROOT::Math::PtEtaPhiMVector& nu1,
+                         const ROOT::Math::PtEtaPhiMVector& nu2);
+
+    // neutrino builders
+    ROOT::Math::PtEtaPhiMVector buildNuFromBranches(float pt, float eta, float phi, float e);
+    std::pair<ROOT::Math::PtEtaPhiMVector, ROOT::Math::PtEtaPhiMVector>
+        buildNuFromNuFlows(const ROOT::VecOps::RVec<float>& nuflows_nu_out);
+
+    // assignment methods
+    Assignment assignHyPER(const std::vector<long>& top_indices,
+                           const std::vector<long>& top_IDs,
+                           const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                           const ROOT::VecOps::RVec<TLV>& el_TLV,
+                           const ROOT::VecOps::RVec<TLV>& mu_TLV);
+
+    Assignment assignPT(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                        const ROOT::VecOps::RVec<TLV>& el_TLV,
+                        const ROOT::VecOps::RVec<TLV>& mu_TLV);
+
+    Assignment assignDeltaR(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                            const ROOT::VecOps::RVec<TLV>& el_TLV,
+                            const ROOT::VecOps::RVec<TLV>& mu_TLV);
+
+    Assignment assignChi2(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                          const ROOT::VecOps::RVec<TLV>& el_TLV,
+                          const ROOT::VecOps::RVec<TLV>& mu_TLV,
+                          const ROOT::Math::PtEtaPhiMVector& nu1,
+                          const ROOT::Math::PtEtaPhiMVector& nu2);
+
+    // dispatcher
+    Assignment getAssignment(Method method,
+                             const std::vector<long>& top_indices,
+                             const std::vector<long>& top_IDs,
+                             const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                             const ROOT::VecOps::RVec<TLV>& el_TLV,
+                             const ROOT::VecOps::RVec<TLV>& mu_TLV,
+                             const ROOT::Math::PtEtaPhiMVector& nu1 = ROOT::Math::PtEtaPhiMVector(0,0,0,0),
+                             const ROOT::Math::PtEtaPhiMVector& nu2 = ROOT::Math::PtEtaPhiMVector(0,0,0,0));
     /**
      *@brief Determines whether region is Signal or not
      * @param elChargeV Vector of electron charges
@@ -1266,4 +1327,35 @@ namespace HyPERPerformanceSingleLepton{
     bool correctlyReconstructedTopHad_KLF(const bool correctWHad,
         int KLFBHadIndex,
         const std::vector<int>& TopHadTruthRecoIndices);
+
+}
+
+namespace HyPERPerformanceDiLepton{
+    std::vector<int> getRecoIndicesTop1(const std::vector<int>& jetTruthIndices,
+                                        const std::vector<int>& eTruthIndices,
+                                        const std::vector<int>& muTruthIndices,
+                                        const std::vector<int>& nMatchedJets,
+                                        const std::vector<int>& nMatchedElectrons,
+                                        const std::vector<int>& nMatchedMuons,
+                                        int nLeptons);
+
+    std::vector<int> getRecoIndicesTop2(const std::vector<int>& jetTruthIndices,
+                                        const std::vector<int>& eTruthIndices,
+                                        const std::vector<int>& muTruthIndices,
+                                        const std::vector<int>& nMatchedJets,
+                                        const std::vector<int>& nMatchedElectrons,
+                                        const std::vector<int>& nMatchedMuons,
+                                        int nLeptons);
+
+    bool HyPERTopConverged(const std::vector<long>& HyPERTopIndices,
+        const std::vector<long>& HyPERTopIDs);
+
+    bool HyPERConvergedTwoLeptonicTops(const std::vector<long>& HyPERTop1Indices,
+        const std::vector<long>& HyPERTop1IDs,
+        const std::vector<long>& HyPERTop2Indices,
+        const std::vector<long>& HyPERTop2IDs);
+
+    bool correctlyReconstructedTop(int HyPERBIndex,
+        const std::vector<int>& TopTruthRecoIndices);
+
 }

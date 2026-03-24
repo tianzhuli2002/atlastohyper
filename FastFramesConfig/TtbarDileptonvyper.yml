@@ -440,7 +440,7 @@ ntuples: # Use this block to define the ntuples to be created.
     - Jet_phi
     - Jet_e
     - Jet_GN2v01_score
-    - Jet_SVmass
+    # - Jet_SVmass
     - Jet_GN2v01_PCBT_quantile_NOSYS
     - nBjets_GN2v01_.+
     - Met_pt

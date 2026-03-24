@@ -31,6 +31,9 @@ set( CMAKE_CXX_EXTENSIONS FALSE CACHE BOOL
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Option to skip ROOT dictionary generation (useful if rootcling is incompatible)
+option(SKIP_ROOT_DICTIONARY "Skip ROOT_GENERATE_DICTIONARY step" OFF)
+
 # Specify the install locations for libraries and binaries.
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
@@ -60,7 +63,7 @@ endif()
 add_library( PartonMatcher SHARED ${LIB_HEADERS} ${SOURCES} )
 target_include_directories( PartonMatcher PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${FastFrames_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${ONNXRUNTIME_INCLUDE_DIRS})
 find_library(FastFrames_LIBRARY FastFrames ${CMAKE_SOURCE_DIR}/install)
-target_link_libraries( PartonMatcher ${FastFrames_LIBRARY} ${ROOT_LIBRARIES} ${ONNXRUNTIME_LIBRARIES})
+target_link_libraries( PartonMatcher PUBLIC ${FastFrames_LIBRARY} ${ROOT_LIBRARIES} ${ONNXRUNTIME_LIBRARIES})
 set_property( TARGET PartonMatcher
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 target_include_directories(PartonMatcher PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
@@ -78,5 +81,9 @@ install( TARGETS PartonMatcher
    LIBRARY DESTINATION lib
    PUBLIC_HEADER DESTINATION include/PartonMatcher )
 
-ROOT_GENERATE_DICTIONARY(PartonMatcher_dict PartonMatcher/PartonMatcher.h MODULE PartonMatcher LINKDEF Root/LinkDef.h)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+if(NOT SKIP_ROOT_DICTIONARY)
+   ROOT_GENERATE_DICTIONARY(PartonMatcher_dict PartonMatcher/PartonMatcher.h MODULE PartonMatcher LINKDEF Root/LinkDef.h)
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+else()
+   message(STATUS "SKIP_ROOT_DICTIONARY=ON: not generating/installing ROOT dictionaries")
+endif()

@@ -328,6 +328,18 @@ namespace Variables{
         return new_HyPER_indices;
     }
 
+    // Overload to accept integer-typed HyPER branches (convert to long and forward)
+    std::vector<long> getSelecHyPERIndices(const std::vector<int>& HyPER_indices,
+                                        const std::vector<int>& HyPER_IDs,
+                                        const std::vector<size_t>& jet_idx,
+                                        const std::vector<size_t>& el_idx,
+                                        const std::vector<size_t>& mu_idx,
+                                        const std::vector<size_t>& tau_idx){
+        std::vector<long> HyPER_indices_long(HyPER_indices.begin(), HyPER_indices.end());
+        std::vector<long> HyPER_IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
+        return getSelecHyPERIndices(HyPER_indices_long, HyPER_IDs_long, jet_idx, el_idx, mu_idx, tau_idx);
+    }
+
     /**
      * @brief Turn Char_t variable to bool.
      * @param myVariable variable that should be used as boolean
@@ -335,6 +347,190 @@ namespace Variables{
     bool charToBool(Char_t myVariable){
         return static_cast<int>(myVariable) == 1;
     }
+}
+// ----------------- mttbar reconstruction helpers -----------------
+namespace TtbarDileptonVars {
+
+    float compute_mttbar(const ROOT::Math::PtEtaPhiMVector& lep1,
+                         const ROOT::Math::PtEtaPhiMVector& lep2,
+                         const ROOT::Math::PtEtaPhiMVector& bjet1,
+                         const ROOT::Math::PtEtaPhiMVector& bjet2,
+                         const ROOT::Math::PtEtaPhiMVector& nu1,
+                         const ROOT::Math::PtEtaPhiMVector& nu2){
+        auto top1 = lep1 + bjet1 + nu1;
+        auto top2 = lep2 + bjet2 + nu2;
+        auto ttbar = top1 + top2;
+        return ttbar.M();
+    }
+
+    ROOT::Math::PtEtaPhiMVector buildNuFromBranches(float pt, float eta, float phi, float e){
+        return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, e);
+    }
+
+    std::pair<ROOT::Math::PtEtaPhiMVector, ROOT::Math::PtEtaPhiMVector>
+    buildNuFromNuFlows(const ROOT::VecOps::RVec<float>& nuflows_nu_out){
+        // Expect ordering: [nu1_px, nu1_py, nu1_pz, nu1_E, nu2_px, ...]
+        if (nuflows_nu_out.size() < 8) return {ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0)};
+        auto buildFromPxPyPzE = [](const float px, const float py, const float pz, const float E){
+            float pt = std::hypot(px, py);
+            float p = std::hypot(pt, pz);
+            float eta = 0.0f;
+            if (p > 0) eta = 0.5f * std::log((p + pz) / std::max(1e-9f, p - pz));
+            float phi = std::atan2(py, px);
+            return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, std::sqrt(std::max(0.0f, E*E - p*p)));
+        };
+        auto nu1 = buildFromPxPyPzE(nuflows_nu_out[0], nuflows_nu_out[1], nuflows_nu_out[2], nuflows_nu_out[3]);
+        auto nu2 = buildFromPxPyPzE(nuflows_nu_out[4], nuflows_nu_out[5], nuflows_nu_out[6], nuflows_nu_out[7]);
+        return {nu1, nu2};
+    }
+
+    Assignment assignHyPER(const std::vector<long>& top_indices,
+                           const std::vector<long>& top_IDs,
+                           const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                           const ROOT::VecOps::RVec<TLV>& el_TLV,
+                           const ROOT::VecOps::RVec<TLV>& mu_TLV){
+        Assignment out;
+        // top_indices expected as flat vector for one top: [i0,i1,i2] etc.; top_IDs holds corresponding type IDs
+        if (top_indices.size() < 3 || top_IDs.size() < 3) return out;
+        // Simple parser: find for top1 first 3 entries, then top2 next 3
+        auto parseTriple = [&](size_t base)->Assignment{
+            Assignment a; a.valid = false;
+            int jet_idx = -1, lep_idx = -1;
+            for(size_t k=0;k<3 && base+k<top_IDs.size() && base+k<top_indices.size();++k){
+                long id = top_IDs[base+k];
+                long idx = top_indices[base+k];
+                if (id == 1) jet_idx = static_cast<int>(idx);
+                if (id == 2 || id == 3) lep_idx = static_cast<int>(idx);
+            }
+            a.bjet1_idx = jet_idx; a.lep1_idx = lep_idx; a.valid = (jet_idx>=0 && lep_idx>=0);
+            return a;
+        };
+        // parse first and second triples
+        Assignment a1 = parseTriple(0);
+        Assignment a2 = parseTriple(3);
+        if (!a1.valid || !a2.valid) return out;
+        out.bjet1_idx = a1.bjet1_idx;
+        out.lep1_idx  = a1.lep1_idx;
+        out.bjet2_idx = a2.bjet1_idx;
+        out.lep2_idx  = a2.lep1_idx;
+        out.valid = (out.bjet1_idx>=0 && out.bjet2_idx>=0 && out.lep1_idx>=0 && out.lep2_idx>=0 && out.bjet1_idx != out.bjet2_idx);
+        return out;
+    }
+
+    Assignment assignPT(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                        const ROOT::VecOps::RVec<TLV>& el_TLV,
+                        const ROOT::VecOps::RVec<TLV>& mu_TLV){
+        Assignment out;
+        if (jet_TLV.size() < 2) return out;
+        out.bjet1_idx = 0; out.bjet2_idx = 1;
+        out.lep1_idx = 0; out.lep2_idx = 1;
+        out.valid = true;
+        return out;
+    }
+
+    Assignment assignDeltaR(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                            const ROOT::VecOps::RVec<TLV>& el_TLV,
+                            const ROOT::VecOps::RVec<TLV>& mu_TLV){
+        Assignment out;
+        // build lepton vector (e/mu mix): use first two available
+        std::vector<TLV> leps;
+        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (leps.size() != 2 || jet_TLV.empty()) return out;
+
+        auto findClosest = [&](const TLV& lep)->int{
+            float best = std::numeric_limits<float>::infinity(); int besti = -1;
+            for (size_t j=0;j<jet_TLV.size();++j){
+                float dR = ROOT::Math::VectorUtil::DeltaR(lep, jet_TLV[j]);
+                if (dR < best){ best = dR; besti = static_cast<int>(j); }
+            }
+            return besti;
+        };
+
+        int j0 = findClosest(leps[0]);
+        int j1 = findClosest(leps[1]);
+        if (j0 == j1){ // resolve conflict: pick second-best for second lepton
+            int second_best = -1; float second_best_val = std::numeric_limits<float>::infinity();
+            for (size_t j=0;j<jet_TLV.size();++j){ if (static_cast<int>(j)==j0) continue; float dR = ROOT::Math::VectorUtil::DeltaR(leps[1], jet_TLV[j]); if (dR < second_best_val){ second_best_val = dR; second_best = static_cast<int>(j); } }
+            j1 = second_best;
+        }
+        if (j0 < 0 || j1 < 0) return out;
+        out.bjet1_idx = j0; out.bjet2_idx = j1; out.lep1_idx = 0; out.lep2_idx = 1; out.valid = true;
+        return out;
+    }
+
+    Assignment assignChi2(const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                          const ROOT::VecOps::RVec<TLV>& el_TLV,
+                          const ROOT::VecOps::RVec<TLV>& mu_TLV,
+                          const ROOT::Math::PtEtaPhiMVector& nu1,
+                          const ROOT::Math::PtEtaPhiMVector& nu2){
+        Assignment out;
+        if (jet_TLV.size() < 2) return out;
+        // lepton ordering
+        std::vector<TLV> leps;
+        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (leps.size() != 2) return out;
+
+        const float m_top = 172500.0f; // MeV
+        double bestScore = std::numeric_limits<double>::infinity();
+        int best_i=-1, best_j=-1;
+        for (size_t i=0;i<jet_TLV.size();++i){
+            for (size_t j=0;j<jet_TLV.size();++j){
+                if (i==j) continue;
+                // Ensure all inputs to compute_mttbar are of type PtEtaPhiMVector by converting
+                auto lep0_m = ROOT::Math::PtEtaPhiMVector(leps[0].Pt(), leps[0].Eta(), leps[0].Phi(), leps[0].M());
+                auto lep1_m = ROOT::Math::PtEtaPhiMVector(leps[1].Pt(), leps[1].Eta(), leps[1].Phi(), leps[1].M());
+                auto jet_i_m = ROOT::Math::PtEtaPhiMVector(jet_TLV[i].Pt(), jet_TLV[i].Eta(), jet_TLV[i].Phi(), jet_TLV[i].M());
+                auto jet_j_m = ROOT::Math::PtEtaPhiMVector(jet_TLV[j].Pt(), jet_TLV[j].Eta(), jet_TLV[j].Phi(), jet_TLV[j].M());
+                float m1 = compute_mttbar(lep0_m, lep1_m, jet_i_m, jet_j_m, nu1, nu2);
+                // swap for second pairing considered below by using same neutrinos
+                float m2 = compute_mttbar(lep1_m, lep0_m, jet_j_m, jet_i_m, nu2, nu1);
+                double chi2 = (m1 - m_top)*(m1 - m_top) + (m2 - m_top)*(m2 - m_top);
+                if (chi2 < bestScore){ bestScore = chi2; best_i = static_cast<int>(i); best_j = static_cast<int>(j); }
+            }
+        }
+        if (best_i<0 || best_j<0) return out;
+        out.bjet1_idx = best_i; out.bjet2_idx = best_j; out.lep1_idx = 0; out.lep2_idx = 1; out.valid = true;
+        return out;
+    }
+
+    Assignment getAssignment(Method method,
+                             const std::vector<long>& top_indices,
+                             const std::vector<long>& top_IDs,
+                             const ROOT::VecOps::RVec<TLV>& jet_TLV,
+                             const ROOT::VecOps::RVec<TLV>& el_TLV,
+                             const ROOT::VecOps::RVec<TLV>& mu_TLV,
+                             const ROOT::Math::PtEtaPhiMVector& nu1,
+                             const ROOT::Math::PtEtaPhiMVector& nu2){
+        switch(method){
+            case Method::HYPER: return assignHyPER(top_indices, top_IDs, jet_TLV, el_TLV, mu_TLV);
+            case Method::CHI2:  return assignChi2(jet_TLV, el_TLV, mu_TLV, nu1, nu2);
+            case Method::PT:    return assignPT(jet_TLV, el_TLV, mu_TLV);
+            case Method::DELTAR: return assignDeltaR(jet_TLV, el_TLV, mu_TLV);
+            default: return Assignment();
+        }
+    }
+
+}
+
+
+// Ensure a definition of ZllCalibrationVars::regionName exists in the global scope
+// (some translation-units expect this exact symbol). Provide a minimal deterministic
+// implementation so the library can be loaded at runtime.
+std::string ZllCalibrationVars::regionName(
+    const ROOT::VecOps::RVec<TLV>& sorted_elTLV,
+    const ROOT::VecOps::RVec<TLV>& sorted_muTLV,
+    const ROOT::VecOps::RVec<float>& sorted_elCharge,
+    const ROOT::VecOps::RVec<float>& sorted_muCharge) {
+    size_t nEl = sorted_elTLV.size();
+    size_t nMu = sorted_muTLV.size();
+    if (nEl == 2 && nMu == 0) return "ee";
+    if (nMu == 2 && nEl == 0) return "mumu";
+    if (nEl == 1 && nMu == 1) return "emu";
+    return "other";
 }
 
 namespace TtbarSingleLeptonVars{
@@ -1784,6 +1980,8 @@ NuFlavourInfo ExtractNeutrinoFlavours(
 
 
 
+
+
 }
 
 namespace HyPERPerformance{
@@ -2016,36 +2214,6 @@ namespace HyPERPerformance{
         }
 }
 
-namespace ZllCalibrationVars{
-
-   std::string regionName(
-        const ROOT::VecOps::RVec<TLV>& sorted_elTLV,
-        const ROOT::VecOps::RVec<TLV>& sorted_muTLV,
-        const ROOT::VecOps::RVec<float>& sorted_elCharge,
-        const ROOT::VecOps::RVec<float>& sorted_muCharge) {
-            std::size_t nMuons = sorted_muTLV.size();
-            std::size_t nElectrons = sorted_elTLV.size();
-
-            // Get the leading lepton pT. Note: params are (nElectrons, nMuons, elTLV, muTLV)
-            float leadingMuonPt = nMuons > 0 ? sorted_muTLV.at(0).Pt() : 0.0f;
-            float leadingElectronPt = nElectrons > 0 ? sorted_elTLV.at(0).Pt() : 0.0f;
-            float leadingLeptonPt = std::max(leadingMuonPt, leadingElectronPt);
-            if (leadingLeptonPt < 28000 ) return "other";
-            if (nMuons + nElectrons == 2) {
-                int totalCharge = 0;
-
-                // Sum muon charges
-                for (auto& mu : sorted_muCharge) totalCharge += mu;
-                // Sum electron charges
-                for (auto& el : sorted_elCharge) totalCharge += el;
-
-                // Require charge = 0 (opposite-sign)
-                if (totalCharge == 0) return "2l";
-            }
-            return "other";
-    }
-
-}
 namespace HyPERPerformanceSingleLepton {
 
     std::vector<int> getRecoIndicesTopLep(const std::vector<int>& jetTruthIndices,
@@ -2539,4 +2707,144 @@ namespace HyPERPerformanceSingleLepton {
         // Use HyPER function.
         return correctlyReconstructedTopHad(correctWHad,KLFBHadIndex,TopHadTruthRecoIndices);
     }
+}
+
+namespace HyPERPerformanceDiLepton {
+
+    std::vector<int> getRecoIndicesTop1(const std::vector<int>& jetTruthIndices,
+        const std::vector<int>& eTruthIndices,
+        const std::vector<int>& muTruthIndices,
+        const std::vector<int>& nMatchedJets,
+        const std::vector<int>& nMatchedElectrons,
+        const std::vector<int>& nMatchedMuons,
+        int nLeptons){
+
+        std::vector<int> defaultIndices{-1,-1,-1};
+        // Basic checks
+        if (jetTruthIndices.size() != 6 || nMatchedJets.size() != 6) return defaultIndices;
+        if (eTruthIndices.size() != 2 || nMatchedElectrons.size() != 2) return defaultIndices;
+        if (muTruthIndices.size() != 2 || nMatchedMuons.size() != 2) return defaultIndices;
+        if (nLeptons != 2) return defaultIndices;
+
+        // For dilepton both tops should have a matched lepton.
+        if ((eTruthIndices.at(0) == -1 && muTruthIndices.at(0) == -1) ||
+            (eTruthIndices.at(1) == -1 && muTruthIndices.at(1) == -1)) return defaultIndices;
+
+        // Check that each top has exactly one matched lepton (electron or muon).
+        if ((nMatchedElectrons.at(0) + nMatchedMuons.at(0)) != 1) return defaultIndices;
+        if ((nMatchedElectrons.at(1) + nMatchedMuons.at(1)) != 1) return defaultIndices;
+
+        // Determine lepton truth index for top1 (use electron if present, otherwise muon)
+        int lepIndexTop1 = eTruthIndices.at(0) != -1 ? eTruthIndices.at(0) : muTruthIndices.at(0);
+
+        // b-jet for top1 is stored in jetTruthIndices position 0
+        std::size_t bJetPos = 0;
+        if (jetTruthIndices.at(bJetPos) == -1) return defaultIndices;
+        if (nMatchedJets.at(bJetPos) != 1) return defaultIndices;
+
+        defaultIndices.at(0) = jetTruthIndices.at(bJetPos);
+        defaultIndices.at(1) = lepIndexTop1;
+        defaultIndices.at(2) = 0; // neutrino placeholder
+
+        return defaultIndices;
+    }
+
+    std::vector<int> getRecoIndicesTop2(const std::vector<int>& jetTruthIndices,
+        const std::vector<int>& eTruthIndices,
+        const std::vector<int>& muTruthIndices,
+        const std::vector<int>& nMatchedJets,
+        const std::vector<int>& nMatchedElectrons,
+        const std::vector<int>& nMatchedMuons,
+        int nLeptons){
+
+        std::vector<int> defaultIndices{-1,-1,-1};
+        // Basic checks
+        if (jetTruthIndices.size() != 6 || nMatchedJets.size() != 6) return defaultIndices;
+        if (eTruthIndices.size() != 2 || nMatchedElectrons.size() != 2) return defaultIndices;
+        if (muTruthIndices.size() != 2 || nMatchedMuons.size() != 2) return defaultIndices;
+        if (nLeptons != 2) return defaultIndices;
+
+        // For dilepton both tops should have a matched lepton.
+        if ((eTruthIndices.at(0) == -1 && muTruthIndices.at(0) == -1) ||
+            (eTruthIndices.at(1) == -1 && muTruthIndices.at(1) == -1)) return defaultIndices;
+
+        // Check that each top has exactly one matched lepton (electron or muon).
+        if ((nMatchedElectrons.at(0) + nMatchedMuons.at(0)) != 1) return defaultIndices;
+        if ((nMatchedElectrons.at(1) + nMatchedMuons.at(1)) != 1) return defaultIndices;
+
+        // Determine lepton truth index for top2 (use electron if present, otherwise muon)
+        int lepIndexTop2 = eTruthIndices.at(1) != -1 ? eTruthIndices.at(1) : muTruthIndices.at(1);
+
+        // b-jet for top2 is stored in jetTruthIndices position 3
+        std::size_t bJetPos = 3;
+        if (jetTruthIndices.at(bJetPos) == -1) return defaultIndices;
+        if (nMatchedJets.at(bJetPos) != 1) return defaultIndices;
+
+        defaultIndices.at(0) = jetTruthIndices.at(bJetPos);
+        defaultIndices.at(1) = lepIndexTop2;
+        defaultIndices.at(2) = 0; // neutrino placeholder
+
+        return defaultIndices;
+    }
+
+    bool HyPERTopConverged(const std::vector<long>& HyPERTopIndices,
+        const std::vector<long>& HyPERTopIDs){
+
+        // Same logic as HyPERTopLepConverged but generalised name for dilepton use.
+        if (HyPERTopIndices.size() != 3 || HyPERTopIDs.size() != 3) return false;
+
+        // Check there is only one jet.
+        std::size_t nJets = 0;
+        for (const auto& ID : HyPERTopIDs){
+            if (ID == 1) nJets++;
+        }
+        if (nJets != 1) return false;
+
+        // Check there is only one MET.
+        std::size_t nMET = 0;
+        for (const auto& ID : HyPERTopIDs){
+            if (ID == 4) nMET++;
+        }
+        if (nMET != 1) return false;
+
+        // Check there is only one lepton.
+        std::size_t nLepton = 0;
+        for (const auto& ID : HyPERTopIDs){
+            if (ID == 2 || ID == 3) nLepton++;
+        }
+        if (nLepton != 1) return false;
+
+        // Check all indices are valid.
+        if (!HyPERPerformance::allValidIndices<long>(HyPERTopIndices)) return false;
+
+        return true;
+    }
+
+    bool HyPERConvergedTwoLeptonicTops(const std::vector<long>& HyPERTop1Indices,
+        const std::vector<long>& HyPERTop1IDs,
+        const std::vector<long>& HyPERTop2Indices,
+        const std::vector<long>& HyPERTop2IDs){
+
+        // Individual convergence checks
+        if (!HyPERTopConverged(HyPERTop1Indices,HyPERTop1IDs)) return false;
+        if (!HyPERTopConverged(HyPERTop2Indices,HyPERTop2IDs)) return false;
+
+        // Extract b-jet indices
+        int b1 = HyPERPerformanceSingleLepton::getHyPERBLepIndex(HyPERTop1Indices,HyPERTop1IDs);
+        int b2 = HyPERPerformanceSingleLepton::getHyPERBLepIndex(HyPERTop2Indices,HyPERTop2IDs);
+
+        if (b1 == -1 || b2 == -1) return false;
+
+        // Require distinct b-jets
+        return (b1 != b2);
+    }
+
+    bool correctlyReconstructedTop(int HyPERBIndex,
+        const std::vector<int>& TopTruthRecoIndices){
+
+        if (TopTruthRecoIndices.size() != 3) return false;
+        if (HyPERBIndex == -1) return false;
+        return HyPERBIndex == TopTruthRecoIndices.at(0);
+    }
+
 }
