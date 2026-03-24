@@ -1,0 +1,541 @@
+general:
+  debug_level: INFO # Logger level
+  input_filelist_path: "/eos/user/l/leet/FF/atlastohyper/metadata_ttbar_comp/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
+  input_sumweights_path: "/eos/user/l/leet/FF/atlastohyper/metadata_ttbar_comp/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
+  output_path_histograms: "/eos/user/l/leet/FF/atlastohyper/output_histograms_ttbar2L_16_2/" # Path to the output histograms relative to fastframes directory
+  output_path_ntuples: "/eos/user/l/leet/FF/atlastohyper/output_ntuples_ttbar2L_16_2/" # Path to the output ntuples relative to fastframes directory
+  default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" #* weight_ftag_effSF_GN2v01_Continuous_NOSYS"
+  default_reco_tree_name: "reco" # Name of the reco tree in the input files.
+  xsection_files: # Location of the cross-section, k-factor, filter-efficiency medatada split per campaign.
+    # - files: ["/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt"]
+    #   campaigns: ["mc23a", "mc23d", "mc23e"]
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d","mc23e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  luminosity: # Luminosity for the campaigns
+    mc23a: 29049.3 # update?
+    mc23d: 27239.9 # update?
+    mc23e: 109400.0
+  automatic_systematics: False
+  nominal_only: True # Run with/without systematics.
+  #config_define_after_custom_class : True
+
+  use_rvec: True # Use ROOT::RVec instead of std::vector.
+  number_of_cpus: 16 # CPU cores to use for the analysis.
+  use_region_subfolders: False # Save the histograms in subfolders per region.
+  custom_frame_name: "PartonMatcher"
+  custom_options:
+    class_name: "TtbarDileptonFrameReco"
+  #custom_frame_name: "TtbarDileptonFrameReco" # Name of the custom class.
+  create_tlorentz_vectors_for: ["jet", "el", "mu"] # Create TLorentzVectors for the specified objects.
+  # custom_options: # Use this to pass custom options to the custom class.
+  #   metadata_histogram_name: metadata_ttbardilepton
+  #   run_tag: ttbarDilepton_v1
+  #   runner: Tim
+
+
+regions: # All the regions (defined by a selection criteria) to be used in the analysis.
+  - name: ttll_fully_matched
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    variables: &ttll_signal_vars
+      - name: n_jet
+        type: unsigned long
+        title : "Number of Jets ; nJets ; Events"
+        definition: n_jets_NOSYS
+        binning:
+          min: -0.5
+          max: 7.5
+          number_of_bins: 8
+      - name: True_bjet_pt 
+        title : "Jet p_{T} [GeV]; p_{T}^{jet} [GeV]; Jets"
+        definition: true_b_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      - name: True_bbarjet_pt
+        title : "Jet p_{T} [GeV]; p_{T}^{jet} [GeV]; Jets"
+        definition: true_bbar_pT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 100
+      - name: True_jet_deltaphi
+        title : "Delta Phi between true b and bbar jets; #Delta#phi (b, bbar); Events"
+        definition: true_jet_deltaphi_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 3.5
+          number_of_bins: 70
+      # - name: n_mu
+      #   type: unsigned long
+      #   title : "Number of Muons ; nMuons ; Events"
+      #   definition: n_muons_NOSYS
+      #   binning:
+      #     min: 0
+      #     max: 3
+      #     number_of_bins: 3
+      # - name: n_el
+      #   type: unsigned long
+      #   title : "Number of Electrons ; nElectrons ; Events"
+      #   definition: n_electrons_NOSYS
+      #   binning:
+      #     min: 0
+      #     max: 3
+      #     number_of_bins: 3
+      # - name: n_bjet
+      #   type: unsigned long
+      #   title : "Number of b-jets ; nBJets ; Events"
+      #   definition: n_bjets_NOSYS
+      #   binning:
+      #     min: -0.5
+      #     max: 8.5
+      #     number_of_bins: 9
+      # - name: met_met
+      #   title : "Missing ET [GeV]; E_{T}^{miss} [GeV]; Events"
+      #   definition: met_met_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 15
+      # - name: ttbar_mass
+      #   title : "ttbar mass [GeV]; m_{tt} [GeV]; Events"
+      #   definition: ttbar_mass_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 10
+      - name: llbb_mass
+        title : "llbb mass [GeV]; m_{llbb} [GeV]; Events"
+        definition: invariant_mass_llbb_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 100
+      - name: mlb_truth_b
+        title : "mlb truth b [GeV]; m_{mlb truth b} [GeV]; Events"
+        definition: mlb_truth_b_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 100
+      - name: mlb_truth_bbar
+        title: "mlb truth bbar [GeV]; m_{mlb truth bbar} [GeV]; Events"
+        definition: mlb_truth_bbar_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 100
+      # - name: mlb_alt_b
+      #   title: "mlb alt b [GeV]; m_{mlb alt b} [GeV]; Events"
+      #   definition: mlb_alt_b_NOSYS
+      #   #definition: mlb_altB_truth_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 100
+      # - name: mlb_alt_bbar
+      #   title: "mlb alt bbar [GeV]; m_{mlb alt bbar} [GeV]; Events"
+      #   definition: mlb_alt_bbar_NOSYS
+      #   #definition: mlb_altB_truth_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 300000
+      #     number_of_bins: 100   
+      - name: mlb_sum_deltaR_true
+        title: "mlb sum deltaR true; sum DeltaR (lepton, true b-jet); Events"
+        definition: mlb_sum_deltaR_true_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 10
+          number_of_bins: 50
+      - name: deltaR_pairing_correct
+        title: "deltaR pairing correct; Pairing correct; Events"
+        definition: pairing_deltaR_correct_NOSYS
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: baseline_pairing_correct
+        title: "Baseline pairing correct; Pairing correct; Events"
+        definition: pairing_correct_NOSYS
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: baseline_b_pairing_mjl0
+        title: "Baseline b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+        definition: "pairing_mjl0_NOSYS"
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: baseline_bbar_pairing_mjl1
+        title: "Baseline bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+        definition: "pairing_mjl1_NOSYS"
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: chisquared_pairing_correct_all
+        title: "Chi2 pairing correct; Pairing correct; Events"
+        definition: "pairing_chi2_correct_all_NOSYS"
+        type: float
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: chisquared_b_pairing_mjl0_all
+        title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+        definition: pairing_chi2_mjl0_all_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      - name: chisquared_bbar_pairing_mjl1_all
+        title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+        definition: pairing_chi2_mjl1_all_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 500000
+          number_of_bins: 50
+      # - name: chisquared_truth_value
+      #   title: "Chi2 truth value; Chi2 value for the truth matching; Events"
+      #   definition: "pairing_chi2_truthvalue_all_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -0
+      #     max: 20
+      #     number_of_bins: 500
+      # - name: chisquared_found_value_diff
+      #   title: "Chi2 found - truth value; Difference between found and truth chi2 values; Events"
+      #   definition: "pairing_chi2_foundvaluediff_all_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -20
+      #     max: 5
+      #     number_of_bins: 500
+      # - name: chisquared_pairing_correct_top2
+      #   title: "Chi2 pairing correct; Pairing correct; Events"
+      #   definition: "pairing_chi2_correct_top2_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -1.5
+      #     max: 1.5
+      #     number_of_bins: 3
+      # - name: chisquared_b_pairing_mjl0_top2
+      #   title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+      #   definition: pairing_chi2_mjl0_top2_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: chisquared_bbar_pairing_mjl1_top2
+      #   title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+      #   definition: pairing_chi2_mjl1_top2_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: Min_sum_invar_mass_all_jets_chisquared_pairing_correct_RedoneAll
+      #   title: "Chi2 pairing correct; Pairing correct; Events"
+      #   definition: "pairing_chi2_correct_RedoneAll_NOSYS"
+      #   type: float
+      #   binning:
+      #     min: -1.5
+      #     max: 1.5
+      #     number_of_bins: 3
+      # - name: Min_sum_invar_mass_all_jets_chisquared_b_pairing_mjl0_RedoneAll
+      #   title: "Chi2 b pairing mjl0 [GeV]; m_{b jet from mjl0} [GeV]; Events"
+      #   definition: pairing_chi2_mjl0_RedoneAll_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      # - name: Min_sum_invar_mass_all_jets_chisquared_bbar_pairing_mjl1_RedoneAll
+      #   title: "Chi2 bbar pairing mjl1 [GeV]; m_{bbar jet from mjl1} [GeV]; Events"
+      #   definition: pairing_chi2_mjl1_RedoneAll_NOSYS
+      #   type: float
+      #   binning:
+      #     min: 0
+      #     max: 500000
+      #     number_of_bins: 50
+      - name: mT_ttbar 
+        title: "Transverse mass of ttbar system [GeV]; m_{T}^{tt} [GeV]; Events"
+        definition: mT_ttbar_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+          
+      - name: mlb_pTdiff_true
+        title: "mlb pT difference (truth) [GeV]; p_{T}^{mlb true b} - p_{T}^{mlb true bbar} [GeV]; Events"
+        definition: mlb_pTdiff_true_NOSYS
+        type: float
+        binning:
+          min: -200000
+          max: 200000
+          number_of_bins: 80
+      # - name: selected_match_truth_bpair
+      #   title: "Selected jets match truth b pair; Selected jets match truth b pair; Events"
+      #   definition: selected_match_truth_bpair_NOSYS
+      #   type: float
+      #   binning:
+      #     min: -1.5
+      #     max: 1.5
+      #     number_of_bins: 3
+
+  - name: ttll_signal_fully_matched_2jets
+    selection: region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 &&  is_fully_matched_NOSYS ==1 && jet_TLV_NOSYS.size() == 2 #n_bjets_NOSYS ==2 #jet_TLV_NOSYS.size() == 2#//&&  n_jets_NOSYS == 2 # && n_bjets_NOSYS >= 1 &&
+    variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_3jets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS == 3 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_4jets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS == 4 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  # - name: ttll_signal_fully_matched_5plusjets
+  #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 5 # && n_bjets_NOSYS >= 1 &&
+  #   variables: *ttll_signal_vars
+  - name: ttll_non_fully_matched
+    selection: (is_fully_matched_NOSYS == 0 || is_fully_matched_NOSYS == -1) && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 2 #&& pass_min_mlb_pair_masses_NOSYS #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    variables: *ttll_signal_vars
+  - name: ttll_PM 
+    selection: (is_fully_matched_NOSYS == 0) && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 2 && pass_min_mlb_pair_masses_NOSYS #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    variables: *ttll_signal_vars
+  - name: ttll_fully_non_FM
+    selection: (is_fully_matched_NOSYS == -1) && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 2 && pass_min_mlb_pair_masses_NOSYS #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 2 #&& n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
+    variables: *ttll_signal_vars
+  # - name: ttbar_signal_all
+  #   selection: signal_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+  #   variables: *ttll_signal_vars
+  - name: bkg
+    selection: jet_TLV_NOSYS.size() >= 2 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #signal_NOSYS == ("signal") && && n_bjets_NOSYS >= 1 
+    variables: *ttll_signal_vars
+  - name: no_selection
+    selection: "1==1"
+    variables: *ttll_signal_vars
+
+  # - name: ttll_background
+  #   selection: 
+ntuples: # Use this block to define the ntuples to be created.
+  regions: # Only events passing the selection of one of the regions will be saved in the ntuple.
+    #- ttll_common_selection
+    #- ttll_signal
+    #- ttll_fully_matched#
+    #- ttll_signal_paper_selection
+   # - ttbar_signal_all
+   # #- ttll_PM
+   # - ttll_fully_non_FM
+    #- bkg
+   #- ttll_fully_matched
+    #- ttll_non_fully_matched #partially_matched
+    #- ttll_signal_fully_matched_2jets
+    - no_selection
+  branches: # These branches will be saved in the ntuple.
+    - eventNumber
+    - Electron_pt
+    - Electron_eta
+    - Electron_phi
+    - Electron_e
+    - Electron_q
+    - Muon_pt
+    - Muon_eta
+    - Muon_phi
+    - Muon_e
+    - Muon_q
+    - Jet_pt
+    - Jet_eta
+    - Jet_phi
+    - Jet_e
+    - Jet_GN2v01_score
+    # Removed Jet_SVmass (jet_SV1_masssvx not present in these inputs)
+    - Jet_GN2v01_PCBT_quantile_NOSYS
+    - nBjets_GN2v01_.+
+    - Met_pt
+    - Met_phi
+    - Truth_.+_index
+    - invariant_mass_llbb_NOSYS
+    # - pairing_mlb_sum_NOSYS
+    # - pairing_mjl0_NOSYS
+    # - pairing_mjl1_NOSYS
+    # - truth_ttbar_mass_beforeFSR_NOSYS
+    # - truth_ttbar_mass_afterFSR_NOSYS
+    # - truth_t_mass_afterFSR_NOSYS
+    # - truth_tbar_mass_afterFSR_NOSYS
+    - isTtbarDilepton_NOSYS
+    - is_fully_matched_NOSYS
+    - HyPER_Top1_Indices_NOSYS
+    - HyPER_Top2_Indices_NOSYS
+    - HyPER_Top1_bIndex_NOSYS
+    - HyPER_Top2_bIndex_NOSYS
+    - HyPER_Top1_converged_NOSYS
+    - HyPER_Top2_converged_NOSYS
+    - HyPER_two_tops_converged_NOSYS
+    - HyPER_Top1_correct_NOSYS
+    - HyPER_Top2_correct_NOSYS
+    - HyPER_both_tops_correct_NOSYS
+    - pairing_chi2_correct_all_NOSYS
+    - pairing_correct_NOSYS
+    - pairing_deltaR_correct_NOSYS
+    - mttbar_HYPER_NOSYS
+    - mttbar_CHI2_NOSYS
+    - mttbar_PT_NOSYS
+    - mttbar_DELTAR_NOSYS
+    - HYPER_correct_NOSYS
+    - CHI2_correct_NOSYS
+    - PT_correct_NOSYS
+    - DELTAR_correct_NOSYS
+    #- selected_match_truth_bpair_NOSYS
+    #- KLF_.+_index
+
+    # - .*_pt_NOSYS # You can use regular expressions. This will select e, mu and jet pt.
+    # - jet_eta
+    # - jet_phi
+    # - mu_eta
+    # - mu_phi
+    # - el_eta
+    # - el_phi
+    # - met_met_NOSYS
+    # - met_phi_NOSYS
+    # - nBjets_GN2v01_100_NOSYS
+    # - nBjets_GN2v01_90_NOSYS
+    # - nBjets_GN2v01_85_NOSYS
+    # - nBjets_GN2v01_77_NOSYS
+    # - nBjets_GN2v01_70_NOSYS
+    # - nBjets_GN2v01_65_NOSYS
+    # #- .*_NOSYS
+    # - ttbar_mass_NOSYS
+    # - invariant_mass_llbb_NOSYS
+    # - min_mlb_pair_masses_NOSYS
+    # - el_charge 
+    # - mu_charge
+    # - .*e_NOSYS 
+    # - invariant_mass_llbb_NOSYS
+    # - n_jets_NOSYS
+    # - n_bjets_NOSYS
+    # - n_muons_NOSYS
+    # - n_electrons_NOSYS
+    # - Jet_GN2v01_score
+    # - Jet_SVmass
+    # - Jet_GN2v01_PCBT_quantile_NOSYS
+    # - mlb_truth_b_NOSYS
+    # - mlb_truth_bbar_NOSYS
+    # - mlb_alt_b_NOSYS
+    # - mlb_alt_bbar_NOSYS
+    # - pairing_correct_NOSYS
+    # - eventNumber
+    # - Truth_.+_index
+    # #- region_name_NOSYS
+    - signal_NOSYS
+
+
+samples: # All the samples to be used in the analysis.
+  # - name: "Z+jets"
+  #   dsids: [700786]
+  #   campaigns: ["mc23e"]
+  #   simulation_type: "fullsim"
+  #   #exclude_variables: *truth_excluded
+
+  - name: "ttll" # Name given to the sample.
+    dsids: [601230] # For data, this is always 0.
+    campaigns: ["mc23a","mc23d"] #,"mc23e""mc23a","#], "mc23e"] # "mc23d" , The corresponding campaing or campaigns.
+    simulation_type: "fullsim" # Type of simulation.
+    exclude_variables: &truth_excluded
+      - reco_index_truth_b
+  #- name: "ttll_run2"
+  # - name: "ttbar_nonallhad_2018"
+  #   dsids: [410470]
+  #   campaigns: ["mc20e"]
+  #   simulation_type: "fullsim"
+  # - name: "ttbar_nonallhad_2017"
+  #   dsids: [410470]
+  #   campaigns: ["mc20d"]
+  #   simulation_type: "fullsim"
+  # - name: "ttbar_nonallhad_2016"
+  #   dsids: [410470]
+  #   campaigns: ["mc20a"]
+  #   simulation_type: "fullsim"
+
+  # - name: "ttbar_dilep_filtered_2018"
+  #   dsids: [410472]
+  #   campaigns: ["mc20e"]
+  #   simulation_type: "fullsim"
+  # - name: "ttbar_dilep_filtered_2016"
+  #   dsids: [410472]
+  #   campaigns: ["mc20a"]
+  #   simulation_type: "fullsim"
+  
+
+  # # - name: "singletop_2023"
+  # #   dsids: [ 601627, 601631]
+  # #   campaigns: ["mc23e"] #"mc23d",
+  # #   simulation_type: "fullsim"
+  # - name: "singletop_2022"
+  #   dsids: [ 601348, 601349, 601350, 601352, 601351, 601353, 601354, 601355]
+  #   campaigns: ["mc23a","mc23d"] #,"mc23e"] #"mc23d",
+  #   simulation_type: "fullsim"
+  # # - name: "singletop_2022_tW"
+  # #   dsids: [ 601352, 601355]
+  # #   campaigns: ["mc23d"] #,"mc23e"] #"mc23d",
+  # #   simulation_type: "fullsim"
+  # # - name: "singletop_2022_schan"
+  # #   dsids: [ 601348, 601349]
+  # #   campaigns: ["mc23a","mc23d","mc23e"] #,"mc23e"] #"mc23d",
+  # #   simulation_type: "fullsim"
+  # # - name: "singletop_2022_tchan"
+  # #   dsids: [ 601350, 601351]
+  # #   campaigns: ["mc23a","mc23d","mc23e"] #,"mc23e"] #"mc23d",
+  # #   simulation_type: "fullsim"
+  #   #exclude_variables: *truth_excluded
+  # # - name: "singletop_run2"
+  # #   dsids: [601352,601355,410644,410645,410658,410659]
+  # #   campaigns: ["mc20a","mc20d","mc20e"]
+  # #   simulation_type: "fullsim"
+
+  # - name: "Z_jets"
+  #   dsids: [700786, 700787, 700788, 700789,700790,700791,700792,700793,700794, 700892,700893] 
+  #   campaigns: ["mc23a","mc23d"] #"mc23a","mc23d",,"mc23e"
+  #   simulation_type: "fullsim"
+  #   #exclude_variables: *truth_excluded
+  # # - name: "Z+jets_run2"
+  # #   dsids: [700792,700793,700794] 
+  # #   campaigns: ["mc20a","mc20d","mc20e"] #"mc23d",
+  # #   simulation_type: "fullsim"
+  #   #exclude_variables: *truth_excluded
+  # - name: "Z+jets_Powheg"
+  #   dsids: [513111,513112,513113,513129]
+  #   campaigns: ["mc23a","mc23d"] #"mc23d",
+  #   simulation_type: "fullsim"
+  #   #exclude_variables: *truth_excluded
+
