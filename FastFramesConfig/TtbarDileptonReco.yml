@@ -1,9 +1,9 @@
 general:
   debug_level: INFO # Logger level
-  input_filelist_path: "/eos/user/l/leet/FF/atlastohyper/metadata_ttbar_comp/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
-  input_sumweights_path: "/eos/user/l/leet/FF/atlastohyper/metadata_ttbar_comp/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
-  output_path_histograms: "/eos/user/l/leet/FF/atlastohyper/output_histograms_ttbar2L_16_2/" # Path to the output histograms relative to fastframes directory
-  output_path_ntuples: "/eos/user/l/leet/FF/atlastohyper/output_ntuples_ttbar2L_16_2/" # Path to the output ntuples relative to fastframes directory
+  input_filelist_path: "/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
+  input_sumweights_path: "/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
+  output_path_histograms: "/data/leet/FFTutorial/output_histograms_ttbarreco_1_4" # Path to the output histograms relative to fastframes directory
+  output_path_ntuples: "/data/leet/FFTutorial/output_ntuples_ttbarreco_1_4" # Path to the output ntuples relative to fastframes directory
   default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
   default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" #* weight_ftag_effSF_GN2v01_Continuous_NOSYS"
   default_reco_tree_name: "reco" # Name of the reco tree in the input files.
@@ -47,7 +47,7 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
       - name: n_jet
         type: unsigned long
         title : "Number of Jets ; nJets ; Events"
-        definition: n_jets_NOSYS
+        definition: jet_TLV_NOSYS.size()
         binning:
           min: -0.5
           max: 7.5
@@ -294,6 +294,118 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
           min: 0
           max: 1000000
           number_of_bins: 50
+      - name: mttbar_HYPER
+        title: "ttbar mass (HYPER) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_HYPER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_truth
+        title: "ttbar mass (truth, from truth indices) [GeV]; m_{tt} truth [GeV]; Events"
+        definition: mttbar_truth_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_CHI2
+        title: "ttbar mass (CHI2) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_CHI2_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_PT
+        title: "ttbar mass (PT) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_PT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_DELTAR
+        title: "ttbar mass (DELTAR) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_DELTAR_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: betaStar_HYPER
+        title: "betaStar (HYPER); beta* (HYPER); Events"
+        definition: betaStar_HYPER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_truth
+        title: "betaStar (truth); beta* (truth from truth indices); Events"
+        definition: betaStar_truth_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_CHI2
+        title: "betaStar (CHI2); beta* (CHI2); Events"
+        definition: betaStar_CHI2_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_PT
+        title: "betaStar (PT); beta* (PT); Events"
+        definition: betaStar_PT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_DELTAR
+        title: "betaStar (DELTAR); beta* (DELTAR); Events"
+        definition: betaStar_DELTAR_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_HYPER_NUWEIGHT
+        title: "betaStar (HYPER, NUWEIGHT); beta* (HYPER NUWEIGHT); Events"
+        definition: betaStar_HYPER_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_CHI2_NUWEIGHT
+        title: "betaStar (CHI2, NUWEIGHT); beta* (CHI2 NUWEIGHT); Events"
+        definition: betaStar_CHI2_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_PT_NUWEIGHT
+        title: "betaStar (PT, NUWEIGHT); beta* (PT NUWEIGHT); Events"
+        definition: betaStar_PT_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_DELTAR_NUWEIGHT
+        title: "betaStar (DELTAR, NUWEIGHT); beta* (DELTAR NUWEIGHT); Events"
+        definition: betaStar_DELTAR_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
           
       - name: mlb_pTdiff_true
         title: "mlb pT difference (truth) [GeV]; p_{T}^{mlb true b} - p_{T}^{mlb true bbar} [GeV]; Events"
@@ -336,6 +448,18 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
   - name: ttll_signal_paper_selection
     selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 2 #&& n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
     variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection_2jets
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() == 2
+    variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection_3jets
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() == 3
+    variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection_4jets
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() == 4
+    variables: *ttll_signal_vars
+  - name: ttll_signal_paper_selection_5plusjets
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == 1 && SingleLepton_pass_triggers_NOSYS == 1 && jet_TLV_NOSYS.size() >= 5
+    variables: *ttll_signal_vars
   # - name: ttbar_signal_all
   #   selection: signal_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
   #   variables: *ttll_signal_vars
@@ -352,7 +476,7 @@ ntuples: # Use this block to define the ntuples to be created.
   regions: # Only events passing the selection of one of the regions will be saved in the ntuple.
     #- ttll_common_selection
     #- ttll_signal
-    #- ttll_fully_matched#
+    - ttll_fully_matched
     #- ttll_signal_paper_selection
    # - ttbar_signal_all
    # #- ttll_PM
@@ -361,7 +485,7 @@ ntuples: # Use this block to define the ntuples to be created.
    #- ttll_fully_matched
     #- ttll_non_fully_matched #partially_matched
     #- ttll_signal_fully_matched_2jets
-    - no_selection
+    #- no_selection
   branches: # These branches will be saved in the ntuple.
     - eventNumber
     - Electron_pt
@@ -395,8 +519,12 @@ ntuples: # Use this block to define the ntuples to be created.
     # - truth_tbar_mass_afterFSR_NOSYS
     - isTtbarDilepton_NOSYS
     - is_fully_matched_NOSYS
-    - HyPER_Top1_Indices_NOSYS
-    - HyPER_Top2_Indices_NOSYS
+    - hyper_TtbarDiLepton_Top1_Indices_NOSYS
+    - hyper_TtbarDiLepton_Top1_IDs_NOSYS
+    - hyper_TtbarDiLepton_Top2_Indices_NOSYS
+    - hyper_TtbarDiLepton_Top2_IDs_NOSYS
+    # - HyPER_Top1_Indices_NOSYS
+    # - HyPER_Top2_Indices_NOSYS
     - HyPER_Top1_bIndex_NOSYS
     - HyPER_Top2_bIndex_NOSYS
     - HyPER_Top1_converged_NOSYS
@@ -410,12 +538,25 @@ ntuples: # Use this block to define the ntuples to be created.
     - pairing_deltaR_correct_NOSYS
     - mttbar_HYPER_NOSYS
     - mttbar_CHI2_NOSYS
+    - mttbar_truth_NOSYS
     - mttbar_PT_NOSYS
     - mttbar_DELTAR_NOSYS
+    - mttbar_HYPER_NUWEIGHT_NOSYS
+    - mttbar_CHI2_NUWEIGHT_NOSYS
+    - mttbar_PT_NUWEIGHT_NOSYS
+    - mttbar_DELTAR_NUWEIGHT_NOSYS
     - HYPER_correct_NOSYS
     - CHI2_correct_NOSYS
     - PT_correct_NOSYS
     - DELTAR_correct_NOSYS
+    - betaStar_HYPER_NOSYS
+    - betaStar_truth_NOSYS
+    - betaStar_CHI2_NOSYS
+    - betaStar_PT_NOSYS
+    - betaStar_DELTAR_NOSYS
+    - betaStar_HYPER_NUWEIGHT_NOSYS
+    - betaStar_CHI2_NUWEIGHT_NOSYS
+    - betaStar_PT_NUWEIGHT_NOSYS  
     #- selected_match_truth_bpair_NOSYS
     #- KLF_.+_index
 
@@ -469,7 +610,7 @@ samples: # All the samples to be used in the analysis.
 
   - name: "ttll" # Name given to the sample.
     dsids: [601230] # For data, this is always 0.
-    campaigns: ["mc23a","mc23d"] #,"mc23e""mc23a","#], "mc23e"] # "mc23d" , The corresponding campaing or campaigns.
+    campaigns: ["mc23a","mc23d", "mc23e"] #,"mc23e""mc23a","#], "mc23e"] # "mc23d" , The corresponding campaing or campaigns.
     simulation_type: "fullsim" # Type of simulation.
     exclude_variables: &truth_excluded
       - reco_index_truth_b

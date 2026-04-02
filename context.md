@@ -1,7 +1,7 @@
 **Purpose**: Comprehensive run & implementation notes for `TtbarDileptonFrameReco` (DiLepton HyPER integration).
 
-- **Location**: /eos/user/l/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
-- **Config**: /eos/user/l/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
+- **Location**: /home/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
+- **Config**: /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
 
 **Summary of recent edits**:
 - Added HyPER performance exposure (indices, IDs, convergence, per-method mttbar outputs and correctness flags) inside `TtbarDileptonFrameReco` only — MainFrame was NOT modified.
@@ -54,14 +54,14 @@ source build_custom/setup.sh
 ```
 2. Confirm install artifacts exist:
 
-- `/eos/user/l/leet/FF/install/lib/libFastFrames.so`
-- `/eos/user/l/leet/FF/install/bin/fast-frames.exe`
+- `/home/leet/FF/install/lib/libFastFrames.so`
+- `/home/leet/FF/install/bin/fast-frames.exe`
 
 **Environment for running FastFrames (important)**:
 - Ensure the installed libs are on `LD_LIBRARY_PATH` for Python wrapper or when running compiled binary:
 
 ```bash
-export LD_LIBRARY_PATH=/eos/user/l/leet/FF/install/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/home/leet/FF/install/lib:${LD_LIBRARY_PATH}
 ```
 
 - Python wrapper may need same `LD_LIBRARY_PATH` exported in the shell used to run `python3`.
@@ -71,10 +71,10 @@ export LD_LIBRARY_PATH=/eos/user/l/leet/FF/install/lib:${LD_LIBRARY_PATH}
 **Run commands**:
 
 
-- Full-split (after single-split validated):
+- Full-split 
 ```bash
-export LD_LIBRARY_PATH=/eos/user/l/leet/FF/install/lib:$LD_LIBRARY_PATH
-python3 python/FastFrames.py -c /eos/user/l/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step h --split_n_jobs 100 --job_index 0
+export LD_LIBRARY_PATH=/home/leet/FF/install/lib:$LD_LIBRARY_PATH
+python3 python/FastFrames.py -c /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 100 --job_index 0
 ```
 
 **Typical failure modes & diagnostics**:
@@ -94,7 +94,7 @@ python3 python/FastFrames.py -c /eos/user/l/leet/FF/atlastohyper/FastFramesConfi
   - Fix: install or provide `libonnxruntime` on `LD_LIBRARY_PATH` or disable ONNX inference codepaths.
 
 **How to verify produced ntuple contents**:
-- The ntuple YAML is at `/eos/user/l/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml` — inspect the `Variables`/`Snapshot` branch list for requested outputs such as `mttbar_HYPER_NOSYS`.
+- The ntuple YAML is at `/home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml` — inspect the `Variables`/`Snapshot` branch list for requested outputs such as `mttbar_HYPER_NOSYS`.
 - After a successful run, open the output ROOT file and list tree branches:
 
 ```bash
@@ -122,10 +122,10 @@ root[0] T->Print();
 - If you plan to run on many jobs (100 splits), ensure `LD_LIBRARY_PATH` and ONNX runtime availability on the compute nodes.
 
 **Quick reference — important file locations**:
-- Frame: /eos/user/l/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
-- YAML: /eos/user/l/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
-- Installed libs: /eos/user/l/leet/FF/install/lib/
-- Binaries: /eos/user/l/leet/FF/install/bin/fast-frames.exe
+- Frame: /home/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
+- YAML: /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
+- Installed libs: /home/leet/FF/install/lib/
+- Binaries: /home/leet/FF/install/bin/fast-frames.exe
 
 **Contact / testing notes**:
 - If you share a failing log, include the first ~200 lines around the failure and the `GetColumnNames()` listing (the frame prints fallback defines). That will make diagnosing duplicate-Define vs. missing input trivial.

@@ -2407,29 +2407,27 @@ namespace HyPERPerformanceSingleLepton {
 
     bool HyPERTopLepConverged(const std::vector<long>& HyPERTopLepIndices,
         const std::vector<long>& HyPERTopLepIDs){
-            // Check the sizes of the vectors are correct.
-            if (HyPERTopLepIndices.size() != 3 || HyPERTopLepIDs.size() != 3) return false;
+            // Accept both 2-element (jet + lepton) and 3-element (jet+lepton+MET) HyPER
+            // representations used by different HyPER versions. Require matching
+            // sizes for indices and IDs and basic composition checks.
+            if (HyPERTopLepIndices.size() != HyPERTopLepIDs.size()) return false;
+            const std::size_t sz = HyPERTopLepIDs.size();
+            if (sz != 2 && sz != 3) return false;
 
-            // Check there is only one jet.
-            std::size_t nJets = 0;
+            // Count object types
+            std::size_t nJets = 0, nMET = 0, nLepton = 0;
             for (const auto& ID : HyPERTopLepIDs){
                 if (ID == 1) nJets++;
-            }
-            if (nJets != 1) return false;
-
-            // Check there is only one MET.
-            std::size_t nMET = 0;
-            for (const auto& ID : HyPERTopLepIDs){
                 if (ID == 4) nMET++;
-            }
-            if (nMET != 1) return false;
-
-            // Check there is only one lepton.
-            std::size_t nLepton = 0;
-            for (const auto& ID : HyPERTopLepIDs){
                 if (ID == 2 || ID == 3) nLepton++;
             }
+
+            // Must always have exactly one jet and exactly one lepton.
+            if (nJets != 1) return false;
             if (nLepton != 1) return false;
+
+            // If representation includes MET (sz==3) require one MET entry as well.
+            if (sz == 3 && nMET != 1) return false;
 
             // Check all indices are valid.
             if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIndices)) return false;
@@ -2620,17 +2618,17 @@ namespace HyPERPerformanceSingleLepton {
 
     int getHyPERBLepIndex(const std::vector<long>& HyPERTopLepIndices,
             const std::vector<long>& HyPERTopLepIDs){
-
-        // Check the sizes of the vectors are correct.
-        if (HyPERTopLepIndices.size() != 3 || HyPERTopLepIDs.size() != 3) return -1;
-        // Check all indices are valid.
+        // Accept either a 2-element (jet+lepton) or 3-element (jet+lepton+MET) HyPER
+        // description. Require matching sizes and valid indices.
+        if (HyPERTopLepIndices.size() != HyPERTopLepIDs.size()) return -1;
+        const std::size_t sz = HyPERTopLepIndices.size();
+        if (sz != 2 && sz != 3) return -1;
         if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIndices)) return -1;
         if (!HyPERPerformance::allValidIndices<long>(HyPERTopLepIDs)) return -1;
 
-        // Check the position of the jet in the IDs. Allow for more than one jet and throw error if found more than one.
         int topLepBJetIndex = -1;
         std::size_t nBJets = 0;
-        for (std::size_t i = 0; i < 3; i++){
+        for (std::size_t i = 0; i < sz; i++){
             if (HyPERTopLepIDs.at(i) == 1){
                 topLepBJetIndex = HyPERTopLepIndices.at(i);
                 nBJets++;
@@ -2638,12 +2636,12 @@ namespace HyPERPerformanceSingleLepton {
         }
 
         if (topLepBJetIndex == -1) {
-            LOG(ERROR) << "The topLep indices do not contain a b-jet. At this point they should.";
-            throw std::invalid_argument("");
+            // no b-jet found
+            return -1;
         }
         if (nBJets != 1) {
-            LOG(ERROR) << "The topLep indices contain more than one b-jet. At this point they should.";
-            throw std::invalid_argument("");
+            // ambiguous b-jet assignment
+            return -1;
         }
 
         return topLepBJetIndex;
@@ -2789,34 +2787,24 @@ namespace HyPERPerformanceDiLepton {
 
     bool HyPERTopConverged(const std::vector<long>& HyPERTopIndices,
         const std::vector<long>& HyPERTopIDs){
+        // Accept either 2-element (jet + lepton) or 3-element (jet+lepton+MET)
+        // HyPER representations. Require matching sizes and basic composition.
+        if (HyPERTopIndices.size() != HyPERTopIDs.size()) return false;
+        const std::size_t sz = HyPERTopIDs.size();
+        if (sz != 2 && sz != 3) return false;
 
-        // Same logic as HyPERTopLepConverged but generalised name for dilepton use.
-        if (HyPERTopIndices.size() != 3 || HyPERTopIDs.size() != 3) return false;
-
-        // Check there is only one jet.
-        std::size_t nJets = 0;
+        std::size_t nJets = 0, nMET = 0, nLepton = 0;
         for (const auto& ID : HyPERTopIDs){
             if (ID == 1) nJets++;
-        }
-        if (nJets != 1) return false;
-
-        // Check there is only one MET.
-        std::size_t nMET = 0;
-        for (const auto& ID : HyPERTopIDs){
             if (ID == 4) nMET++;
-        }
-        if (nMET != 1) return false;
-
-        // Check there is only one lepton.
-        std::size_t nLepton = 0;
-        for (const auto& ID : HyPERTopIDs){
             if (ID == 2 || ID == 3) nLepton++;
         }
+
+        if (nJets != 1) return false;
         if (nLepton != 1) return false;
+        if (sz == 3 && nMET != 1) return false;
 
-        // Check all indices are valid.
         if (!HyPERPerformance::allValidIndices<long>(HyPERTopIndices)) return false;
-
         return true;
     }
 
