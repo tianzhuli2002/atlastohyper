@@ -1025,6 +1025,11 @@ NuFlavourInfo ExtractNeutrinoFlavours(
     float tb_w1_pt,   float tb_w1_eta,   float tb_w1_phi,   float tb_w1_m,   int tb_w1_pdg,
     float tb_w2_pt,   float tb_w2_eta,   float tb_w2_phi,   float tb_w2_m,   int tb_w2_pdg
 );
+
+ std::vector<TLV> buildChargeOrderedLeptons(const ROOT::VecOps::RVec<TLV>& el_TLV,
+                                               const ROOT::VecOps::RVec<TLV>& mu_TLV,
+                                               const ROOT::VecOps::RVec<float>& el_charge,
+                                               const ROOT::VecOps::RVec<float>& mu_charge);
 }
 
 namespace TtbarSingleLeptonVyper{

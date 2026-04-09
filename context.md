@@ -80,7 +80,7 @@ export LD_LIBRARY_PATH=/data/leet/FFTutorial/install/lib:${LD_LIBRARY_PATH}
 - Full-split 
 ```bash
 export LD_LIBRARY_PATH=/data/leet/FFTutorial/install/lib:$LD_LIBRARY_PATH
-python3 python/FastFrames.py -c /data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 100 --job_index 0
+python3 python/FastFrames.py -c /data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 500 --job_index 0
 ```
 
 **Typical failure modes & diagnostics**:

@@ -357,10 +357,33 @@ namespace TtbarDileptonVars {
                          const ROOT::Math::PtEtaPhiMVector& bjet2,
                          const ROOT::Math::PtEtaPhiMVector& nu1,
                          const ROOT::Math::PtEtaPhiMVector& nu2){
+        // Invalid NuFlows inputs are mapped to exact zero 4-vectors in buildNuFromNuFlows.
+        // Reject those events here to avoid a systematic downward pull in mttbar.
+        const bool nu1_zero = (nu1.Px() == 0.0 && nu1.Py() == 0.0 && nu1.Pz() == 0.0 && nu1.E() == 0.0);
+        const bool nu2_zero = (nu2.Px() == 0.0 && nu2.Py() == 0.0 && nu2.Pz() == 0.0 && nu2.E() == 0.0);
+        if (nu1_zero && nu2_zero) {
+            return -1.0f;
+        }
+
         auto top1 = lep1 + bjet1 + nu1;
         auto top2 = lep2 + bjet2 + nu2;
         auto ttbar = top1 + top2;
-        return ttbar.M();
+        const float mtt = ttbar.M();
+
+        // Keep logs bounded while still providing per-event scale diagnostics.
+        // static int log_count = 0;
+        // if (log_count < 40) {
+        //     const float pnu1 = std::sqrt(nu1.Px()*nu1.Px() + nu1.Py()*nu1.Py() + nu1.Pz()*nu1.Pz());
+        //     const float pnu2 = std::sqrt(nu2.Px()*nu2.Px() + nu2.Py()*nu2.Py() + nu2.Pz()*nu2.Pz());
+        //     LOG(INFO) << "mttbar-scale-check: "
+        //               << "lep_pt=(" << lep1.Pt() << "," << lep2.Pt() << ") "
+        //               << "bjet_pt=(" << bjet1.Pt() << "," << bjet2.Pt() << ") "
+        //               << "nu_p=(" << pnu1 << "," << pnu2 << ") "
+        //               << "nu_E=(" << nu1.E() << "," << nu2.E() << ") "
+        //               << "mttbar=" << mtt;
+        //     ++log_count;
+        // }
+        return mtt;
     }
 
     float compute_betaStar(const ROOT::Math::PtEtaPhiMVector& t1,
@@ -405,23 +428,52 @@ namespace TtbarDileptonVars {
         const float p = std::hypot(pt, pz);
         const float m2 = e*e - p*p;
         const float m = std::sqrt(std::max(0.0f, m2));
-        return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, m);
+        ROOT::Math::PtEtaPhiMVector nu(pt, eta, phi, m);
+
+        static int log_count = 0;
+        if (log_count < 40) {
+            LOG(INFO) << "NuWeight neutrino input: pt=" << pt
+                      << " eta=" << eta
+                      << " phi=" << phi
+                      << " E_in=" << e
+                      << " E_reco=" << nu.E();
+            ++log_count;
+        }
+        return nu;
     }
 
     std::pair<ROOT::Math::PtEtaPhiMVector, ROOT::Math::PtEtaPhiMVector>
     buildNuFromNuFlows(const ROOT::VecOps::RVec<float>& nuflows_nu_out){
-        // Expect ordering: [nu1_px, nu1_py, nu1_pz, nu1_E, nu2_px, ...]
-        if (nuflows_nu_out.size() < 8) return {ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0)};
-        auto buildFromPxPyPzE = [](const float px, const float py, const float pz, const float E){
+        // Expect ordering: [nu_px, nu_py, nu_pz, nubar_px, nubar_py, nubar_pz].
+        if (nuflows_nu_out.size() != 6) {
+            LOG(INFO) << "NuFlows validation failed: nuflows_nu_out.size()=" << nuflows_nu_out.size()
+                      << " (expected 6). Returning zero neutrinos.";
+            return {ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0)};
+        }
+        auto buildFromPxPyPz = [](const float px, const float py, const float pz){
             float pt = std::hypot(px, py);
             float p = std::hypot(pt, pz);
             float eta = 0.0f;
             if (p > 0) eta = 0.5f * std::log((p + pz) / std::max(1e-9f, p - pz));
             float phi = std::atan2(py, px);
-            return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, std::sqrt(std::max(0.0f, E*E - p*p)));
+            return ROOT::Math::PtEtaPhiMVector(pt, eta, phi, 0.0f);
         };
-        auto nu1 = buildFromPxPyPzE(nuflows_nu_out[0], nuflows_nu_out[1], nuflows_nu_out[2], nuflows_nu_out[3]);
-        auto nu2 = buildFromPxPyPzE(nuflows_nu_out[4], nuflows_nu_out[5], nuflows_nu_out[6], nuflows_nu_out[7]);
+        auto nu1 = buildFromPxPyPz(nuflows_nu_out[0], nuflows_nu_out[1], nuflows_nu_out[2]);
+        auto nu2 = buildFromPxPyPz(nuflows_nu_out[3], nuflows_nu_out[4], nuflows_nu_out[5]);
+
+        const float e1 = std::sqrt(nuflows_nu_out[0]*nuflows_nu_out[0] + nuflows_nu_out[1]*nuflows_nu_out[1] + nuflows_nu_out[2]*nuflows_nu_out[2]);
+        const float e2 = std::sqrt(nuflows_nu_out[3]*nuflows_nu_out[3] + nuflows_nu_out[4]*nuflows_nu_out[4] + nuflows_nu_out[5]*nuflows_nu_out[5]);
+
+        static int log_count = 0;
+        if (log_count < 40) {
+            LOG(INFO) << "NuFlows raw components: "
+                      << "nu(px,py,pz)=(" << nuflows_nu_out[0] << "," << nuflows_nu_out[1] << "," << nuflows_nu_out[2] << ") "
+                      << "nubar(px,py,pz)=(" << nuflows_nu_out[3] << "," << nuflows_nu_out[4] << "," << nuflows_nu_out[5] << ")";
+            LOG(INFO) << "NuFlows derived kinematics: "
+                      << "nu(pt,E,eta)=(" << nu1.Pt() << "," << e1 << "," << nu1.Eta() << ") "
+                      << "nubar(pt,E,eta)=(" << nu2.Pt() << "," << e2 << "," << nu2.Eta() << ")";
+            ++log_count;
+        }
         return {nu1, nu2};
     }
 

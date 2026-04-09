@@ -602,6 +602,64 @@ ntuples: # Use this block to define the ntuples to be created.
     - mttbar_DELTAR_NUFLOWS_NOSYS
     - mttbar_DELTAR_NUWEIGHT_NOSYS
     - mttbar_TRUTH_NOSYS
+    - llbb_HYPER_NUFLOWS_NOSYS
+    - llbb_HYPER_NUWEIGHT_NOSYS
+    - llbb_CHI2_NUFLOWS_NOSYS
+    - llbb_CHI2_NUWEIGHT_NOSYS
+    - llbb_PT_NUFLOWS_NOSYS
+    - llbb_PT_NUWEIGHT_NOSYS
+    - llbb_DELTAR_NUFLOWS_NOSYS
+    - llbb_DELTAR_NUWEIGHT_NOSYS
+    - llbb_TRUTH_NOSYS
+    - mttbar_HYPER_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
+    - mttbar_CHI2_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
+    - mttbar_PT_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
+    - mttbar_DELTAR_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
+    - mttbar_HYPER_compare_to_TRUTH_NOSYS
+    - mttbar_truth_bjet_index_NOSYS
+    - mttbar_truth_bbarjet_index_NOSYS
+    - mttbar_truth_assignment_valid_NOSYS
+    - mttbar_partonic_history_NOSYS
+    - mttbar_partonic_history_valid_NOSYS
+    - mttbar_debug_HYPER_NUFLOWS_bjet1_index_NOSYS
+    - mttbar_debug_HYPER_NUFLOWS_bjet2_index_NOSYS
+    - mttbar_debug_HYPER_NUWEIGHT_bjet1_index_NOSYS
+    - mttbar_debug_HYPER_NUWEIGHT_bjet2_index_NOSYS
+    - mttbar_debug_CHI2_bjet1_index_NOSYS
+    - mttbar_debug_CHI2_bjet2_index_NOSYS
+    - mttbar_debug_PT_bjet1_index_NOSYS
+    - mttbar_debug_PT_bjet2_index_NOSYS
+    - mttbar_debug_DELTAR_bjet1_index_NOSYS
+    - mttbar_debug_DELTAR_bjet2_index_NOSYS
+    - nuflows_nu1_pt_NOSYS
+    - nuflows_nu1_eta_NOSYS
+    - nuflows_nu1_phi_NOSYS
+    - nuflows_nu1_m_NOSYS
+    - nuflows_nu2_pt_NOSYS
+    - nuflows_nu2_eta_NOSYS
+    - nuflows_nu2_phi_NOSYS
+    - nuflows_nu2_m_NOSYS
+    - nuflows_validation_status_NOSYS
+    - truth_nu1_pt_NOSYS
+    - truth_nu1_eta_NOSYS
+    - truth_nu1_phi_NOSYS
+    - truth_nu1_m_NOSYS
+    - truth_nu2_pt_NOSYS
+    - truth_nu2_eta_NOSYS
+    - truth_nu2_phi_NOSYS
+    - truth_nu2_m_NOSYS
+    - nu_pt_NOSYS
+    - nu_eta_NOSYS
+    - nu_phi_NOSYS
+    - nu_e_NOSYS
+    - nubar_pt_NOSYS
+    - nubar_eta_NOSYS
+    - nubar_phi_NOSYS
+    - nubar_e_NOSYS
+    - nu1_pt_compare_NUFLOWS_minus_TRUTH_NOSYS
+    - nu2_pt_compare_NUFLOWS_minus_TRUTH_NOSYS
+    - nu1_pt_compare_NUWEIGHT_minus_TRUTH_NOSYS
+    - nu2_pt_compare_NUWEIGHT_minus_TRUTH_NOSYS
     - HYPER_correct_NOSYS
     - CHI2_correct_NOSYS
     - PT_correct_NOSYS
