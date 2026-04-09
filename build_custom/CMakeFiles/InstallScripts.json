@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/data/leet/FFTutorial/atlastohyper/build_custom/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,158 @@
+# Ttbar Dilepton Reconstruction — Context (for agents)
+
+Purpose
+-------
+- Provide a compact but comprehensive reference describing how the ttbar dilepton reconstruction code in this repo works (design, dataflow, key files, algorithms, produced variables, and testing). This document is written so another automated agent or developer can pick up, extend, debug or re-run the reconstruction and validation workflow.
+
+Quick map
+---------
+- Frame (definitions & ntupling): `FFTutorial/atlastohyper/Root/TtbarDileptonFrameReco.cc`
+- Algorithms, helpers and physics utilities: `FFTutorial/atlastohyper/Root/Variables.cc`
+- Ntupling / region config: `FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml`
+- Plotting and comparisons: `FFTutorial/fastframes/scripts/compare_reco.py`
+- Output ntuples location (example): `output_ntuples_ttbarreco_1_4` (configured in the YAML `output_path_ntuples`).
+
+High-level flow
+----------------
+1. Input files contain reco trees with many branches (jets/leptons/MET, and optionally HyPER / nuflows / neutrino scalar branches and truth arrays).
+2. `TtbarDileptonFrameReco::defineVariables` declares many derived columns using `systematicDefine` (the project convention that produces `_NOSYS` columns).
+3. Several pairing and reconstruction algorithms are defined in `Variables.cc` and exposed via the frame. Their outputs are saved in the ntuple when the YAML includes the corresponding branch names.
+4. Downstream plotting/validation code (`compare_reco.py`) reads those ntuples and compares reconstruction methods (HYPER, CHI2, PT, DELTAR, pairing-by-mlb/min-sumsq, etc.).
+
+Naming / conventions
+--------------------
+- Systematic columns use the `_NOSYS` suffix for the nominal case (e.g., `mttbar_HYPER_NOSYS`).
+- Many defines return sentinel values on failure: `-1` or `-1.0` (invalid / not evaluable), `-999999.0` (placeholder) and other negative sentinels for region codes. Treat these as "invalid".
+- Truth arrays and per-event truth indices follow a fixed layout used throughout the code: `event_jet_truth_idx` is expected to have 6 entries representing the two tops as `[0,1,2]` and `[3,4,5]` with indices `0` and `3` being the two b-jets. `event_jet_truth_candidates` is the parallel candidate flag (1==matched candidate).
+
+Truth mapping details
+---------------------
+- `event_jet_truth_idx` layout (convention used by helper code):
+  - Top1 partons -> indices `[0,1,2]` (index 0 is b)
+  - Top2 partons -> indices `[3,4,5]` (index 3 is bbar)
+- The frame and many algorithms assume `event_jet_truth_idx.size() >= 6` and that `event_jet_truth_candidates[0] == 1` and `event_jet_truth_candidates[3] == 1` indicate available b/bbar truth matches.
+- `event_electron_truth_idx` and `event_muon_truth_idx` are typically length 2 and indicate which reco lepton maps to which top-side lepton.
+
+Neutrino handling (two methods)
+--------------------------------
+Two ways neutrino kinematics are supplied to the reconstruction code:
+
+1) NUWEIGHT (scalar neutrino branches)
+   - Branches: `nu_pt_NOSYS`, `nu_eta_NOSYS`, `nu_phi_NOSYS`, `nu_e_NOSYS` and parallel for `nubar_*`.
+   - The frame creates NUWEIGHT variants of `mttbar` and `betaStar` (e.g., `mttbar_HYPER_NUWEIGHT_NOSYS`, `betaStar_HYPER_NUWEIGHT_NOSYS`).
+   - Function: `TtbarDileptonVars::buildNuFromBranches` converts the scalar neutrino branches into `PtEtaPhiMVector` objects used by `compute_mttbar` and `betaStar` helpers.
+
+2) NUFLOWS / nu2flows (vector-of-floats summarising two neutrino four-vectors)
+   - Branch: `nuflows_nu_out_NOSYS` — expected ordering: `[nu1_px, nu1_py, nu1_pz, nu1_E, nu2_px, nu2_py, nu2_pz, nu2_E]` (8 floats minimum).
+   - Helper: `TtbarDileptonVars::buildNuFromNuFlows` reconstructs two `PtEtaPhiMVector` objects from the 8 float vector (computes pt, eta, phi and mass = sqrt(max(0,E^2 - p^2))).
+   - Many HyPER/CHI2 truth-aware defines prefer `nuflows` when present.
+
+Notes about units: most TLVs in this codebase use the original units from the ntuple (commonly MeV for ATLAS samples). Watch for places that divide by 1000 when making histograms.
+
+Reconstruction techniques (what they do and where)
+--------------------------------------------------
+The code implements multiple assignment methods. The canonical functions live in `Variables.cc` and are wrapped in `systematicDefine` in the frame.
+
+1) HyPER (external / precomputed assignment)
+   - Input branches: `hyper_TtbarDiLepton_Top1_Indices_NOSYS`, `hyper_TtbarDiLepton_Top1_IDs_NOSYS`, `...Top2_Indices...`, `...Top2_IDs...`.
+   - Representation: HyPER supplies pairs of parallel vectors: indices (positions in the original ntuple pre-selection) and IDs (object type codes). ID encoding used here: `1` = jet, `2` = electron, `3` = muon, `4` = MET / neutrino, `5` = tau.
+   - The frame converts integer HyPER vectors to `long` if needed and calls helpers to extract the HyPER b-jet index:
+       - `HyPERPerformanceSingleLepton::getHyPERBLepIndex` extracts the b-jet index from the HyPER triplet.
+   - Convergence checks: `HyPERTopLepConverged`, `HyPERTopHadConverged`, `HyPERConvergedTwoLeptonicTops` and `HyPERConvergedTwoTops` verify sizes, presence of exactly one lepton and a b-jet, uniqueness, and valid indices.
+   - Correctness flags compare HyPER b-indices with the truth-derived `Top*_Truth_Reco_Indices_NOSYS` (permutational tolerant check for both tops). Output columns: `HyPER_Top1_bIndex_NOSYS`, `HyPER_Top2_bIndex_NOSYS`, `HyPER_Top1_converged_NOSYS`, `HyPER_Top2_converged_NOSYS`, `HyPER_two_tops_converged_NOSYS`, `HyPER_Top1_correct_NOSYS`, `HyPER_Top2_correct_NOSYS`, `HyPER_both_tops_correct_NOSYS` and alias `HYPER_correct_NOSYS`.
+
+2) CHI2
+   - Implementation: `assignChi2` / `PairLeptonsToJets_Chi2TruthAll`.
+   - Approach: loop over ordered pairs of jets (i != j), compute two candidate m(ttbar) values (flip lepton order for the alternate pairing or for m2), combine into a chi2-like metric (difference from target top mass and additional terms like mT, pTdiff, sum deltaR), choose pair with minimum chi2.
+   - Uses neutrino guesses from `nuflows` or NUWEIGHT when available.
+   - Output: `mttbar_CHI2_NOSYS`, `betaStar_CHI2_NOSYS`, `pairing_chi2_out_all_NOSYS` (which contains chi2, indices, truth comparisons), and `CHI2_correct_NOSYS`.
+
+3) PT (two-highest-pT heuristic)
+   - `assignPT` chooses the first two jets (indices 0 and 1 in the TLV vector) as the b-jets and computes m(ttbar) with default neutrino placeholders (or zero neutrino if none). Outputs: `mttbar_PT_NOSYS`, `betaStar_PT_NOSYS`, `PT_correct_NOSYS`.
+
+4) DELTAR (minimize sum of ΔR)
+   - `assignDeltaR` and `PairLeptonsToJets_MinSumDeltaR` choose a pair of jets (ordered) that minimize ΔR(lepton_i, jet_assigned_i) sum. Resolves conflicts (same jet for both leptons) by picking second-best for the second lepton.
+   - Outputs pairing diagnostics: e.g., `pairing_minDeltaR_out_NOSYS`, `pairing_deltaR_correct_NOSYS` (correctness flag), and `DELTAR_correct_NOSYS` for reconstruction vs truth.
+
+5) MinSumSq / two-highest-pt/min-sum-of-squares pairing
+   - Function: `PairLeptonsToTopJets_MinSumSq`. Chooses two jets (two highest pT as starting point) and then computes sum-of-squared mlb/objective to decide pairing order. Output saved in `pairing_minSumSq_out_NOSYS` and scalar extractors such as `pairing_correct_NOSYS`.
+
+How m(ttbar) and betaStar are computed
+--------------------------------------
+- `TtbarDileptonVars::compute_mttbar(lep1, lep2, b1, b2, nu1, nu2)` constructs two top four-vectors `top1 = lep1 + b1 + nu1` and `top2 = lep2 + b2 + nu2` then returns `(top1 + top2).M()`.
+- `betaStar` (per-method variants) is implemented by building `t1 = b1 + lep1 + nu1` and `t2 = b2 + lep2 + nu2`, computing the boost to `t2` rest frame, boosting `t1` and computing $|p'| / E'$ for `t1`'s three-momentum and energy in that frame. Implementations guard on unphysical betas, negative energies, and return `-1` if invalid.
+- Variants exist for each method (HYPER, CHI2, PT, DELTAR) and NUWEIGHT/NuFlow versions where applicable: `betaStar_HYPER_NOSYS`, `betaStar_CHI2_NOSYS`, `betaStar_PT_NOSYS`, `betaStar_DELTAR_NOSYS`, and respective NUWEIGHT or NU variants.
+
+Top truth-derived helpers used by the frame
+------------------------------------------
+- `HyPERPerformanceDiLepton::getRecoIndicesTop1` and `getRecoIndicesTop2` compute compact truth-reco triplets used to evaluate correctness of methods. They expect `event_jet_truth_idx`, `event_electron_truth_idx`, `event_muon_truth_idx`, paired with `*_candidates` arrays and `event_nLeptons`.
+- `TtbarDileptonVars::FullyMatched` and `FullyMatched_MLB` use `event_jet_truth_idx` to decide if event is "fully matched" and to compute mlb truth summary vectors.
+
+Sentinels and failure modes
+---------------------------
+- Missing truth arrays: most `*_correct` flags will be `false` and many helper functions will return `-1` when the `event_*_truth_*` arrays are absent or malformed. This is why YAML must include the truth branches in `ntuples.branches` if you want persisted correctness flags.
+- HyPER inputs may be absent or typed differently across samples (some HyPER outputs are `vector<int>` while some helpers expect `vector<long>`). The frame contains small conversion lambdas and fallback `Define` statements that define empty vectors to avoid runtime aborts when inputs are missing.
+- Beta/boost numerical issues: negative Eprime, or beta2 >= 1 checks guard the physicality; if you see many `-1` returned from `betaStar_*` functions, check neutrino inputs for NaNs/unphysical values.
+
+Where to change/add algorithms or diagnostics
+--------------------------------------------
+- Add new reconstruction method: implement a new `Assignment` builder in `Variables.cc` (similar pattern to `assignChi2`, `assignDeltaR`, `assignPT`) and expose it through `defineVariables` with a `systematicDefine` returning `mttbar_<METHOD>_NOSYS`, `betaStar_<METHOD>_NOSYS`, and correctness flag using `Top*_Truth_Reco_Indices_NOSYS`.
+- Instrumentation: add more scalar extractors after the vector `pairing_*_out_*` defines to record diagnostics (chi2 value, selected indices) for histogramming.
+
+How to quickly validate locally
+------------------------------
+1. Build and install the local fastframes/atlastohyper libraries (example):
+```bash
+cmake -S FFTutorial/fastframes -B FFTutorial/fastframes/build -DCMAKE_BUILD_TYPE=Release
+cmake --build FFTutorial/fastframes/build -j8
+cmake --install FFTutorial/fastframes/build --prefix $PWD/FFTutorial/install
+export LD_LIBRARY_PATH=$PWD/FFTutorial/install/lib:$PWD/FFTutorial/atlastohyper/install/lib:$LD_LIBRARY_PATH
+```
+2. Produce one small ntuple (single job) using the YAML config:
+```bash
+python3 python/FastFrames.py -c FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 1 --job_index 0
+```
+3. Quick branch check with `uproot` (example):
+```python
+import uproot
+f = uproot.open('path/to/ntuple.root')
+tree = f['NOSYS']
+print('Has Top1 truth?', 'Top1_Truth_Reco_Indices_NOSYS' in tree.keys())
+print('Has HyPER top1 index?', 'hyper_TtbarDiLepton_Top1_Indices_NOSYS' in tree.keys())
+```
+4. Re-run `FFTutorial/fastframes/scripts/compare_reco.py` on the updated ntuple and check that `HYPER_correct_NOSYS` becomes nonzero for events where truth is available.
+
+Common failure modes and debugging hints
+---------------------------------------
+- `HyPER_correct_NOSYS` equals zero for all events: inspect `Top1_Truth_Reco_Indices_NOSYS` and `Top2_Truth_Reco_Indices_NOSYS` presence — if missing, the frame could not compute truth indices because `event_jet_truth_idx` etc are absent in the input ntuple.
+- Many `-1` values in `pairing_*_correct` arrays: this indicates missing or malformed truth arrays; verify `event_jet_truth_candidates` flags and lengths (need at least length 4 or 6 depending on helper) and ensure `TtbarDileptonReco.yml` lists those branches under `ntuples.branches`.
+- HyPER types mismatch errors at runtime: some samples store HyPER arrays as `vector<int>` vs `vector<long>`. The frame contains conversions but if you add new HyPER-based defines, follow the same safe conversion pattern (convert ints to longs before calling `HyPERPerformance*` helpers).
+
+Pointers to where to look in the code
+-------------------------------------
+- `FFTutorial/atlastohyper/Root/TtbarDileptonFrameReco.cc` — wiring of `systematicDefine` calls and what branches are created or required by each define.
+- `FFTutorial/atlastohyper/Root/Variables.cc` — full implementation of the matching, HyPER parsing, convergence, chi2 scoring, mttbar/betaStar calculations, and utility helpers.
+- `FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml` — region selection logic and `ntuples.branches` (control what is stored); must include truth branches if correctness comparisons should be persisted.
+- `FFTutorial/fastframes/scripts/compare_reco.py` — how the plotting/efficiency-by-multiplicity code reads and expects columns (`mttbar_truth_NOSYS`, `betaStar_truth_NOSYS`, `HYPER_correct_NOSYS` etc).
+
+Recommended next steps for an agent picking this up
+-------------------------------------------------
+1. Confirm `TtbarDileptonReco.yml` includes the truth branches (we already added `event_jet_truth_idx`, `event_jet_truth_candidates`, `event_electron_truth_idx`, `event_electron_truth_candidates`, `event_muon_truth_idx`, `event_muon_truth_candidates`, `event_nLeptons`).
+2. Build & run a single-job ntupling to produce an updated ntuple that can be inspected.
+3. Run `compare_reco.py` on the updated ntuple and check that `HYPER_correct_NOSYS` becomes nonzero for events where truth is available.
+4. If `HYPER_correct_NOSYS` still zero, inspect `Top1_Truth_Reco_Indices_NOSYS`/`Top2_Truth_Reco_Indices_NOSYS` content (use `uproot` to dump a few entries) and then step into `HyPERPerformanceDiLepton::getRecoIndicesTop1/Top2` logic.
+
+Contact/logging
+---------------
+- When instrumenting new tests, prefer returning small diagnostic histograms or scalar text logs (chi2 distributions, fraction of events with `-1` sentinel) before committing big runs. Use the `LOG(INFO)` lines already present in the frame to trace which defines were registered at runtime.
+
+Appendix: Useful symbol index (quick reference)
+----------------------------------------------
+- `mttbar_HYPER_NOSYS`, `mttbar_CHI2_NOSYS`, `mttbar_PT_NOSYS`, `mttbar_DELTAR_NOSYS` — reconstructed ttbar mass per-method.
+- `betaStar_HYPER_NOSYS`, `betaStar_CHI2_NOSYS`, `betaStar_PT_NOSYS`, `betaStar_DELTAR_NOSYS` — beta* per-method.
+- `HyPER_Top1_bIndex_NOSYS`, `HyPER_Top2_bIndex_NOSYS` — HyPER-picked b-jet indices (reco-jets index space).
+- `HyPER_Top1_converged_NOSYS`, `HyPER_Top2_converged_NOSYS`, `HyPER_two_tops_converged_NOSYS` — HyPER convergence checks.
+- `HyPER_Top1_correct_NOSYS`, `HyPER_Top2_correct_NOSYS`, `HyPER_both_tops_correct_NOSYS`, `HYPER_correct_NOSYS` — HyPER correctness flags (truth comparison).
+- `Top1_Truth_Reco_Indices_NOSYS`, `Top2_Truth_Reco_Indices_NOSYS` — truth → reco triplets used as reference (b, lep, nu placeholders).
+
+End of context file.

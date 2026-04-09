@@ -206,7 +206,7 @@ LOG(INFO) << "Adding variable: n_muons_NOSYS" << std::endl;
   mainNode = m_partonMatcher->systematicDefine(mainNode,
                                           "region_name_NOSYS",
                                           TtbarDileptonVars::regionName,
-                                          {"n_electrons_NOSYS", "n_muons_NOSYS", "sorted_el_TLV_NOSYS", "sorted_mu_TLV_NOSYS"});
+                                          {"n_electrons_NOSYS", "n_muons_NOSYS", "sorted_el_TLV_NOSYS", "sorted_mu_TLV_NOSYS", "sorted_el_charge_NOSYS", "sorted_mu_charge_NOSYS"});
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// Analysis specific variables ////////////////////////////////////////////////////
@@ -368,6 +368,112 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
                                           [](const ROOT::VecOps::RVec<float>& v){ return v.size()>7? v[7] : -1.0f; },
                                           {"pairing_chi2_out_all_NOSYS"});
 
+                                            LOG(INFO) << "Adding variable: TruthNeutrinos_NOSYS (from ExtractTruthNeutrinos)" << std::endl;
+
+                      // Guard: only define TruthNeutrinos_NOSYS if the input file
+                      // actually contains the required truth decay branches.
+                      {
+                        auto cols_nu = mainNode.GetColumnNames();
+                        auto has_col_nu = [&](const std::string &n){ for (const auto &c : cols_nu) if (c == n) return true; return false; };
+                        const std::vector<std::string> nu_branches = {
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_pt",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_eta",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_phi",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_m",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_pdgId",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_pt",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_eta",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_phi",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_m",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_pdgId",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_pt",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_eta",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_phi",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_m",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_pdgId",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_pt",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_eta",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_phi",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_m",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_pdgId"
+                        };
+                        bool has_all_nu = true;
+                        for (const auto &b : nu_branches) { if (!has_col_nu(b)) { has_all_nu = false; break; } }
+
+                        if (has_all_nu) {
+                      mainNode = m_partonMatcher->systematicDefine(
+                        mainNode,
+                        "TruthNeutrinos_NOSYS",
+                        [](float t_w1_pt, float t_w1_eta, float t_w1_phi, float t_w1_m, int t_w1_pdg,
+                           float t_w2_pt, float t_w2_eta, float t_w2_phi, float t_w2_m, int t_w2_pdg,
+                           float tb_w1_pt, float tb_w1_eta, float tb_w1_phi, float tb_w1_m, int tb_w1_pdg,
+                           float tb_w2_pt, float tb_w2_eta, float tb_w2_phi, float tb_w2_m, int tb_w2_pdg) -> TtbarDileptonVars::NuFlavourInfo {
+                          auto truth = TtbarDileptonVars::ExtractTruthNeutrinos(
+                            t_w1_pt, t_w1_eta, t_w1_phi, t_w1_m, t_w1_pdg,
+                            t_w2_pt, t_w2_eta, t_w2_phi, t_w2_m, t_w2_pdg,
+                            tb_w1_pt, tb_w1_eta, tb_w1_phi, tb_w1_m, tb_w1_pdg,
+                            tb_w2_pt, tb_w2_eta, tb_w2_phi, tb_w2_m, tb_w2_pdg
+                          );
+                          TtbarDileptonVars::NuFlavourInfo out;
+                          out.nu_e = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                          out.nu_mu = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                          out.nu_from_t = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                          out.nu_from_tbar = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                          out.pdg_e = 0;
+                          out.pdg_mu = 0;
+                          // expose raw truth neutrinos (from top and from antitop)
+                          out.nu_from_t = truth.nu_from_t;
+                          out.nu_from_tbar = truth.nu_from_tbar;
+                          // keep flavour-mapped slots for backward compatibility
+                          if (std::abs(truth.pdg_from_t) == 12) { out.nu_e = truth.nu_from_t; out.pdg_e = truth.pdg_from_t; }
+                          else if (std::abs(truth.pdg_from_t) == 14) { out.nu_mu = truth.nu_from_t; out.pdg_mu = truth.pdg_from_t; }
+                          if (std::abs(truth.pdg_from_tbar) == 12) { out.nu_e = truth.nu_from_tbar; out.pdg_e = truth.pdg_from_tbar; }
+                          else if (std::abs(truth.pdg_from_tbar) == 14) { out.nu_mu = truth.nu_from_tbar; out.pdg_mu = truth.pdg_from_tbar; }
+                          return out;
+                        },
+                        {
+                          // from top (after FSR)
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_pt",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_eta",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_phi",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_m",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_t_pdgId",
+
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_pt",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_eta",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_phi",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_m",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_t_pdgId",
+
+                          // from antitop (after FSR)
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_pt",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_eta",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_phi",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_m",
+                          "Ttbar_History_MC_Wdecay1_afterFSR_from_tbar_pdgId",
+
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_pt",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_eta",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_phi",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_m",
+                          "Ttbar_History_MC_Wdecay2_afterFSR_from_tbar_pdgId"
+                        }
+                      );
+                        } else {
+                          LOG(INFO) << "Skipping TruthNeutrinos_NOSYS: input file missing required truth decay branches" << std::endl;
+                          // Provide a fallback so downstream defines that depend on it don't crash
+                          mainNode = mainNode.Define("TruthNeutrinos_NOSYS", [](){
+                            TtbarDileptonVars::NuFlavourInfo out;
+                            out.nu_e = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                            out.nu_mu = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                            out.nu_from_t = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                            out.nu_from_tbar = ROOT::Math::PtEtaPhiMVector(0,0,0,0);
+                            out.pdg_e = 0;
+                            out.pdg_mu = 0;
+                            return out;
+                          });
+                        }
+                      }
     // HyPER/nuflows presence check: if inputs don't provide these branches
     // skip all HyPER-dependent defines to keep processing robust.
     {
@@ -377,13 +483,12 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
       // "hyper_TtbarDiLepton_*") so substring matching is safer than
       // checking a small fixed set of names.
       auto cols = mainNode.GetColumnNames();
-      auto has_col = [&](const std::string &n){ for (const auto &c : cols) if (c == n) return true; return false; };
 
       bool has_hyper_inputs = false;
       for (const auto &c : cols) {
         std::string lc = c;
         std::transform(lc.begin(), lc.end(), lc.begin(), [](unsigned char ch){ return static_cast<char>(std::tolower(ch)); });
-        if (lc.find("hyper") != std::string::npos || lc.find("hyper") != std::string::npos || lc.find("nuflow") != std::string::npos || lc.find("nu_") != std::string::npos) {
+        if (lc.find("hyper") != std::string::npos || lc.find("nuflow") != std::string::npos || lc.find("nu_") != std::string::npos) {
           has_hyper_inputs = true;
           break;
         }
@@ -394,23 +499,40 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
         auto cols2 = mainNode.GetColumnNames();
         auto has_col2 = [&](const std::string &n){ for (const auto &c : cols2) if (c == n) return true; return false; };
 
-        if (!has_col2("mttbar_HYPER_NOSYS")) {
-            mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_HYPER_NOSYS",
+        if (!has_col2("mttbar_HYPER_NUFLOWS_NOSYS")) {
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_HYPER_NUFLOWS_NOSYS",
           [](const std::vector<int>& top1_idx, const std::vector<int>& top1_IDs,
            const std::vector<int>& top2_idx, const std::vector<int>& top2_IDs,
        const ROOT::VecOps::RVec<TLV>& jet_TLV,
        const ROOT::VecOps::RVec<TLV>& el_TLV,
        const ROOT::VecOps::RVec<TLV>& mu_TLV,
+       const ROOT::VecOps::RVec<float>& el_charge,
+       const ROOT::VecOps::RVec<float>& mu_charge,
+       unsigned long n_electrons,
+       unsigned long n_muons,
        const ROOT::VecOps::RVec<float>& nuflows)->float {
         auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<long> tops; tops.insert(tops.end(), top1_idx.begin(), top1_idx.end()); tops.insert(tops.end(), top2_idx.begin(), top2_idx.end());
         std::vector<long> ids; ids.insert(ids.end(), top1_IDs.begin(), top1_IDs.end()); ids.insert(ids.end(), top2_IDs.begin(), top2_IDs.end());
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second);
+        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second, el_charge, mu_charge);
         if (!asg.valid) return -1.0f;
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
         auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
         auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
@@ -422,98 +544,189 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
         return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus.first, nus.second);
       },
-      {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","nuflows_nu_out_NOSYS"});
+      {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("mttbar_CHI2_NOSYS")) {
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_CHI2_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV, const ROOT::VecOps::RVec<float>& nuflows)->float{
+        if (!has_col2("mttbar_CHI2_NUFLOWS_NOSYS")) {
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_CHI2_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
         auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::CHI2, {}, {}, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second);
-        if (!asg.valid) return -1.0f;
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
         return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus.first, nus.second);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","nuflows_nu_out_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_chi2_out_all_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("mttbar_PT_NOSYS")) {
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_PT_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV)->float{
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::PT, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-        if (!asg.valid) return -1.0f;
+        if (!has_col2("mttbar_PT_NUFLOWS_NOSYS")) {
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_PT_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
+        auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
-        return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
+        return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus.first, nus.second);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_minSumSq_out_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("mttbar_DELTAR_NOSYS")) {
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_DELTAR_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV)->float{
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::DELTAR, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-        if (!asg.valid) return -1.0f;
+        if (!has_col2("mttbar_DELTAR_NUFLOWS_NOSYS")) {
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_DELTAR_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
+        auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
-        return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
+        return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus.first, nus.second);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_minDeltaR_out_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
         // betaStar: boost t1 into t2 rest frame and compute |p|/E for each reconstruction method
-        if (!has_col2("betaStar_HYPER_NOSYS")) {
-          LOG(INFO) << "Adding variable: betaStar_HYPER_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_HYPER_NOSYS",
+        if (!has_col2("betaStar_HYPER_NUFLOWS_NOSYS")) {
+          LOG(INFO) << "Adding variable: betaStar_HYPER_NUFLOWS_NOSYS" << std::endl;
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_HYPER_NUFLOWS_NOSYS",
           [](const std::vector<int>& top1_idx, const std::vector<int>& top1_IDs,
            const std::vector<int>& top2_idx, const std::vector<int>& top2_IDs,
        const ROOT::VecOps::RVec<TLV>& jet_TLV,
        const ROOT::VecOps::RVec<TLV>& el_TLV,
        const ROOT::VecOps::RVec<TLV>& mu_TLV,
+       const ROOT::VecOps::RVec<float>& el_charge,
+       const ROOT::VecOps::RVec<float>& mu_charge,
+       unsigned long n_electrons,
+       unsigned long n_muons,
        const ROOT::VecOps::RVec<float>& nuflows)->float {
         auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<long> tops; tops.insert(tops.end(), top1_idx.begin(), top1_idx.end()); tops.insert(tops.end(), top2_idx.begin(), top2_idx.end());
         std::vector<long> ids; ids.insert(ids.end(), top1_IDs.begin(), top1_IDs.end()); ids.insert(ids.end(), top2_IDs.begin(), top2_IDs.end());
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second);
+        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second, el_charge, mu_charge);
         if (!asg.valid) return -1.0f;
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
         auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
         auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
@@ -525,166 +738,202 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
         auto t1 = b1m + l1m + nus.first;
         auto t2 = b2m + l2m + nus.second;
-        const double betax = t2.Px()/t2.E();
-        const double betay = t2.Py()/t2.E();
-        const double betaz = t2.Pz()/t2.E();
-        const double beta2 = betax*betax + betay*betay + betaz*betaz;
-        if (beta2 >= 1.0) return -1.0f;
-        const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-        const double E1 = t1.E();
-        const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-        const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-        const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-        const double ppx = p1x + factor * betax;
-        const double ppy = p1y + factor * betay;
-        const double ppz = p1z + factor * betaz;
-        const double Eprime = gamma * (E1 - p_dot_beta);
-        if (Eprime <= 0.0) return -1.0f;
-        const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-        const double betaStar = pprime / Eprime;
-        if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-        return static_cast<float>(betaStar);
+        return TtbarDileptonVars::compute_betaStar(t1, t2);
       },
-      {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","nuflows_nu_out_NOSYS"});
+      {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("betaStar_CHI2_NOSYS")) {
-          LOG(INFO) << "Adding variable: betaStar_CHI2_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_CHI2_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV, const ROOT::VecOps::RVec<float>& nuflows)->float{
+        if (!has_col2("betaStar_CHI2_NUFLOWS_NOSYS")) {
+          LOG(INFO) << "Adding variable: betaStar_CHI2_NUFLOWS_NOSYS" << std::endl;
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_CHI2_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
         auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::CHI2, {}, {}, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second);
-        if (!asg.valid) return -1.0f;
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
         auto t1 = b1m + l1m + nus.first;
         auto t2 = b2m + l2m + nus.second;
-        const double betax = t2.Px()/t2.E();
-        const double betay = t2.Py()/t2.E();
-        const double betaz = t2.Pz()/t2.E();
-        const double beta2 = betax*betax + betay*betay + betaz*betaz;
-        if (beta2 >= 1.0) return -1.0f;
-        const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-        const double E1 = t1.E();
-        const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-        const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-        const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-        const double ppx = p1x + factor * betax;
-        const double ppy = p1y + factor * betay;
-        const double ppz = p1z + factor * betaz;
-        const double Eprime = gamma * (E1 - p_dot_beta);
-        if (Eprime <= 0.0) return -1.0f;
-        const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-        const double betaStar = pprime / Eprime;
-        if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-        return static_cast<float>(betaStar);
+        return TtbarDileptonVars::compute_betaStar(t1, t2);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","nuflows_nu_out_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_chi2_out_all_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("betaStar_PT_NOSYS")) {
-          LOG(INFO) << "Adding variable: betaStar_PT_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_PT_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV)->float{
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::PT, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-        if (!asg.valid) return -1.0f;
+        if (!has_col2("betaStar_PT_NUFLOWS_NOSYS")) {
+          LOG(INFO) << "Adding variable: betaStar_PT_NUFLOWS_NOSYS" << std::endl;
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_PT_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
+        auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
-        auto t1 = b1m + l1m + ROOT::Math::PtEtaPhiMVector(0,0,0,0);
-        auto t2 = b2m + l2m + ROOT::Math::PtEtaPhiMVector(0,0,0,0);
-        const double betax = t2.Px()/t2.E();
-        const double betay = t2.Py()/t2.E();
-        const double betaz = t2.Pz()/t2.E();
-        const double beta2 = betax*betax + betay*betay + betaz*betaz;
-        if (beta2 >= 1.0) return -1.0f;
-        const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-        const double E1 = t1.E();
-        const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-        const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-        const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-        const double ppx = p1x + factor * betax;
-        const double ppy = p1y + factor * betay;
-        const double ppz = p1z + factor * betaz;
-        const double Eprime = gamma * (E1 - p_dot_beta);
-        if (Eprime <= 0.0) return -1.0f;
-        const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-        const double betaStar = pprime / Eprime;
-        if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-        return static_cast<float>(betaStar);
+        auto t1 = b1m + l1m + nus.first;
+        auto t2 = b2m + l2m + nus.second;
+        return TtbarDileptonVars::compute_betaStar(t1, t2);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_minSumSq_out_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        if (!has_col2("betaStar_DELTAR_NOSYS")) {
-          LOG(INFO) << "Adding variable: betaStar_DELTAR_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_DELTAR_NOSYS",
-      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV)->float{
-        auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::DELTAR, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-        if (!asg.valid) return -1.0f;
+        if (!has_col2("betaStar_DELTAR_NUFLOWS_NOSYS")) {
+          LOG(INFO) << "Adding variable: betaStar_DELTAR_NUFLOWS_NOSYS" << std::endl;
+          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_DELTAR_NUFLOWS_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV,
+         const ROOT::VecOps::RVec<TLV>& el_TLV,
+         const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<float>& el_charge,
+         const ROOT::VecOps::RVec<float>& mu_charge,
+         unsigned long n_electrons,
+         unsigned long n_muons,
+         const ROOT::VecOps::RVec<float>& pairing_out,
+         const ROOT::VecOps::RVec<float>& nuflows)->float{
+        auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
         std::vector<TLV> leps;
-        if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-        else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-        else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+        if (n_electrons == 2 && n_muons == 0) {
+          if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+          if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+          else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+        } else if (n_muons == 2 && n_electrons == 0) {
+          if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+          if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+          if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+          else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+        } else if (n_electrons == 1 && n_muons == 1) {
+          if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+          if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+          if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+          else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+        }
         if (leps.size() != 2) return -1.0f;
-        auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
-        auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
-        auto l1 = leps.size() > static_cast<size_t>(asg.lep1_idx) && asg.lep1_idx>=0 ? leps[asg.lep1_idx] : TLV(0,0,0,0);
-        auto l2 = leps.size() > static_cast<size_t>(asg.lep2_idx) && asg.lep2_idx>=0 ? leps[asg.lep2_idx] : TLV(0,0,0,0);
+        if (pairing_out.size() < 2) return -1.0f;
+        const int j0 = static_cast<int>(pairing_out[0]);
+        const int j1 = static_cast<int>(pairing_out[1]);
+        if (j0 < 0 || j1 < 0 || j0 == j1) return -1.0f;
+        if (static_cast<size_t>(j0) >= jet_TLV.size() || static_cast<size_t>(j1) >= jet_TLV.size()) return -1.0f;
+        auto b1 = jet_TLV[j0];
+        auto b2 = jet_TLV[j1];
+        auto l1 = leps[0];
+        auto l2 = leps[1];
         auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
         auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
         auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
         auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
-        auto t1 = b1m + l1m + ROOT::Math::PtEtaPhiMVector(0,0,0,0);
-        auto t2 = b2m + l2m + ROOT::Math::PtEtaPhiMVector(0,0,0,0);
-        const double betax = t2.Px()/t2.E();
-        const double betay = t2.Py()/t2.E();
-        const double betaz = t2.Pz()/t2.E();
-        const double beta2 = betax*betax + betay*betay + betaz*betaz;
-        if (beta2 >= 1.0) return -1.0f;
-        const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-        const double E1 = t1.E();
-        const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-        const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-        const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-        const double ppx = p1x + factor * betax;
-        const double ppy = p1y + factor * betay;
-        const double ppz = p1z + factor * betaz;
-        const double Eprime = gamma * (E1 - p_dot_beta);
-        if (Eprime <= 0.0) return -1.0f;
-        const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-        const double betaStar = pprime / Eprime;
-        if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-        return static_cast<float>(betaStar);
+        auto t1 = b1m + l1m + nus.first;
+        auto t2 = b2m + l2m + nus.second;
+        return TtbarDileptonVars::compute_betaStar(t1, t2);
       },
-      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS"});
+      {"jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS","pairing_minDeltaR_out_NOSYS","nuflows_nu_out_NOSYS"});
         }
 
-        // Truth-based mttbar and betaStar using truth indices (use nuflows if available)
-        if (!has_col2("mttbar_truth_NOSYS")) {
-          LOG(INFO) << "Adding variable: mttbar_truth_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_truth_NOSYS",
+        // Truth-based mttbar and betaStar using truth indices (prefer TruthNeutrinos_NOSYS)
+        if (!has_col2("mttbar_TRUTH_NOSYS")) {
+          LOG(INFO) << "Adding variable: mttbar_TRUTH_NOSYS" << std::endl;
+          bool has_truth_nus = has_col2("TruthNeutrinos_NOSYS") || has_col2("nu_e_px_NOSYS") || has_col2("nu_mu_px_NOSYS");
+          if (has_truth_nus) {
+            mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_TRUTH_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<int>& event_jet_truth_idx, const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+         const TtbarDileptonVars::NuFlavourInfo& truth_nus, const ROOT::VecOps::RVec<float>& el_charge, const ROOT::VecOps::RVec<float>& mu_charge)->float{
+            auto nus1 = truth_nus.nu_from_t;
+            auto nus2 = truth_nus.nu_from_tbar;
+            if (event_jet_truth_idx.size() <= 3 || event_jet_truth_candidates.size() <= 3) return -1.0f;
+            if (event_jet_truth_idx[0] == -1 || event_jet_truth_idx[3] == -1) return -1.0f;
+            if (event_jet_truth_candidates[0] != 1 || event_jet_truth_candidates[3] != 1) return -1.0f;
+            int idx_b = event_jet_truth_idx[0];
+            int idx_bbar = event_jet_truth_idx[3];
+            if (idx_b < 0 || idx_bbar < 0) return -1.0f;
+            if (idx_b >= static_cast<int>(jet_TLV.size()) || idx_bbar >= static_cast<int>(jet_TLV.size())) return -1.0f;
+            if (idx_b == idx_bbar) return -1.0f;
+            // assemble leptons in consistent order
+            std::vector<TLV> leps;
+            if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+            else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+            else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+            if (leps.size() != 2) return -1.0f;
+            auto b1 = jet_TLV[idx_b];
+            auto b2 = jet_TLV[idx_bbar];
+            auto l1 = leps[0];
+            auto l2 = leps[1];
+            auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
+            auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
+            auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
+            auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
+            return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus1, nus2);
+      },
+      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","event_jet_truth_idx","event_jet_truth_candidates","TruthNeutrinos_NOSYS","el_charge","mu_charge"});
+          } else {
+            mainNode = m_partonMatcher->systematicDefine(mainNode, "mttbar_TRUTH_NOSYS",
       [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
          const ROOT::VecOps::RVec<int>& event_jet_truth_idx, const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
          const ROOT::VecOps::RVec<float>& nuflows, const ROOT::VecOps::RVec<float>& el_charge, const ROOT::VecOps::RVec<float>& mu_charge)->float{
@@ -715,11 +964,47 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
             return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nus.first, nus.second);
       },
       {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","event_jet_truth_idx","event_jet_truth_candidates","nuflows_nu_out_NOSYS","el_charge","mu_charge"});
+          }
         }
 
-        if (!has_col2("betaStar_truth_NOSYS")) {
-          LOG(INFO) << "Adding variable: betaStar_truth_NOSYS" << std::endl;
-          mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_truth_NOSYS",
+        if (!has_col2("betaStar_TRUTH_NOSYS")) {
+          LOG(INFO) << "Adding variable: betaStar_TRUTH_NOSYS" << std::endl;
+          bool has_truth_nus = has_col2("TruthNeutrinos_NOSYS") || has_col2("nu_e_px_NOSYS") || has_col2("nu_mu_px_NOSYS");
+          if (has_truth_nus) {
+            mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_TRUTH_NOSYS",
+      [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
+         const ROOT::VecOps::RVec<int>& event_jet_truth_idx, const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
+         const TtbarDileptonVars::NuFlavourInfo& truth_nus, const ROOT::VecOps::RVec<float>& el_charge, const ROOT::VecOps::RVec<float>& mu_charge)->float{
+            auto nus1 = truth_nus.nu_from_t;
+            auto nus2 = truth_nus.nu_from_tbar;
+            if (event_jet_truth_idx.size() <= 3 || event_jet_truth_candidates.size() <= 3) return -1.0f;
+            if (event_jet_truth_idx[0] == -1 || event_jet_truth_idx[3] == -1) return -1.0f;
+            if (event_jet_truth_candidates[0] != 1 || event_jet_truth_candidates[3] != 1) return -1.0f;
+            int idx_b = event_jet_truth_idx[0];
+            int idx_bbar = event_jet_truth_idx[3];
+            if (idx_b < 0 || idx_bbar < 0) return -1.0f;
+            if (idx_b >= static_cast<int>(jet_TLV.size()) || idx_bbar >= static_cast<int>(jet_TLV.size())) return -1.0f;
+            if (idx_b == idx_bbar) return -1.0f;
+            std::vector<TLV> leps;
+            if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+            else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+            else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+            if (leps.size() != 2) return -1.0f;
+            auto b1 = jet_TLV[idx_b];
+            auto b2 = jet_TLV[idx_bbar];
+            auto l1 = leps[0];
+            auto l2 = leps[1];
+            auto l1m = ROOT::Math::PtEtaPhiMVector(l1.Pt(), l1.Eta(), l1.Phi(), l1.M());
+            auto l2m = ROOT::Math::PtEtaPhiMVector(l2.Pt(), l2.Eta(), l2.Phi(), l2.M());
+            auto b1m = ROOT::Math::PtEtaPhiMVector(b1.Pt(), b1.Eta(), b1.Phi(), b1.M());
+            auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
+            auto t1 = b1m + l1m + nus1;
+            auto t2 = b2m + l2m + nus2;
+            return TtbarDileptonVars::compute_betaStar(t1, t2);
+      },
+      {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","event_jet_truth_idx","event_jet_truth_candidates","TruthNeutrinos_NOSYS","el_charge","mu_charge"});
+          } else {
+            mainNode = m_partonMatcher->systematicDefine(mainNode, "betaStar_TRUTH_NOSYS",
       [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
          const ROOT::VecOps::RVec<int>& event_jet_truth_idx, const ROOT::VecOps::RVec<int>& event_jet_truth_candidates,
          const ROOT::VecOps::RVec<float>& nuflows, const ROOT::VecOps::RVec<float>& el_charge, const ROOT::VecOps::RVec<float>& mu_charge)->float{
@@ -747,27 +1032,10 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
             auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
             auto t1 = b1m + l1m + nus.first;
             auto t2 = b2m + l2m + nus.second;
-            const double betax = t2.Px()/t2.E();
-            const double betay = t2.Py()/t2.E();
-            const double betaz = t2.Pz()/t2.E();
-            const double beta2 = betax*betax + betay*betay + betaz*betaz;
-            if (beta2 >= 1.0) return -1.0f;
-            const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-            const double E1 = t1.E();
-            const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-            const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-            const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-            const double ppx = p1x + factor * betax;
-            const double ppy = p1y + factor * betay;
-            const double ppz = p1z + factor * betaz;
-            const double Eprime = gamma * (E1 - p_dot_beta);
-            if (Eprime <= 0.0) return -1.0f;
-            const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-            const double betaStar = pprime / Eprime;
-            if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-            return static_cast<float>(betaStar);
+            return TtbarDileptonVars::compute_betaStar(t1, t2);
       },
       {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","event_jet_truth_idx","event_jet_truth_candidates","nuflows_nu_out_NOSYS","el_charge","mu_charge"});
+          }
         }
 
         // Add NUWEIGHT-based mttbar variants when scalar neutrino branches exist
@@ -780,18 +1048,35 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
            const ROOT::VecOps::RVec<TLV>& jet_TLV,
            const ROOT::VecOps::RVec<TLV>& el_TLV,
            const ROOT::VecOps::RVec<TLV>& mu_TLV,
+           const ROOT::VecOps::RVec<float>& el_charge,
+           const ROOT::VecOps::RVec<float>& mu_charge,
+           unsigned long n_electrons,
+           unsigned long n_muons,
            float nu_pt, float nu_eta, float nu_phi, float nu_e,
            float nubar_pt, float nubar_eta, float nubar_phi, float nubar_e)->float {
               auto nu1 = TtbarDileptonVars::buildNuFromBranches(nu_pt, nu_eta, nu_phi, nu_e);
               auto nu2 = TtbarDileptonVars::buildNuFromBranches(nubar_pt, nubar_eta, nubar_phi, nubar_e);
               std::vector<long> tops; tops.insert(tops.end(), top1_idx.begin(), top1_idx.end()); tops.insert(tops.end(), top2_idx.begin(), top2_idx.end());
               std::vector<long> ids; ids.insert(ids.end(), top1_IDs.begin(), top1_IDs.end()); ids.insert(ids.end(), top2_IDs.begin(), top2_IDs.end());
-              auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nu1, nu2);
+              auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nu1, nu2, el_charge, mu_charge);
               if (!asg.valid) return -1.0f;
               std::vector<TLV> leps;
-              if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-              else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-              else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+              if (n_electrons == 2 && n_muons == 0) {
+                if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+                if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+                if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+                else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+              } else if (n_muons == 2 && n_electrons == 0) {
+                if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+                if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+                if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+                else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+              } else if (n_electrons == 1 && n_muons == 1) {
+                if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+                if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+                if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+                else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+              }
               if (leps.size() != 2) return -1.0f;
               auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
               auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
@@ -803,7 +1088,7 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
               auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
               return TtbarDileptonVars::compute_mttbar(l1m, l2m, b1m, b2m, nu1, nu2);
         },
-        {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS",
+        {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS",
          "nu_pt_NOSYS","nu_eta_NOSYS","nu_phi_NOSYS","nu_e_NOSYS","nubar_pt_NOSYS","nubar_eta_NOSYS","nubar_phi_NOSYS","nubar_e_NOSYS"});
           }
 
@@ -900,18 +1185,35 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
            const ROOT::VecOps::RVec<TLV>& jet_TLV,
            const ROOT::VecOps::RVec<TLV>& el_TLV,
            const ROOT::VecOps::RVec<TLV>& mu_TLV,
+           const ROOT::VecOps::RVec<float>& el_charge,
+           const ROOT::VecOps::RVec<float>& mu_charge,
+           unsigned long n_electrons,
+           unsigned long n_muons,
            float nu_pt, float nu_eta, float nu_phi, float nu_e,
            float nubar_pt, float nubar_eta, float nubar_phi, float nubar_e)->float {
               auto nu1 = TtbarDileptonVars::buildNuFromBranches(nu_pt, nu_eta, nu_phi, nu_e);
               auto nu2 = TtbarDileptonVars::buildNuFromBranches(nubar_pt, nubar_eta, nubar_phi, nubar_e);
               std::vector<long> tops; tops.insert(tops.end(), top1_idx.begin(), top1_idx.end()); tops.insert(tops.end(), top2_idx.begin(), top2_idx.end());
               std::vector<long> ids; ids.insert(ids.end(), top1_IDs.begin(), top1_IDs.end()); ids.insert(ids.end(), top2_IDs.begin(), top2_IDs.end());
-              auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nu1, nu2);
+              auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::HYPER, tops, ids, jet_TLV, el_TLV, mu_TLV, nu1, nu2, el_charge, mu_charge);
               if (!asg.valid) return -1.0f;
               std::vector<TLV> leps;
-              if (!el_TLV.empty() && !mu_TLV.empty()){ leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
-              else if (el_TLV.size()>=2){ leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
-              else if (mu_TLV.size()>=2){ leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+              if (n_electrons == 2 && n_muons == 0) {
+                if (el_TLV.size() < 2 || el_charge.size() < 2) return -1.0f;
+                if (el_charge[0] * el_charge[1] >= 0.0f) return -1.0f;
+                if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(el_TLV[1]); }
+                else { leps.push_back(el_TLV[1]); leps.push_back(el_TLV[0]); }
+              } else if (n_muons == 2 && n_electrons == 0) {
+                if (mu_TLV.size() < 2 || mu_charge.size() < 2) return -1.0f;
+                if (mu_charge[0] * mu_charge[1] >= 0.0f) return -1.0f;
+                if (mu_charge[0] > 0.0f) { leps.push_back(mu_TLV[0]); leps.push_back(mu_TLV[1]); }
+                else { leps.push_back(mu_TLV[1]); leps.push_back(mu_TLV[0]); }
+              } else if (n_electrons == 1 && n_muons == 1) {
+                if (el_TLV.empty() || mu_TLV.empty() || el_charge.empty() || mu_charge.empty()) return -1.0f;
+                if (el_charge[0] * mu_charge[0] >= 0.0f) return -1.0f;
+                if (el_charge[0] > 0.0f) { leps.push_back(el_TLV[0]); leps.push_back(mu_TLV[0]); }
+                else { leps.push_back(mu_TLV[0]); leps.push_back(el_TLV[0]); }
+              }
               if (leps.size() != 2) return -1.0f;
               auto b1 = jet_TLV.size() > static_cast<size_t>(asg.bjet1_idx) && asg.bjet1_idx>=0 ? jet_TLV[asg.bjet1_idx] : TLV(0,0,0,0);
               auto b2 = jet_TLV.size() > static_cast<size_t>(asg.bjet2_idx) && asg.bjet2_idx>=0 ? jet_TLV[asg.bjet2_idx] : TLV(0,0,0,0);
@@ -923,27 +1225,9 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
               auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
               auto t1 = b1m + l1m + nu1;
               auto t2 = b2m + l2m + nu2;
-              const double betax = t2.Px()/t2.E();
-              const double betay = t2.Py()/t2.E();
-              const double betaz = t2.Pz()/t2.E();
-              const double beta2 = betax*betax + betay*betay + betaz*betaz;
-              if (beta2 >= 1.0) return -1.0f;
-              const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-              const double E1 = t1.E();
-              const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-              const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-              const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-              const double ppx = p1x + factor * betax;
-              const double ppy = p1y + factor * betay;
-              const double ppz = p1z + factor * betaz;
-              const double Eprime = gamma * (E1 - p_dot_beta);
-              if (Eprime <= 0.0) return -1.0f;
-              const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-              const double betaStar = pprime / Eprime;
-              if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-              return static_cast<float>(betaStar);
+              return TtbarDileptonVars::compute_betaStar(t1, t2);
         },
-        {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS",
+        {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS","jet_TLV_NOSYS","el_TLV_NOSYS","mu_TLV_NOSYS","el_charge","mu_charge","n_electrons_NOSYS","n_muons_NOSYS",
          "nu_pt_NOSYS","nu_eta_NOSYS","nu_phi_NOSYS","nu_e_NOSYS","nubar_pt_NOSYS","nubar_eta_NOSYS","nubar_phi_NOSYS","nubar_e_NOSYS"});
           }
 
@@ -972,25 +1256,7 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
               auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
               auto t1 = b1m + l1m + nu1;
               auto t2 = b2m + l2m + nu2;
-              const double betax = t2.Px()/t2.E();
-              const double betay = t2.Py()/t2.E();
-              const double betaz = t2.Pz()/t2.E();
-              const double beta2 = betax*betax + betay*betay + betaz*betaz;
-              if (beta2 >= 1.0) return -1.0f;
-              const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-              const double E1 = t1.E();
-              const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-              const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-              const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-              const double ppx = p1x + factor * betax;
-              const double ppy = p1y + factor * betay;
-              const double ppz = p1z + factor * betaz;
-              const double Eprime = gamma * (E1 - p_dot_beta);
-              if (Eprime <= 0.0) return -1.0f;
-              const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-              const double betaStar = pprime / Eprime;
-              if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-              return static_cast<float>(betaStar);
+              return TtbarDileptonVars::compute_betaStar(t1, t2);
         },
         {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS",
          "nu_pt_NOSYS","nu_eta_NOSYS","nu_phi_NOSYS","nu_e_NOSYS","nubar_pt_NOSYS","nubar_eta_NOSYS","nubar_phi_NOSYS","nubar_e_NOSYS"});
@@ -1021,25 +1287,7 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
               auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
               auto t1 = b1m + l1m + nu1;
               auto t2 = b2m + l2m + nu2;
-              const double betax = t2.Px()/t2.E();
-              const double betay = t2.Py()/t2.E();
-              const double betaz = t2.Pz()/t2.E();
-              const double beta2 = betax*betax + betay*betay + betaz*betaz;
-              if (beta2 >= 1.0) return -1.0f;
-              const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-              const double E1 = t1.E();
-              const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-              const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-              const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-              const double ppx = p1x + factor * betax;
-              const double ppy = p1y + factor * betay;
-              const double ppz = p1z + factor * betaz;
-              const double Eprime = gamma * (E1 - p_dot_beta);
-              if (Eprime <= 0.0) return -1.0f;
-              const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-              const double betaStar = pprime / Eprime;
-              if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-              return static_cast<float>(betaStar);
+              return TtbarDileptonVars::compute_betaStar(t1, t2);
         },
         {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS",
          "nu_pt_NOSYS","nu_eta_NOSYS","nu_phi_NOSYS","nu_e_NOSYS","nubar_pt_NOSYS","nubar_eta_NOSYS","nubar_phi_NOSYS","nubar_e_NOSYS"});
@@ -1070,25 +1318,7 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
               auto b2m = ROOT::Math::PtEtaPhiMVector(b2.Pt(), b2.Eta(), b2.Phi(), b2.M());
               auto t1 = b1m + l1m + nu1;
               auto t2 = b2m + l2m + nu2;
-              const double betax = t2.Px()/t2.E();
-              const double betay = t2.Py()/t2.E();
-              const double betaz = t2.Pz()/t2.E();
-              const double beta2 = betax*betax + betay*betay + betaz*betaz;
-              if (beta2 >= 1.0) return -1.0f;
-              const double gamma = beta2 > 0.0 ? 1.0/std::sqrt(1.0 - beta2) : 1.0;
-              const double E1 = t1.E();
-              const double p1x = t1.Px(); const double p1y = t1.Py(); const double p1z = t1.Pz();
-              const double p_dot_beta = p1x*betax + p1y*betay + p1z*betaz;
-              const double factor = (beta2 > 0.0) ? ((gamma - 1.0) * p_dot_beta / beta2 - gamma * E1) : -gamma * E1;
-              const double ppx = p1x + factor * betax;
-              const double ppy = p1y + factor * betay;
-              const double ppz = p1z + factor * betaz;
-              const double Eprime = gamma * (E1 - p_dot_beta);
-              if (Eprime <= 0.0) return -1.0f;
-              const double pprime = std::sqrt(ppx*ppx + ppy*ppy + ppz*ppz);
-              const double betaStar = pprime / Eprime;
-              if (!(betaStar >= 0.0 && betaStar < 1.0)) return -1.0f;
-              return static_cast<float>(betaStar);
+              return TtbarDileptonVars::compute_betaStar(t1, t2);
         },
         {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS",
          "nu_pt_NOSYS","nu_eta_NOSYS","nu_phi_NOSYS","nu_e_NOSYS","nubar_pt_NOSYS","nubar_eta_NOSYS","nubar_phi_NOSYS","nubar_e_NOSYS"});
@@ -1449,13 +1679,13 @@ mainNode = m_partonMatcher->systematicDefine(mainNode,
     }
   }
 
-  if (isHyPERAvailable) {
-  LOG(INFO) << "Ensuring hyper_TtbarDiLepton top indices/IDs available\n";
-  // If hyper_* columns are present they will be used directly; otherwise
-  // create empty fallbacks earlier. We still expose standardized names
-  // matching input: `hyper_TtbarDiLepton_Top*_Indices_NOSYS` and `*_IDs_NOSYS`.
-  // No need to create HyPER_* aliases here.
-  }
+  // if (isHyPERAvailable) {
+  // LOG(INFO) << "Ensuring hyper_TtbarDiLepton top indices/IDs available\n";
+  // // If hyper_* columns are present they will be used directly; otherwise
+  // // create empty fallbacks earlier. We still expose standardized names
+  // // matching input: `hyper_TtbarDiLepton_Top*_Indices_NOSYS` and `*_IDs_NOSYS`.
+  // // No need to create HyPER_* aliases here.
+  // }
                                 //muon as placeholder for taus
 
   // LOG(INFO) << "Adding variable: HyPER_WHad_Indices_NOSYS\n";
@@ -1821,7 +2051,7 @@ ROOT::RDF::RNode TtbarDileptonFrameReco::defineVariablesNtuple(ROOT::RDF::RNode 
                               HyPERPerformanceDiLepton::getRecoIndicesTop1,
                               {"event_jet_truth_idx", "event_electron_truth_idx", "event_muon_truth_idx",
                                "event_jet_truth_candidates", "event_electron_truth_candidates", "event_muon_truth_candidates",
-                               "event_nLeptons"});
+                               "event_nLeptons", "el_ptOrderIndex_NOSYS", "mu_ptOrderIndex_NOSYS"});
 
   LOG(INFO) << "Adding variable: Top2_Truth_Reco_Indices_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode,
@@ -1829,86 +2059,138 @@ ROOT::RDF::RNode TtbarDileptonFrameReco::defineVariablesNtuple(ROOT::RDF::RNode 
                               HyPERPerformanceDiLepton::getRecoIndicesTop2,
                               {"event_jet_truth_idx", "event_electron_truth_idx", "event_muon_truth_idx",
                                "event_jet_truth_candidates", "event_electron_truth_candidates", "event_muon_truth_candidates",
-                               "event_nLeptons"});
+                               "event_nLeptons", "el_ptOrderIndex_NOSYS", "mu_ptOrderIndex_NOSYS"});
 
-  // HyPER b-jet index for each top (uses HyPER IDs to locate the b)
-  LOG(INFO) << "Adding variable: HyPER_Top1_bIndex_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top1_bIndex_NOSYS",
-                              [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
-                                std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
-                                std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
-                                return HyPERPerformanceSingleLepton::getHyPERBLepIndex(indices_long, IDs_long);
-                              },
-                              {"hyper_TtbarDiLepton_Top1_Indices_NOSYS", "hyper_TtbarDiLepton_Top1_IDs_NOSYS"});
+  // //if (isHyPERAvailable) {
+  // LOG(INFO) << "Adding variable: HyPER_Top1_Indices_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top1_Indices_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices,
+  //                                const std::vector<int>& HyPER_IDs,
+  //                                const std::vector<size_t>& jet_idx,
+  //                                const std::vector<size_t>& el_idx,
+  //                                const std::vector<size_t>& mu_idx,
+  //                                const std::vector<size_t>& tau_idx){
+  //                                 return Variables::getSelecHyPERIndices(HyPER_indices, HyPER_IDs, jet_idx, el_idx, mu_idx, tau_idx);
+  //                             },
+  //                             { "hyper_TtbarDiLepton_Top1_Indices_NOSYS",
+  //                               "hyper_TtbarDiLepton_Top1_IDs_NOSYS",
+  //                               "jets_ptOrderIndex_NOSYS",
+  //                               "el_ptOrderIndex_NOSYS",
+  //                               "mu_ptOrderIndex_NOSYS",
+  //                               "mu_ptOrderIndex_NOSYS"});
+                                
+  // LOG(INFO) << "Adding variable: HyPER_Top2_Indices_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top2_Indices_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices,
+  //                                const std::vector<int>& HyPER_IDs,
+  //                                const std::vector<size_t>& jet_idx,
+  //                                const std::vector<size_t>& el_idx,
+  //                                const std::vector<size_t>& mu_idx,
+  //                                const std::vector<size_t>& tau_idx){
+  //                                 return Variables::getSelecHyPERIndices(HyPER_indices, HyPER_IDs, jet_idx, el_idx, mu_idx, tau_idx);
+  //                             },
+  //                             { "hyper_TtbarDiLepton_Top2_Indices_NOSYS",
+  //                               "hyper_TtbarDiLepton_Top2_IDs_NOSYS",
+  //                               "jets_ptOrderIndex_NOSYS",
+  //                               "el_ptOrderIndex_NOSYS",
+  //                               "mu_ptOrderIndex_NOSYS",
+  //                               "mu_ptOrderIndex_NOSYS"});
+  //                             }           
 
-  LOG(INFO) << "Adding variable: HyPER_Top2_bIndex_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top2_bIndex_NOSYS",
-                              [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
-                                std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
-                                std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
-                                return HyPERPerformanceSingleLepton::getHyPERBLepIndex(indices_long, IDs_long);
-                              },
-                              {"hyper_TtbarDiLepton_Top2_Indices_NOSYS", "hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
 
-  // HyPER convergence flags
-  LOG(INFO) << "Adding variable: HyPER_Top1_converged_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top1_converged_NOSYS",
-                              [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
-                                std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
-                                std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
-                                return HyPERPerformanceDiLepton::HyPERTopConverged(indices_long, IDs_long);
-                              },
-                              {"hyper_TtbarDiLepton_Top1_Indices_NOSYS", "hyper_TtbarDiLepton_Top1_IDs_NOSYS"});
+  // // HyPER b-jet index for each top (uses HyPER IDs to locate the b)
+  // LOG(INFO) << "Adding variable: HyPER_Top1_bIndex_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top1_bIndex_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
+  //                               std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
+  //                               std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
+  //                               return HyPERPerformanceSingleLepton::getHyPERBLepIndex(indices_long, IDs_long);
+  //                             },
+  //                             {"hyper_TtbarDiLepton_Top1_Indices_NOSYS", "hyper_TtbarDiLepton_Top1_IDs_NOSYS"});
 
-  LOG(INFO) << "Adding variable: HyPER_Top2_converged_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top2_converged_NOSYS",
-                              [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
-                                std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
-                                std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
-                                return HyPERPerformanceDiLepton::HyPERTopConverged(indices_long, IDs_long);
-                              },
-                              {"hyper_TtbarDiLepton_Top2_Indices_NOSYS", "hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
+  // LOG(INFO) << "Adding variable: HyPER_Top2_bIndex_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top2_bIndex_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
+  //                               std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
+  //                               std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
+  //                               return HyPERPerformanceSingleLepton::getHyPERBLepIndex(indices_long, IDs_long);
+  //                             },
+  //                             {"hyper_TtbarDiLepton_Top2_Indices_NOSYS", "hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
 
-  LOG(INFO) << "Adding variable: HyPER_two_tops_converged_NOSYS\n";
-    mainNode = m_partonMatcher->systematicDefine(mainNode,
-                  "HyPER_two_tops_converged_NOSYS",
-                  [](const std::vector<int>& a, const std::vector<int>& b, const std::vector<int>& c, const std::vector<int>& d){
-                    std::vector<long> a_l(a.begin(), a.end());
-                    std::vector<long> b_l(b.begin(), b.end());
-                    std::vector<long> c_l(c.begin(), c.end());
-                    std::vector<long> d_l(d.begin(), d.end());
-                    return HyPERPerformanceDiLepton::HyPERConvergedTwoLeptonicTops(a_l,b_l,c_l,d_l);
-                  },
-                  {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
+  // // HyPER convergence flags
+  // LOG(INFO) << "Adding variable: HyPER_Top1_converged_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top1_converged_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
+  //                               std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
+  //                               std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
+  //                               return HyPERPerformanceDiLepton::HyPERTopConverged(indices_long, IDs_long);
+  //                             },
+  //                             {"hyper_TtbarDiLepton_Top1_Indices_NOSYS", "hyper_TtbarDiLepton_Top1_IDs_NOSYS"});
 
-  // Correctness checks: compare HyPER b-index with truth-derived top indices
-  LOG(INFO) << "Adding variable: HyPER_Top1_correct_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top1_correct_NOSYS",
-                              HyPERPerformanceDiLepton::correctlyReconstructedTop,
-                              {"HyPER_Top1_bIndex_NOSYS","Top1_Truth_Reco_Indices_NOSYS"});
+  // LOG(INFO) << "Adding variable: HyPER_Top2_converged_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top2_converged_NOSYS",
+  //                             [](const std::vector<int>& HyPER_indices, const std::vector<int>& HyPER_IDs){
+  //                               std::vector<long> indices_long(HyPER_indices.begin(), HyPER_indices.end());
+  //                               std::vector<long> IDs_long(HyPER_IDs.begin(), HyPER_IDs.end());
+  //                               return HyPERPerformanceDiLepton::HyPERTopConverged(indices_long, IDs_long);
+  //                             },
+  //                             {"hyper_TtbarDiLepton_Top2_Indices_NOSYS", "hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
 
-  LOG(INFO) << "Adding variable: HyPER_Top2_correct_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_Top2_correct_NOSYS",
-                              HyPERPerformanceDiLepton::correctlyReconstructedTop,
-                              {"HyPER_Top2_bIndex_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+  // LOG(INFO) << "Adding variable: HyPER_two_tops_converged_NOSYS\n";
+  //   mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                 "HyPER_two_tops_converged_NOSYS",
+  //                 [](const std::vector<int>& a, const std::vector<int>& b, const std::vector<int>& c, const std::vector<int>& d){
+  //                   std::vector<long> a_l(a.begin(), a.end());
+  //                   std::vector<long> b_l(b.begin(), b.end());
+  //                   std::vector<long> c_l(c.begin(), c.end());
+  //                   std::vector<long> d_l(d.begin(), d.end());
+  //                   return HyPERPerformanceDiLepton::HyPERConvergedTwoLeptonicTops(a_l,b_l,c_l,d_l);
+  //                 },
+  //                 {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS","hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS"});
 
-  LOG(INFO) << "Adding variable: HyPER_both_tops_correct_NOSYS\n";
-  mainNode = m_partonMatcher->systematicDefine(mainNode,
-                              "HyPER_both_tops_correct_NOSYS",
-                              [](int b1, int b2, const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
-                                if (top1_truth.size()==0 || top2_truth.size()==0) return false;
-                                int t1b = top1_truth.size()>0? top1_truth[0] : -1;
-                                int t2b = top2_truth.size()>0? top2_truth[0] : -1;
-                                if (t1b<0 || t2b<0) return false;
-                                return (b1==t1b && b2==t2b) || (b1==t2b && b2==t1b);
-                              },
-                              {"HyPER_Top1_bIndex_NOSYS","HyPER_Top2_bIndex_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+  // // Correctness checks: compare HyPER b-index with truth-derived top indices
+  // LOG(INFO) << "Adding variable: HyPER_Top1_correct_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top1_correct_NOSYS",
+  //                             HyPERPerformanceDiLepton::correctlyReconstructedTop,
+  //                             {"HyPER_Top1_bIndex_NOSYS","Top1_Truth_Reco_Indices_NOSYS"});
+
+  // LOG(INFO) << "Adding variable: HyPER_Top2_correct_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_Top2_correct_NOSYS",
+  //                             HyPERPerformanceDiLepton::correctlyReconstructedTop,
+  //                             {"HyPER_Top2_bIndex_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+
+
+  // LOG(INFO) << "Adding variable: HyPER_both_tops_correct_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode,
+  //                             "HyPER_both_tops_correct_NOSYS",
+  //                             [](int b1, int b2, const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
+  //                               if (top1_truth.size() < 2 || top2_truth.size() < 2) return false;
+  //                               const int truth_b_top1 = top1_truth[0];
+  //                               const int truth_slot_top1 = top1_truth[1];
+  //                               const int truth_b_top2 = top2_truth[0];
+  //                               const int truth_slot_top2 = top2_truth[1];
+  //                               if (truth_b_top1 < 0 || truth_b_top2 < 0) return false;
+  //                               if ((truth_slot_top1 != 0 && truth_slot_top1 != 1) ||
+  //                                   (truth_slot_top2 != 0 && truth_slot_top2 != 1)) return false;
+  //                               int truth_b_for_slot0 = -1;
+  //                               int truth_b_for_slot1 = -1;
+  //                               if (truth_slot_top1 == 0) truth_b_for_slot0 = truth_b_top1;
+  //                               else truth_b_for_slot1 = truth_b_top1;
+  //                               if (truth_slot_top2 == 0) truth_b_for_slot0 = truth_b_top2;
+  //                               else truth_b_for_slot1 = truth_b_top2;
+  //                               if (truth_b_for_slot0 < 0 || truth_b_for_slot1 < 0) return false;
+  //                               return (b1 == truth_b_for_slot0 && b2 == truth_b_for_slot1) ||
+  //                                      (b1 == truth_b_for_slot1 && b2 == truth_b_for_slot0);
+  //                             },
+  //                             {"HyPER_Top1_bIndex_NOSYS","HyPER_Top2_bIndex_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
 
   // Note: avoid redundant non-systematic alias Defines here.
   // The systematic *_NOSYS columns are exposed directly by the ntupling
@@ -1917,25 +2199,28 @@ ROOT::RDF::RNode TtbarDileptonFrameReco::defineVariablesNtuple(ROOT::RDF::RNode 
   // should reference the *_NOSYS columns or define lightweight aliases
   // centrally if required.
 
-  // Per-assignment-method correctness flags (NOSYS) - CHI2/PT/DELTAR use assignment comparison against truth
   {
     auto cols3 = mainNode.GetColumnNames();
     auto has_col3 = [&](const std::string &n){ for (const auto &c : cols3) if (c == n) return true; return false; };
     if (!has_col3("CHI2_correct_NOSYS")) {
       mainNode = m_partonMatcher->systematicDefine(mainNode, "CHI2_correct_NOSYS",
-        [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
-           const ROOT::VecOps::RVec<float>& nuflows, const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
-          auto nus = TtbarDileptonVars::buildNuFromNuFlows(nuflows);
-          auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::CHI2, {}, {}, jet_TLV, el_TLV, mu_TLV, nus.first, nus.second);
-          if (!asg.valid) return false;
-          int b1 = asg.bjet1_idx; int b2 = asg.bjet2_idx;
-          if (top1_truth.size()==0 || top2_truth.size()==0) return false;
-          int t1b = top1_truth.size()>0? top1_truth[0] : -1;
-          int t2b = top2_truth.size()>0? top2_truth[0] : -1;
-          if (t1b<0 || t2b<0) return false;
-          return (b1==t1b && b2==t2b) || (b1==t2b && b2==t1b);
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
         },
-        {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","nuflows_nu_out_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+        {"pairing_chi2_out_all_NOSYS"});
+    }
+    if (!has_col3("CHI2_correct_pairing_NOSYS")) {
+      mainNode = m_partonMatcher->systematicDefine(mainNode, "CHI2_correct_pairing_NOSYS",
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
+        },
+        {"pairing_chi2_out_all_NOSYS"});
     }
   }
 
@@ -1944,18 +2229,23 @@ ROOT::RDF::RNode TtbarDileptonFrameReco::defineVariablesNtuple(ROOT::RDF::RNode 
     auto has_col4 = [&](const std::string &n){ for (const auto &c : cols4) if (c == n) return true; return false; };
     if (!has_col4("PT_correct_NOSYS")) {
       mainNode = m_partonMatcher->systematicDefine(mainNode, "PT_correct_NOSYS",
-        [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
-           const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
-          auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::PT, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-          if (!asg.valid) return false;
-          int b1 = asg.bjet1_idx; int b2 = asg.bjet2_idx;
-          if (top1_truth.size()==0 || top2_truth.size()==0) return false;
-          int t1b = top1_truth.size()>0? top1_truth[0] : -1;
-          int t2b = top2_truth.size()>0? top2_truth[0] : -1;
-          if (t1b<0 || t2b<0) return false;
-          return (b1==t1b && b2==t2b) || (b1==t2b && b2==t1b);
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
         },
-        {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+        {"pairing_minSumSq_out_NOSYS"});
+    }
+    if (!has_col4("PT_correct_pairing_NOSYS")) {
+      mainNode = m_partonMatcher->systematicDefine(mainNode, "PT_correct_pairing_NOSYS",
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
+        },
+        {"pairing_minSumSq_out_NOSYS"});
     }
   }
 
@@ -1964,25 +2254,56 @@ ROOT::RDF::RNode TtbarDileptonFrameReco::defineVariablesNtuple(ROOT::RDF::RNode 
     auto has_col5 = [&](const std::string &n){ for (const auto &c : cols5) if (c == n) return true; return false; };
     if (!has_col5("DELTAR_correct_NOSYS")) {
       mainNode = m_partonMatcher->systematicDefine(mainNode, "DELTAR_correct_NOSYS",
-        [](const ROOT::VecOps::RVec<TLV>& jet_TLV, const ROOT::VecOps::RVec<TLV>& el_TLV, const ROOT::VecOps::RVec<TLV>& mu_TLV,
-           const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
-          auto asg = TtbarDileptonVars::getAssignment(TtbarDileptonVars::Method::DELTAR, {}, {}, jet_TLV, el_TLV, mu_TLV, ROOT::Math::PtEtaPhiMVector(0,0,0,0), ROOT::Math::PtEtaPhiMVector(0,0,0,0));
-          if (!asg.valid) return false;
-          int b1 = asg.bjet1_idx; int b2 = asg.bjet2_idx;
-          if (top1_truth.size()==0 || top2_truth.size()==0) return false;
-          int t1b = top1_truth.size()>0? top1_truth[0] : -1;
-          int t2b = top2_truth.size()>0? top2_truth[0] : -1;
-          if (t1b<0 || t2b<0) return false;
-          return (b1==t1b && b2==t2b) || (b1==t2b && b2==t1b);
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
         },
-        {"jet_TLV_NOSYS","sorted_el_TLV_NOSYS","sorted_mu_TLV_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
+        {"pairing_minDeltaR_out_NOSYS"});
+    }
+    if (!has_col5("DELTAR_correct_pairing_NOSYS")) {
+      mainNode = m_partonMatcher->systematicDefine(mainNode, "DELTAR_correct_pairing_NOSYS",
+        [](const ROOT::VecOps::RVec<float>& pairing_out)->int{
+          if (pairing_out.size() <= 5) return -1;
+          const float v = pairing_out[5];
+          if (v < 0.0f) return -1;
+          return (v > 0.5f) ? 1 : 0;
+        },
+        {"pairing_minDeltaR_out_NOSYS"});
     }
   }
 
-  // HYPER already has correctness helpers; alias to both-tops-correct
+  LOG(INFO) << "Adding variable: HYPER_correct_NOSYS\n";
   mainNode = m_partonMatcher->systematicDefine(mainNode, "HYPER_correct_NOSYS",
-    [](bool both_correct){ return both_correct; },
-    {"HyPER_both_tops_correct_NOSYS"});
+    HyPERPerformanceDiLepton::isCorrectAssignment,
+    {"hyper_TtbarDiLepton_Top1_Indices_NOSYS","hyper_TtbarDiLepton_Top1_IDs_NOSYS",
+     "hyper_TtbarDiLepton_Top2_Indices_NOSYS","hyper_TtbarDiLepton_Top2_IDs_NOSYS",
+     "event_jet_truth_idx","event_jet_truth_candidates",
+     "sorted_el_charge_NOSYS","sorted_mu_charge_NOSYS",
+     "jets_ptOrderIndex_NOSYS"});
+  // LOG(INFO) << "Adding variable: HYPER_correct_legacy_NOSYS\n";
+  // mainNode = m_partonMatcher->systematicDefine(mainNode, "HYPER_correct_legacy_NOSYS",
+  //   [](int b1, int b2, const std::vector<int>& top1_truth, const std::vector<int>& top2_truth)->bool{
+  //     if (top1_truth.size() < 2 || top2_truth.size() < 2) return false;
+  //     const int truth_b_top1 = top1_truth[0];
+  //     const int truth_slot_top1 = top1_truth[1];
+  //     const int truth_b_top2 = top2_truth[0];
+  //     const int truth_slot_top2 = top2_truth[1];
+  //     if (truth_b_top1 < 0 || truth_b_top2 < 0) return false;
+  //     if ((truth_slot_top1 != 0 && truth_slot_top1 != 1) ||
+  //         (truth_slot_top2 != 0 && truth_slot_top2 != 1)) return false;
+  //     int truth_b_for_slot0 = -1;
+  //     int truth_b_for_slot1 = -1;
+  //     if (truth_slot_top1 == 0) truth_b_for_slot0 = truth_b_top1;
+  //     else truth_b_for_slot1 = truth_b_top1;
+  //     if (truth_slot_top2 == 0) truth_b_for_slot0 = truth_b_top2;
+  //     else truth_b_for_slot1 = truth_b_top2;
+  //     if (truth_b_for_slot0 < 0 || truth_b_for_slot1 < 0) return false;
+  //     return (b1 == truth_b_for_slot0 && b2 == truth_b_for_slot1) ||
+  //            (b1 == truth_b_for_slot1 && b2 == truth_b_for_slot0);
+  //   },
+  //   {"HyPER_Top1_bIndex_NOSYS","HyPER_Top2_bIndex_NOSYS","Top1_Truth_Reco_Indices_NOSYS","Top2_Truth_Reco_Indices_NOSYS"});
 
   return mainNode;
 }

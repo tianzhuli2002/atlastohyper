@@ -42,7 +42,7 @@ general:
 
 regions: # All the regions (defined by a selection criteria) to be used in the analysis.
   - name: ttll_fully_matched
-    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
     variables: &ttll_signal_vars
       - name: n_jet
         type: unsigned long

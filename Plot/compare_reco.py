@@ -14,7 +14,8 @@ def main():
     parser.add_argument('rootfile', help='Input ROOT file')
     parser.add_argument('--region', default='ttll_fully_matched', help='Region suffix used in branch names')
     parser.add_argument('--outdir', default='analysis_plots', help='Output directory')
-    parser.add_argument('--nbins', type=int, default=50, help='Number of bins for mass histograms')
+    parser.add_argument('--nbins', type=int, default=100, help='Number of bins for mass histograms')
+    parser.add_argument('--xmax', type=float, default=2000.0, help='Max m(ttbar) x-axis in GeV (will cap hist range)')
     args = parser.parse_args()
 
     path = args.rootfile
@@ -62,8 +63,12 @@ def main():
     # function to find an existing suffix for a requested multiplicity
     def find_suffix_for_mult(mult):
         cand_list = []
-        if mult == '5+':
-            cand_list = ['5jets', '5+jets', '5plus', '5plusjets', 'ge5jets', '>=5jets']
+        if isinstance(mult, str) and mult.endswith('+'):
+            nmin = mult[:-1]
+            cand_list = [
+                f'{nmin}jets', f'{nmin}+jets', f'{nmin}plus', f'{nmin}plusjets',
+                f'ge{nmin}jets', f'>={nmin}jets'
+            ]
         else:
             n = str(mult)
             cand_list = [f'{n}jets', f'{n}jet', f'{n}_jets', f'{n}_jet']
@@ -81,11 +86,24 @@ def main():
         import awkward as ak
 
         # helper: build candidate branch names for correctness per method
+        # Prefer the per-method boolean correctness branches (PT/CHI2/DELTAR/HYPER),
+        # falling back to legacy pairing scalar branches if needed.
         method_patterns = {
-            'baseline': [f'baseline_pairing_correct_{region}_{mult}', f'baseline_pairing_correct_{region}', 'baseline_pairing_correct', 'pairing_correct_NOSYS', 'pairing_correct'],
-            'chisquared': [f'chisquared_pairing_correct_all_{region}_{mult}', f'chisquared_pairing_correct_all_{region}', 'chisquared_pairing_correct_all', 'pairing_chi2_correct_all_NOSYS', 'pairing_chi2_correct_all'],
-            'deltaR': [f'deltaR_pairing_correct_{region}_{mult}', f'deltaR_pairing_correct_{region}', 'deltaR_pairing_correct', 'pairing_deltaR_correct_NOSYS', 'pairing_deltaR_correct'],
-            'hyper': [f'HYPER_correct_{region}_{mult}', f'HYPER_correct_{region}', 'HYPER_correct_NOSYS', 'HYPER_correct']
+            'baseline': [
+                f'PT_correct_{region}_{mult}', f'PT_correct_{region}', 'PT_correct_NOSYS', 'PT_correct',
+                f'baseline_pairing_correct_{region}_{mult}', f'baseline_pairing_correct_{region}', 'baseline_pairing_correct', 'pairing_correct_NOSYS', 'pairing_correct'
+            ],
+            'chisquared': [
+                f'CHI2_correct_{region}_{mult}', f'CHI2_correct_{region}', 'CHI2_correct_NOSYS', 'CHI2_correct',
+                f'chisquared_pairing_correct_all_{region}_{mult}', f'chisquared_pairing_correct_all_{region}', 'chisquared_pairing_correct_all', 'pairing_chi2_correct_all_NOSYS', 'pairing_chi2_correct_all'
+            ],
+            'deltaR': [
+                f'DELTAR_correct_{region}_{mult}', f'DELTAR_correct_{region}', 'DELTAR_correct_NOSYS', 'DELTAR_correct',
+                f'deltaR_pairing_correct_{region}_{mult}', f'deltaR_pairing_correct_{region}', 'deltaR_pairing_correct', 'pairing_deltaR_correct_NOSYS', 'pairing_deltaR_correct'
+            ],
+            'hyper': [
+                f'HYPER_correct_{region}_{mult}', f'HYPER_correct_{region}', 'HYPER_correct_NOSYS', 'HYPER_correct'
+            ]
         }
 
         # collect correctness info — histograms (TH1) or event-level awkward arrays
@@ -130,13 +148,46 @@ def main():
         totals = {}
         # If we have event-level arrays, we need to filter by multiplicity
         def get_njets_array():
-            # prefer explicit n_jets branch if present
-            # Try many possible n_jets-like branch names first
+            # Prefer multiplicity inferred from the size of a jet_pt-like jagged branch
+            # (use ak.num or per-event .size()/len), falling back to explicit n_jets
+            jet_cands = ['jet_pt_NOSYS', 'jet_pt', 'Jet_pt', 'Jet_pt_NOSYS', 'jet_TLV_NOSYS', 'jet_TLV', 'jets_pt', 'jets_pt_NOSYS']
+            for cand in jet_cands:
+                if cand in ks or (cand + ';1') in ks:
+                    k = cand if cand in ks else cand + ';1'
+                    # Try awkward jagged arrays first and use ak.num (equivalent to .size())
+                    try:
+                        arr_ak = tree[k].array(library='ak')
+                        try:
+                            nums = ak.num(arr_ak)
+                            return np.asarray(ak.to_numpy(nums), dtype=int)
+                        except Exception:
+                            # Last-resort: iterate and compute length/size per event
+                            counts = []
+                            for elem in arr_ak:
+                                try:
+                                    counts.append(len(elem))
+                                except Exception:
+                                    try:
+                                        counts.append(int(getattr(elem, 'size', 0) or 0))
+                                    except Exception:
+                                        counts.append(0)
+                            return np.asarray(counts, dtype=int)
+                    except Exception:
+                        # Fallback to numpy object arrays where each entry is an iterable
+                        try:
+                            arr_np = tree[k].array(library='np')
+                            if isinstance(arr_np, np.ndarray) and arr_np.dtype == object:
+                                return np.array([len(x) if x is not None else 0 for x in arr_np], dtype=int)
+                            # If we get here, arr_np may already be a per-event integer array; return as-is
+                            return np.asarray(arr_np, dtype=int)
+                        except Exception:
+                            continue
+
+            # Fall back to explicit n_jets-like branches if no jet_pt-like branch found
             nj_cands = ['n_jets_NOSYS', 'n_jets', 'nJets', 'nJets_good_NOSYS', 'nJets_good', 'n_jets_good_NOSYS', 'n_jets_good']
             for cand in nj_cands:
                 if cand in ks or (cand + ';1') in ks:
                     k = cand if cand in ks else cand + ';1'
-                    # Prefer numpy scalar arrays when available
                     try:
                         arr_np = tree[k].array(library='np')
                         return np.asarray(arr_np, dtype=int)
@@ -146,33 +197,29 @@ def main():
                             try:
                                 return np.asarray(ak.to_numpy(arr_ak), dtype=int)
                             except Exception:
-                                # fallback: coerce to python list then numpy
                                 return np.asarray([int(x) if x is not None else 0 for x in arr_ak], dtype=int)
-                        except Exception:
-                            continue
-
-            # Otherwise try to infer multiplicity from jet pt / TLV jagged arrays
-            jet_cands = ['jet_pt_NOSYS', 'jet_pt', 'Jet_pt', 'Jet_pt_NOSYS', 'jet_TLV_NOSYS', 'jet_TLV']
-            for cand in jet_cands:
-                if cand in ks or (cand + ';1') in ks:
-                    k = cand if cand in ks else cand + ';1'
-                    try:
-                        arr = tree[k].array(library='ak')
-                        # awkward: use ak.num for jagged arrays and return numpy
-                        try:
-                            nums = ak.num(arr)
-                            return np.asarray(ak.to_numpy(nums), dtype=int)
-                        except Exception:
-                            return np.array([len(x) if x is not None else 0 for x in arr], dtype=int)
-                    except Exception:
-                        try:
-                            arr = tree[k].array(library='np')
-                            return np.array([len(x) if x is not None else 0 for x in arr], dtype=int)
                         except Exception:
                             continue
             return None
 
         njets_arr = get_njets_array()
+
+        def multiplicity_mask(njets, mult_label):
+            if njets is None:
+                return None
+            arr = np.asarray(njets)
+            s = str(mult_label)
+            if s.endswith('+'):
+                try:
+                    nmin = int(s[:-1])
+                    return arr >= nmin
+                except Exception:
+                    return np.ones(arr.shape[0], dtype=bool)
+            try:
+                n = int(s.lstrip('_').split('j')[0])
+                return arr == n
+            except Exception:
+                return np.ones(arr.shape[0], dtype=bool)
 
         for m, info in found.items():
             if info[0] == 'hist':
@@ -195,29 +242,25 @@ def main():
                     # apply multiplicity mask if available (njets_arr is returned as numpy by get_njets_array)
                     try:
                         if njets_arr is not None:
-                            if mult == '5+':
-                                mask = np.asarray(njets_arr) >= 5
-                            else:
-                                try:
-                                    nn = int(str(mult).lstrip('_').split('j')[0])
-                                except Exception:
-                                    nn = None
-                                mask = (np.asarray(njets_arr) == nn) if nn is not None else np.ones(vals_all.shape[0], dtype=bool)
+                            mask = multiplicity_mask(njets_arr, mult)
                             vals = np.asarray(vals_all)[mask]
                         else:
                             vals = np.asarray(vals_all)
 
                         vals = np.asarray(vals)
                         # determine truth count: booleans or numeric flags where 1 means correct
-                        if vals.dtype == np.bool_:
-                            n_true = float(np.count_nonzero(vals))
-                        else:
-                            # treat 1 as correct; also treat True as correct
-                            try:
-                                n_true = float(np.count_nonzero(vals == 1))
-                            except Exception:
-                                n_true = float(np.count_nonzero(vals))
+                        #vals = np.asarray(vals)
+
+                        # keep only valid events (0 or 1)
+                        valid_mask = (vals == 0) | (vals == 1)
+                        vals = vals[valid_mask]
+
                         total = float(vals.size)
+
+                        if total > 0:
+                            n_true = float(np.count_nonzero(vals == 1))
+                        else:
+                            n_true = 0.0
                     except Exception:
                         n_true = 0.0
                         total = 0.0
@@ -262,14 +305,27 @@ def main():
         fout = os.path.join(outdir, f'efficiency_{region}_{suffix_safe}.png')
         fig.savefig(fout, dpi=150)
         print('Saved efficiency plot to', fout)
+        plt.close(fig)
 
-        # m(ttbar) distributions: per-method reco mttbar_* and truth llbb_mass with suffix
-        method_vars = ['mttbar_HYPER', 'mttbar_CHI2', 'mttbar_PT', 'mttbar_DELTAR']
+        # m(ttbar) distributions: plot both NUFLOWS and NUWEIGHT variants.
+        method_vars = [
+            'mttbar_HYPER_NUFLOWS', 'mttbar_CHI2_NUFLOWS', 'mttbar_PT_NUFLOWS', 'mttbar_DELTAR_NUFLOWS',
+            'mttbar_HYPER_NUWEIGHT', 'mttbar_CHI2_NUWEIGHT', 'mttbar_PT_NUWEIGHT', 'mttbar_DELTAR_NUWEIGHT'
+        ]
+        legacy_nuflows_map = {
+            'mttbar_HYPER_NUFLOWS': 'mttbar_HYPER',
+            'mttbar_CHI2_NUFLOWS': 'mttbar_CHI2',
+            'mttbar_PT_NUFLOWS': 'mttbar_PT',
+            'mttbar_DELTAR_NUFLOWS': 'mttbar_DELTAR',
+        }
         # collect per-method histograms/arrays
         method_data = {}
         for mv in method_vars:
             # look for multiple candidate names (with region/suffix, NOSYS, or bare)
             pats = [f'{mv}_{region}_{mult}', f'{mv}_{region}', f'{mv}_NOSYS', mv]
+            legacy = legacy_nuflows_map.get(mv)
+            if legacy is not None:
+                pats.extend([f'{legacy}_{region}_{mult}', f'{legacy}_{region}', f'{legacy}_NOSYS', legacy])
             cand = None
             for p in pats:
                 if p in ks:
@@ -298,7 +354,10 @@ def main():
         # truth per-multiplicity
         # truth variable: prefer mttbar_truth if available, otherwise llbb_mass / invariant_mass_llbb
         truth_data = None
-        truth_pats = [f'mttbar_truth_{region}_{mult}', f'mttbar_truth_{region}', 'mttbar_truth_NOSYS', 'mttbar_truth', f'llbb_mass_{region}_{mult}', f'llbb_mass_{region}', 'llbb_mass', 'invariant_mass_llbb_NOSYS', 'invariant_mass_llbb']
+        truth_pats = [
+            f'mttbar_TRUTH_{region}_{mult}', f'mttbar_TRUTH_{region}', 'mttbar_TRUTH_NOSYS', 'mttbar_TRUTH',
+            f'mttbar_truth_{region}_{mult}', f'mttbar_truth_{region}', 'mttbar_truth_NOSYS', 'mttbar_truth'
+        ]
         for tpat in truth_pats:
             cand = None
             if tpat in ks:
@@ -369,6 +428,11 @@ def main():
                     pass
         lo = min(lows) if lows else 0.0
         hi = max(highs) if highs else 1.0
+        # cap hi at user-requested maximum (in GeV)
+        try:
+            hi = min(hi, float(args.xmax))
+        except Exception:
+            pass
         if lo == hi:
             lo = 0.0
             hi = max(1.0, hi)
@@ -384,14 +448,7 @@ def main():
                 try:
                     arr = ak.to_numpy(info[1])
                     if njets_arr is not None:
-                        if mult == '5+':
-                            mask = njets_arr >= 5
-                        else:
-                            try:
-                                nn = int(str(mult).lstrip('_').split('j')[0])
-                            except Exception:
-                                nn = None
-                            mask = (njets_arr == nn) if nn is not None else np.ones(arr.shape[0], dtype=bool)
+                        mask = multiplicity_mask(njets_arr, mult)
                         arr = arr[mask]
                     cts, _ = np.histogram(arr, bins=target_edges)
                     method_counts[mv] = cts
@@ -412,14 +469,7 @@ def main():
                 try:
                     tarr = ak.to_numpy(truth_data[1])
                     if njets_arr is not None:
-                        if mult == '5+':
-                            mask = njets_arr >= 5
-                        else:
-                            try:
-                                nn = int(str(mult).lstrip('_').split('j')[0])
-                            except Exception:
-                                nn = None
-                            mask = (njets_arr == nn) if nn is not None else np.ones(len(tarr), dtype=bool)
+                        mask = multiplicity_mask(njets_arr, mult)
                         tarr = tarr[mask]
                     truth_counts, _ = np.histogram(tarr, bins=target_edges)
                 except Exception:
@@ -433,6 +483,11 @@ def main():
             truth_counts = np.zeros(len(target_edges) - 1)
 
         bin_centers = 0.5 * (target_edges[:-1] + target_edges[1:])
+        # scale masses for plotting (divide by 1e3 so axes are in TeV)
+        scale_mass = 1000.0
+        bin_centers = bin_centers / scale_mass
+        lo_plot = lo / scale_mass
+        hi_plot = hi / scale_mass
         # normalized densities
         method_density = {mv: (cts / np.sum(cts) if np.sum(cts) > 0 else cts) for mv, cts in method_counts.items()}
         truth_density = truth_counts / np.sum(truth_counts) if np.sum(truth_counts) > 0 else truth_counts
@@ -440,6 +495,7 @@ def main():
         import matplotlib.pyplot as plt
 
         colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728']
+        style_map = {'baseline': '-', 'chisquared': '--', 'deltaR': '-.', 'hyper': ':'}
 
         def mv_to_key(mv):
             l = mv.lower()
@@ -460,38 +516,6 @@ def main():
         eff_text = '\n'.join(eff_lines)
         bbox = dict(boxstyle='round', facecolor='white', alpha=0.8, edgecolor='none')
 
-        # Normalized plot with ratio subplot
-        fig, (ax, axr) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
-        fig.subplots_adjust(hspace=0.05)
-        for i, (mv, dens) in enumerate(method_density.items()):
-            key = mv_to_key(mv)
-            label = mv.replace('mttbar_', '')
-            if key in eff:
-                label = f"{label} (eff={eff[key]:.3f})"
-            ax.step(bin_centers, dens, where='mid', label=label, color=colors[i % len(colors)])
-        if truth_counts.sum() > 0:
-            ax.step(bin_centers, truth_density, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.5)
-        ax.set_ylabel('Normalized density')
-        ax.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (normalized)')
-        ax.legend()
-        ax.text(0.98, 0.95, eff_text, transform=ax.transAxes, fontsize=8, va='top', ha='right', bbox=bbox)
-
-        # Ratio to truth (normalized)
-        if truth_density.sum() > 0:
-            for i, (mv, dens) in enumerate(method_density.items()):
-                ratio = np.full_like(truth_density, np.nan)
-                mask = truth_density > 0
-                if np.any(mask):
-                    ratio[mask] = dens[mask] / truth_density[mask]
-                axr.step(bin_centers, ratio, where='mid', color=colors[i % len(colors)])
-        axr.axhline(1.0, color='k', linestyle='--', linewidth=1)
-        axr.set_ylabel('Ratio')
-        axr.set_xlabel('Mass [GeV]')
-
-        fout_norm_ratio = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_norm_ratio.png')
-        fig.savefig(fout_norm_ratio, dpi=150, bbox_inches='tight')
-        print('Saved normalized per-method overlay with ratio to', fout_norm_ratio)
-
         # Counts plot with ratio subplot
         fig2, (ax2, ax2r) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
         fig2.subplots_adjust(hspace=0.05)
@@ -500,9 +524,11 @@ def main():
             label = mv.replace('mttbar_', '')
             if key in eff:
                 label = f"{label} (eff={eff[key]:.3f})"
-            ax2.step(bin_centers, cts, where='mid', label=label, color=colors[i % len(colors)])
+            ls = style_map.get(key, '-')
+            ax2.step(bin_centers, cts, where='mid', label=label, color=colors[i % len(colors)], linestyle=ls)
         if truth_counts.sum() > 0:
-            ax2.step(bin_centers, truth_counts, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.5)
+            ax2.fill_between(bin_centers, truth_counts, step='mid', color='0.15', alpha=0.35, label='Truth (llbb_mass)')
+            ax2.step(bin_centers, truth_counts, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.0)
         ax2.set_ylabel('Counts')
         ax2.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (counts)')
         ax2.legend()
@@ -516,21 +542,64 @@ def main():
                 if np.any(mask):
                     ratio[mask] = cts[mask] / truth_counts[mask]
                 ax2r.step(bin_centers, ratio, where='mid', color=colors[i % len(colors)])
+            ax2r.axhspan(0.8, 1.2, color='gray', alpha=0.12)
+            ax2r.set_ylim(0.5, 1.5)
         ax2r.axhline(1.0, color='k', linestyle='--', linewidth=1)
         ax2r.set_ylabel('Ratio')
-        ax2r.set_xlabel('Mass [GeV]')
+        ax2r.set_xlabel('Mass [TeV]')
+        ax2.grid(True, linestyle=':', linewidth=0.5, alpha=0.6)
+
+        fout_norm_ratio = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_norm_ratio.png')
+        fig.savefig(fout_norm_ratio, dpi=150, bbox_inches='tight')
+        print('Saved normalized per-method overlay with ratio to', fout_norm_ratio)
+        plt.close(fig)
+
+        # Normalized plot with ratio subplot
+        fig, (ax, axr) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
+        fig.subplots_adjust(hspace=0.05)
+        for i, (mv, dens) in enumerate(method_density.items()):
+            key = mv_to_key(mv)
+            label = mv.replace('mttbar_', '')
+            if key in eff:
+                label = f"{label} (eff={eff[key]:.3f})"
+            ls = style_map.get(key, '-')
+            ax.step(bin_centers, dens, where='mid', label=label, color=colors[i % len(colors)], linestyle=ls)
+        if truth_counts.sum() > 0:
+            ax.fill_between(bin_centers, truth_density, step='mid', color='0.15', alpha=0.4, label='Truth (llbb_mass)')
+            ax.step(bin_centers, truth_density, where='mid', color='k', linewidth=1.0)
+        ax.set_ylabel('Normalized density')
+        ax.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (normalized)')
+        ax.legend()
+        ax.text(0.98, 0.95, eff_text, transform=ax.transAxes, fontsize=8, va='top', ha='right', bbox=bbox)
+
+        # Ratio to truth (normalized)
+        if truth_density.sum() > 0:
+            for i, (mv, dens) in enumerate(method_density.items()):
+                ratio = np.full_like(truth_density, np.nan)
+                mask = truth_density > 0
+                if np.any(mask):
+                    ratio[mask] = dens[mask] / truth_density[mask]
+                axr.step(bin_centers, ratio, where='mid', color=colors[i % len(colors)])
+            # highlight acceptable band and set reasonable y-limits for ratios
+            axr.axhspan(0.8, 1.2, color='gray', alpha=0.12)
+            axr.set_ylim(0.5, 1.5)
+        axr.axhline(1.0, color='k', linestyle='--', linewidth=1)
+        axr.set_ylabel('Ratio')
+        axr.set_xlabel('Mass [TeV]')
+        ax.grid(True, linestyle=':', linewidth=0.5, alpha=0.6)
 
         fout_counts_ratio = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_counts_ratio.png')
         fig2.savefig(fout_counts_ratio, dpi=150, bbox_inches='tight')
         print('Saved counts per-method overlay with ratio to', fout_counts_ratio)
+        plt.close(fig2)
 
         # Add a zoomed x-axis view for m(ttbar) (0..2000 GeV) if the data extend beyond that
         try:
-            zoom_hi_limit = 2000.0
-            zoom_lo = max(lo, 0.0)
-            zoom_hi = min(hi, zoom_hi_limit)
-            if zoom_lo < zoom_hi:
-                mask = (bin_centers >= zoom_lo) & (bin_centers <= zoom_hi)
+            zoom_hi_limit = float(args.xmax)
+            zoom_lo_plot = max(lo, 0.0) / scale_mass
+            zoom_hi_plot = min(hi, zoom_hi_limit) / scale_mass
+            if zoom_lo_plot < zoom_hi_plot:
+                mask = (bin_centers >= zoom_lo_plot) & (bin_centers <= zoom_hi_plot)
                 if np.any(mask):
                     zoom_centers = bin_centers[mask]
                     figz, (axz, axzr) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
@@ -544,9 +613,10 @@ def main():
                         axz.step(zoom_centers, dens_sub, where='mid', label=label, color=colors[i % len(colors)])
                     if truth_counts.sum() > 0:
                         truth_sub = truth_density[mask]
-                        axz.step(zoom_centers, truth_sub, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.5)
+                        axz.fill_between(zoom_centers, truth_sub, step='mid', color='0.15', alpha=0.35, label='Truth (llbb_mass)')
+                        axz.step(zoom_centers, truth_sub, where='mid', label='Truth', color='k', linewidth=1.0)
                     axz.set_ylabel('Normalized density')
-                    axz.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (zoom {int(zoom_lo)}-{int(zoom_hi)} GeV)')
+                    axz.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (zoom {zoom_lo_plot:.2f}-{zoom_hi_plot:.2f} TeV)')
                     axz.legend()
                     axz.text(0.98, 0.95, eff_text, transform=axz.transAxes, fontsize=8, va='top', ha='right', bbox=bbox)
 
@@ -559,10 +629,11 @@ def main():
                             axzr.step(zoom_centers, ratio, where='mid', color=colors[i % len(colors)])
                     axzr.axhline(1.0, color='k', linestyle='--', linewidth=1)
                     axzr.set_ylabel('Ratio')
-                    axzr.set_xlabel('Mass [GeV]')
-                    fout_zoom = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_norm_ratio_zoom_0-{int(zoom_hi)}.png')
+                    axzr.set_xlabel('Mass [TeV]')
+                    fout_zoom = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_norm_ratio_zoom_0-{int(zoom_hi_plot*scale_mass)}.png')
                     figz.savefig(fout_zoom, dpi=150, bbox_inches='tight')
                     print('Saved zoomed normalized per-method overlay with ratio to', fout_zoom)
+                    plt.close(figz)
 
                     # zoomed counts
                     figz2, (axz2, axz2r) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
@@ -576,9 +647,10 @@ def main():
                         axz2.step(zoom_centers, cts_sub, where='mid', label=label, color=colors[i % len(colors)])
                     if truth_counts.sum() > 0:
                         truth_sub_cts = truth_counts[mask]
-                        axz2.step(zoom_centers, truth_sub_cts, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.5)
-                    axz2.set_ylabel('Counts')
-                    axz2.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (zoom {int(zoom_lo)}-{int(zoom_hi)} GeV)')
+                        axz2.fill_between(zoom_centers, truth_sub_cts, step='mid', color='0.15', alpha=0.35, label='Truth (llbb_mass)')
+                        axz2.step(zoom_centers, truth_sub_cts, where='mid', label='Truth (llbb_mass)', color='k', linewidth=1.0)
+                        axz2.set_ylabel('Counts')
+                        axz2.set_title(f'm(ttbar) per-method vs truth — {region} ({suffix_str}) (zoom {zoom_lo_plot:.2f}-{zoom_hi_plot:.2f} TeV)')
                     axz2.legend()
                     axz2.text(0.98, 0.95, eff_text, transform=axz2.transAxes, fontsize=8, va='top', ha='right', bbox=bbox)
 
@@ -591,18 +663,31 @@ def main():
                             axz2r.step(zoom_centers, ratio, where='mid', color=colors[i % len(colors)])
                     axz2r.axhline(1.0, color='k', linestyle='--', linewidth=1)
                     axz2r.set_ylabel('Ratio')
-                    axz2r.set_xlabel('Mass [GeV]')
-                    fout_zoom_counts = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_counts_ratio_zoom_0-{int(zoom_hi)}.png')
+                    axz2r.set_xlabel('Mass [TeV]')
+                    fout_zoom_counts = os.path.join(outdir, f'mttbar_methods_vs_truth_{region}_{suffix_safe}_counts_ratio_zoom_0-{int(zoom_hi_plot*scale_mass)}.png')
                     figz2.savefig(fout_zoom_counts, dpi=150, bbox_inches='tight')
                     print('Saved zoomed counts per-method overlay with ratio to', fout_zoom_counts)
+                    plt.close(figz2)
         except Exception:
             pass
 
         # --- betaStar plots: per-method vs truth (same style as m(ttbar)) ---
-        beta_method_vars = ['betaStar_HYPER', 'betaStar_CHI2', 'betaStar_PT', 'betaStar_DELTAR']
+        beta_method_vars = [
+            'betaStar_HYPER_NUFLOWS', 'betaStar_CHI2_NUFLOWS', 'betaStar_PT_NUFLOWS', 'betaStar_DELTAR_NUFLOWS',
+            'betaStar_HYPER_NUWEIGHT', 'betaStar_CHI2_NUWEIGHT', 'betaStar_PT_NUWEIGHT', 'betaStar_DELTAR_NUWEIGHT'
+        ]
+        legacy_beta_nuflows_map = {
+            'betaStar_HYPER_NUFLOWS': 'betaStar_HYPER',
+            'betaStar_CHI2_NUFLOWS': 'betaStar_CHI2',
+            'betaStar_PT_NUFLOWS': 'betaStar_PT',
+            'betaStar_DELTAR_NUFLOWS': 'betaStar_DELTAR',
+        }
         beta_method_data = {}
         for mv in beta_method_vars:
             pats = [f'{mv}_{region}_{mult}', f'{mv}_{region}', f'{mv}_NOSYS', mv]
+            legacy = legacy_beta_nuflows_map.get(mv)
+            if legacy is not None:
+                pats.extend([f'{legacy}_{region}_{mult}', f'{legacy}_{region}', f'{legacy}_NOSYS', legacy])
             cand = None
             for p in pats:
                 if p in ks:
@@ -630,7 +715,11 @@ def main():
 
         # truth for betaStar: prefer betaStar_truth_NOSYS or betaStar_truth
         beta_truth_data = None
-        beta_truth_pats = [f'betaStar_truth_{region}_{mult}', f'betaStar_truth_{region}', 'betaStar_truth_NOSYS', 'betaStar_truth', f'betaStar_{region}_{mult}', f'betaStar_{region}', 'betaStar_NOSYS', 'betaStar']
+        beta_truth_pats = [
+            f'betaStar_TRUTH_{region}_{mult}', f'betaStar_TRUTH_{region}', 'betaStar_TRUTH_NOSYS', 'betaStar_TRUTH',
+            f'betaStar_truth_{region}_{mult}', f'betaStar_truth_{region}', 'betaStar_truth_NOSYS', 'betaStar_truth',
+            f'betaStar_{region}_{mult}', f'betaStar_{region}', 'betaStar_NOSYS', 'betaStar'
+        ]
         for tpat in beta_truth_pats:
             cand = None
             if tpat in ks:
@@ -655,6 +744,12 @@ def main():
                     break
                 except Exception:
                     continue
+
+        beta_method_density = {}
+        beta_truth_density = np.array([])
+        beta_bin_centers = np.array([])
+        beta_method_counts = {}
+        beta_truth_counts = np.array([])
 
         if not beta_method_data and beta_truth_data is None:
             print('No betaStar per-method or truth branches available for plotting for region', region, 'multiplicity', mult)
@@ -713,14 +808,7 @@ def main():
                     try:
                         arr = ak.to_numpy(info[1])
                         if njets_arr is not None:
-                            if mult == '5+':
-                                mask = njets_arr >= 5
-                            else:
-                                try:
-                                    nn = int(str(mult).lstrip('_').split('j')[0])
-                                except Exception:
-                                    nn = None
-                                mask = (njets_arr == nn) if nn is not None else np.ones(arr.shape[0], dtype=bool)
+                            mask = multiplicity_mask(njets_arr, mult)
                             arr = arr[mask]
                         cts, _ = np.histogram(arr, bins=target_edges_beta)
                         beta_method_counts[mv] = cts
@@ -741,14 +829,7 @@ def main():
                     try:
                         tarr = ak.to_numpy(beta_truth_data[1])
                         if njets_arr is not None:
-                            if mult == '5+':
-                                mask = njets_arr >= 5
-                            else:
-                                try:
-                                    nn = int(str(mult).lstrip('_').split('j')[0])
-                                except Exception:
-                                    nn = None
-                                mask = (njets_arr == nn) if nn is not None else np.ones(len(tarr), dtype=bool)
+                            mask = multiplicity_mask(njets_arr, mult)
                             tarr = tarr[mask]
                         beta_truth_counts, _ = np.histogram(tarr, bins=target_edges_beta)
                     except Exception:
@@ -774,7 +855,8 @@ def main():
                     label = f"{label} (eff={eff[key]:.3f})"
                 ax.step(beta_bin_centers, dens, where='mid', label=label, color=colors[i % len(colors)])
             if beta_truth_counts.sum() > 0:
-                ax.step(beta_bin_centers, beta_truth_density, where='mid', label='Truth (betaStar)', color='k', linewidth=1.5)
+                ax.fill_between(beta_bin_centers, beta_truth_density, step='mid', color='0.15', alpha=0.35, label='Truth (betaStar)')
+                ax.step(beta_bin_centers, beta_truth_density, where='mid', label='Truth (betaStar)', color='k', linewidth=1.0)
             ax.set_ylabel('Normalized density')
             ax.set_title(f'betaStar per-method vs truth — {region} ({suffix_str}) (normalized)')
             ax.legend()
@@ -787,6 +869,8 @@ def main():
                     if np.any(mask):
                         ratio[mask] = dens[mask] / beta_truth_density[mask]
                     axr.step(beta_bin_centers, ratio, where='mid', color=colors[i % len(colors)])
+                axr.axhspan(0.8, 1.2, color='gray', alpha=0.12)
+                axr.set_ylim(0.5, 1.5)
             axr.axhline(1.0, color='k', linestyle='--', linewidth=1)
             axr.set_ylabel('Ratio')
             axr.set_xlabel('betaStar')
@@ -794,6 +878,7 @@ def main():
             fout_norm_ratio = os.path.join(outdir, f'betastar_methods_vs_truth_{region}_{suffix_safe}_norm_ratio.png')
             fig.savefig(fout_norm_ratio, dpi=150, bbox_inches='tight')
             print('Saved normalized per-method betaStar overlay with ratio to', fout_norm_ratio)
+            plt.close(fig)
 
             fig2, (ax2, ax2r) = plt.subplots(2, 1, sharex=True, figsize=(8, 8), gridspec_kw={'height_ratios': [3, 1]})
             fig2.subplots_adjust(hspace=0.05)
@@ -804,7 +889,8 @@ def main():
                     label = f"{label} (eff={eff[key]:.3f})"
                 ax2.step(beta_bin_centers, cts, where='mid', label=label, color=colors[i % len(colors)])
             if beta_truth_counts.sum() > 0:
-                ax2.step(beta_bin_centers, beta_truth_counts, where='mid', label='Truth (betaStar)', color='k', linewidth=1.5)
+                ax2.fill_between(beta_bin_centers, beta_truth_counts, step='mid', color='0.15', alpha=0.35, label='Truth (betaStar)')
+                ax2.step(beta_bin_centers, beta_truth_counts, where='mid', label='Truth (betaStar)', color='k', linewidth=1.0)
             ax2.set_ylabel('Counts')
             ax2.set_title(f'betaStar per-method vs truth — {region} ({suffix_str}) (counts)')
             ax2.legend()
@@ -817,6 +903,8 @@ def main():
                     if np.any(mask):
                         ratio[mask] = cts[mask] / beta_truth_counts[mask]
                     ax2r.step(beta_bin_centers, ratio, where='mid', color=colors[i % len(colors)])
+                ax2r.axhspan(0.8, 1.2, color='gray', alpha=0.12)
+                ax2r.set_ylim(0.5, 1.5)
             ax2r.axhline(1.0, color='k', linestyle='--', linewidth=1)
             ax2r.set_ylabel('Ratio')
             ax2r.set_xlabel('betaStar')
@@ -824,14 +912,24 @@ def main():
             fout_counts_ratio = os.path.join(outdir, f'betastar_methods_vs_truth_{region}_{suffix_safe}_counts_ratio.png')
             fig2.savefig(fout_counts_ratio, dpi=150, bbox_inches='tight')
             print('Saved counts per-method betaStar overlay with ratio to', fout_counts_ratio)
+            plt.close(fig2)
 
-        # return collected efficiencies/totals so caller can aggregate across multiplicities
-        return eff, err, totals
+        # return collected efficiencies/totals and per-multiplicity histograms/densities
+        return (eff, err, totals,
+            method_density, truth_density, bin_centers, method_counts, truth_counts,
+            beta_method_density, beta_truth_density, beta_bin_centers, beta_method_counts, beta_truth_counts,
+            suffix_safe)
 
     # Main: iterate requested multiplicities and collect efficiencies
-    jet_mults = [2, 3, 4, '5+']
+    jet_mults = [2, 3, 4, 5, '6+']
     any_hist_found = False
     results_by_mult = {}
+
+    # Also keep an overall (inclusive) view for superplots.
+    overall_res = process_multiplicity('')
+    if overall_res:
+        results_by_mult['overall'] = overall_res
+
     for m in jet_mults:
         suf = find_suffix_for_mult(m)
         if suf:
@@ -843,6 +941,7 @@ def main():
         if res:
             # store results under canonical multiplicity label
             results_by_mult[str(m)] = res
+            any_hist_found = True
 
     # If we collected efficiencies across multiplicities, make an efficiency vs multiplicity plot
     if results_by_mult:
@@ -880,6 +979,122 @@ def main():
             fout_ev = os.path.join(outdir, f'efficiency_vs_multiplicity_{region}.png')
             fig.savefig(fout_ev, dpi=150, bbox_inches='tight')
             print('Saved efficiency-vs-multiplicity plot to', fout_ev)
+            # --- Superplots: include overall + multiplicities ---
+            try:
+                import matplotlib.pyplot as plt
+
+                mult_order = ['overall', '2', '3', '4', '5', '6+']
+                colors_sp = ['#1f77b4','#ff7f0e','#2ca02c','#d62728']
+                style_map_sp = {'baseline': '-', 'chisquared': '--', 'deltaR': '-.', 'hyper': ':'}
+
+                def mv_to_key_local(mv):
+                    l = mv.lower()
+                    if 'chi' in l: return 'chisquared'
+                    if 'delt' in l or 'delta' in l: return 'deltaR'
+                    if 'pt' in l: return 'baseline'
+                    if 'hyper' in l: return 'hyper'
+                    return None
+
+                # ---------- m(ttbar) SUPERPLOT (normalized) ----------
+                fig, axes = plt.subplots(2, 3, figsize=(16, 10), sharex=True, sharey=True)
+                axes = axes.flatten()
+
+                for idx, ml in enumerate(mult_order):
+                    ax = axes[idx]
+
+                    if ml not in results_by_mult:
+                        ax.set_visible(False)
+                        continue
+
+                    res = results_by_mult[ml]
+                    eff, err = res[0], res[1]
+                    method_density = res[3]
+                    truth_density = res[4]
+                    bin_centers = res[5]
+
+                    # efficiency text
+                    eff_text = "\n".join([f"{k}: {eff[k]:.3f}" for k in eff])
+
+                    for i, (mv, dens) in enumerate(method_density.items()):
+                        key = mv_to_key_local(mv)
+                        ls = style_map_sp.get(key, '-')
+                        label = mv.replace('mttbar_', '')
+                        ax.step(bin_centers, dens, where='mid',
+                                color=colors_sp[i % len(colors_sp)],
+                                linestyle=ls,
+                                label=label)
+
+                    if truth_density.sum() > 0:
+                        ax.fill_between(bin_centers, truth_density, step='mid',
+                                        color='0.15', alpha=0.3)
+                        ax.step(bin_centers, truth_density, where='mid', color='k')
+
+                    ax.set_title(f'{ml} jets')
+                    ax.text(0.97, 0.97, eff_text, transform=ax.transAxes,
+                            ha='right', va='top', fontsize=8,
+                            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+                    ax.grid(True, linestyle=':', alpha=0.5)
+
+                fig.suptitle(f'm(ttbar) comparison — {region} (all multiplicities)')
+                fig.legend(loc='upper right')
+
+                fout = os.path.join(outdir, f'mttbar_superplot_all_{region}.png')
+                fig.savefig(fout, dpi=150, bbox_inches='tight')
+                plt.close(fig)
+
+                print('Saved mttbar superplot:', fout)
+
+                # ---------- betaStar SUPERPLOT ----------
+                fig, axes = plt.subplots(2, 3, figsize=(16, 10), sharex=True, sharey=True)
+                axes = axes.flatten()
+
+                for idx, ml in enumerate(mult_order):
+                    ax = axes[idx]
+
+                    if ml not in results_by_mult:
+                        ax.set_visible(False)
+                        continue
+
+                    res = results_by_mult[ml]
+                    eff = res[0]
+
+                    beta_method_density = res[8]
+                    beta_truth_density = res[9]
+                    beta_bin_centers = res[10]
+
+                    for i, (mv, dens) in enumerate(beta_method_density.items()):
+                        key = mv_to_key_local(mv)
+                        ls = style_map_sp.get(key, '-')
+                        label = mv.replace('betaStar_', '')
+                        ax.step(beta_bin_centers, dens, where='mid',
+                                color=colors_sp[i % len(colors_sp)],
+                                linestyle=ls,
+                                label=label)
+
+                    if beta_truth_density.size > 0 and np.nansum(beta_truth_density) > 0:
+                        ax.fill_between(beta_bin_centers, beta_truth_density, step='mid',
+                                        color='0.15', alpha=0.3)
+                        ax.step(beta_bin_centers, beta_truth_density, where='mid', color='k')
+
+                    ax.set_title(f'{ml} jets')
+                    ax.text(0.97, 0.97,
+                            "\n".join([f"{k}: {eff[k]:.3f}" for k in eff]),
+                            transform=ax.transAxes,
+                            ha='right', va='top', fontsize=8,
+                            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+                    ax.grid(True, linestyle=':', alpha=0.5)
+
+                fig.suptitle(f'betaStar comparison — {region} (all multiplicities)')
+                fout = os.path.join(outdir, f'betastar_superplot_all_{region}.png')
+                fig.savefig(fout, dpi=150, bbox_inches='tight')
+                plt.close(fig)
+
+                print('Saved betaStar superplot:', fout)
+
+            except Exception as e:
+                print('Superplot generation failed:', e)
         except Exception:
             pass
 

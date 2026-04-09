@@ -1,7 +1,7 @@
 **Purpose**: Comprehensive run & implementation notes for `TtbarDileptonFrameReco` (DiLepton HyPER integration).
 
-- **Location**: /home/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
-- **Config**: /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
+- **Location**: /data/leet/FFTutorial/atlastohyper/Root/TtbarDileptonFrameReco.cc
+- **Config**: /data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
 
 **Summary of recent edits**:
 - Added HyPER performance exposure (indices, IDs, convergence, per-method mttbar outputs and correctness flags) inside `TtbarDileptonFrameReco` only — MainFrame was NOT modified.
@@ -43,6 +43,12 @@ source build/setup.sh
 cmake --build build_custom -j4 --target install
 source build_custom/setup.sh
 ```
+
+If setupATLAS doesn't work, you can try the more manual approach:
+export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+If this works please add it to the documentation and remove the note about setupATLAS not working.
+
 To simply recompile the custom frame 
 ```bash
 cmake --build build_custom -j4 --target install
@@ -52,16 +58,16 @@ if already built/compiled then you can simply run
 ```bash
 source build_custom/setup.sh
 ```
-2. Confirm install artifacts exist:
+1. Confirm install artifacts exist:
 
-- `/home/leet/FF/install/lib/libFastFrames.so`
-- `/home/leet/FF/install/bin/fast-frames.exe`
+- `/data/leet/FFTutorial/install/lib/libFastFrames.so`
+- `/data/leet/FFTutorial/install/bin/fast-frames.exe`
 
 **Environment for running FastFrames (important)**:
 - Ensure the installed libs are on `LD_LIBRARY_PATH` for Python wrapper or when running compiled binary:
 
 ```bash
-export LD_LIBRARY_PATH=/home/leet/FF/install/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/data/leet/FFTutorial/install/lib:${LD_LIBRARY_PATH}
 ```
 
 - Python wrapper may need same `LD_LIBRARY_PATH` exported in the shell used to run `python3`.
@@ -73,8 +79,8 @@ export LD_LIBRARY_PATH=/home/leet/FF/install/lib:${LD_LIBRARY_PATH}
 
 - Full-split 
 ```bash
-export LD_LIBRARY_PATH=/home/leet/FF/install/lib:$LD_LIBRARY_PATH
-python3 python/FastFrames.py -c /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 100 --job_index 0
+export LD_LIBRARY_PATH=/data/leet/FFTutorial/install/lib:$LD_LIBRARY_PATH
+python3 python/FastFrames.py -c /data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml --step n --split_n_jobs 100 --job_index 0
 ```
 
 **Typical failure modes & diagnostics**:
@@ -94,7 +100,7 @@ python3 python/FastFrames.py -c /home/leet/FF/atlastohyper/FastFramesConfig/Ttba
   - Fix: install or provide `libonnxruntime` on `LD_LIBRARY_PATH` or disable ONNX inference codepaths.
 
 **How to verify produced ntuple contents**:
-- The ntuple YAML is at `/home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml` — inspect the `Variables`/`Snapshot` branch list for requested outputs such as `mttbar_HYPER_NOSYS`.
+- The ntuple YAML is at `/data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml` — inspect the `Variables`/`Snapshot` branch list for requested outputs such as `mttbar_HYPER_NOSYS`.
 - After a successful run, open the output ROOT file and list tree branches:
 
 ```bash
@@ -122,10 +128,10 @@ root[0] T->Print();
 - If you plan to run on many jobs (100 splits), ensure `LD_LIBRARY_PATH` and ONNX runtime availability on the compute nodes.
 
 **Quick reference — important file locations**:
-- Frame: /home/leet/FF/atlastohyper/Root/TtbarDileptonFrameReco.cc
-- YAML: /home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
-- Installed libs: /home/leet/FF/install/lib/
-- Binaries: /home/leet/FF/install/bin/fast-frames.exe
+- Frame: /data/leet/FFTutorial/atlastohyper/Root/TtbarDileptonFrameReco.cc
+- YAML: /data/leet/FFTutorial/atlastohyper/FastFramesConfig/TtbarDileptonReco.yml
+- Installed libs: /data/leet/FFTutorial/install/lib/
+- Binaries: /data/leet/FFTutorial/install/bin/fast-frames.exe
 
 **Contact / testing notes**:
 - If you share a failing log, include the first ~200 lines around the failure and the `GetColumnNames()` listing (the frame prints fallback defines). That will make diagnosing duplicate-Define vs. missing input trivial.

@@ -1,0 +1,4 @@
+[ libPartonMatcher.so ]
+# List of selected classes
+class PartonMatcher
+header PartonMatcher/PartonMatcher.h

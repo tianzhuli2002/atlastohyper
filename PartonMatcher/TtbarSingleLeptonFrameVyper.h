@@ -1,12 +1,12 @@
 #pragma once
 #include "PartonMatcher/PartonMatcher.h"
 
-class ZllCalibrationFrame : public ChannelFrame {
+class TtbarSingleLeptonFrameVyper : public ChannelFrame {
 public:
 
-  explicit ZllCalibrationFrame(PartonMatcher* partonMatcherPtr) : ChannelFrame(partonMatcherPtr) {}
+  explicit TtbarSingleLeptonFrameVyper(PartonMatcher* partonMatcherPtr) : ChannelFrame(partonMatcherPtr) {}
 
-  virtual ~ZllCalibrationFrame() = default;
+  virtual ~TtbarSingleLeptonFrameVyper() = default;
 
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const std::shared_ptr<Sample>& sample,

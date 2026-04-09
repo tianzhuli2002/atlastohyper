@@ -1,0 +1,7 @@
+module "PartonMatcher" {
+  requires cplusplus
+  module "PartonMatcher/PartonMatcher.h" { header "PartonMatcher/PartonMatcher.h" export * }
+  link "libPartonMatcher.so"
+  export *
+}
+

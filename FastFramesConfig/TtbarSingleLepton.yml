@@ -145,13 +145,33 @@ ntuples:
     - Jet_phi
     - Jet_e
     - Jet_GN2v01_score
+   
+    - eventNumber
+    - Electron_pt
+    - Electron_eta
+    - Electron_phi
+    - Electron_e
+    - Electron_q
+    - Muon_pt
+    - Muon_eta
+    - Muon_phi
+    - Muon_e
+    - Muon_q
+    - Jet_pt
+    - Jet_eta
+    - Jet_phi
+    - Jet_e
+    - Jet_GN2v01_score
     # - Jet_SVmass
-    - Jet_GN2v01_PCBT_quantile
+    - Jet_GN2v01_PCBT_quantile_NOSYS
     - nBjets_GN2v01_.+
     - Met_pt
     - Met_phi
     - Truth_.+_index
-    - KLF_.+_index
+
+    - nu_px
+    - nu_py
+    - nu_pz
 
 samples:
 # ttbar
