@@ -1,8 +1,0 @@
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/PartonMatcher.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/PartonMatcher_dict.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/edit_cache.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/rebuild_cache.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/list_install_components.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/install.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/install/local.dir
-/data/leet/FFTutorial/atlastohyper/build_custom/CMakeFiles/install/strip.dir
