@@ -1,0 +1,4 @@
+Saving 36 events
+Creating HDF5 dataset:   0%|          | 0/74 [00:00<?, ?events/s]Creating HDF5 dataset: 100%|██████████| 74/74 [00:00<00:00, 38242.79events/s]
+Saving 38 events
+Creating HDF5 dataset:   0%|          | 0/74 [00:00<?, ?events/s]Creating HDF5 dataset: 100%|██████████| 74/74 [00:00<00:00, 39194.15events/s]

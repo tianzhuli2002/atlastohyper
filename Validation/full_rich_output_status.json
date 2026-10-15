@@ -1,0 +1,8 @@
+{
+  "directory": "/data/leet/FFTutorial/output_ntuples_ttbarDilepton_reco_VyPERStudy_KKGraviton",
+  "checked_at_utc": "2026-10-06T20:01:29+00:00",
+  "directory_exists": false,
+  "root_file_count": 0,
+  "files": [],
+  "required_branch_audit": "not run because no rich ROOT outputs are present"
+}

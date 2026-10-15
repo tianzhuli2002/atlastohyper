@@ -1,0 +1,230 @@
+{
+  "validated_at_utc": "2026-10-05T23:31:02.272224+00:00",
+  "pilot_input": "/home/leet/FF/atlastohyper/Validation/pilots/artifacts/root/kk574797_reco_leptonmatch_pilot.root",
+  "pilot_population": {
+    "selected": 88,
+    "unique_truth_b_pair": 74,
+    "truth_matched_lepton_pair": 75,
+    "truth_reconstructible": 63,
+    "candidate_supported": 63,
+    "assignment_correct": 57,
+    "categories": {
+      "CORRECT": 57,
+      "SWAPPED": 1,
+      "ONE_WRONG": 5,
+      "BOTH_WRONG": 0,
+      "INVALID": 0,
+      "UNSUPPORTED": 0
+    }
+  },
+  "correct_assignment_neutrino_diagnostics": {
+    "population": "truth_reconstructible_and_assignment_CORRECT",
+    "n": 57,
+    "component_oracle_mttbar": {
+      "VYPER_NATIVE": {
+        "n": 57,
+        "median_relative_residual": -0.034529274272563616,
+        "sigma68_relative_residual": 0.406019568391464
+      },
+      "VYPER_NUFLOWS": {
+        "n": 57,
+        "median_relative_residual": -0.027886580763074636,
+        "sigma68_relative_residual": 0.3393373720621442
+      },
+      "VYPER_METPROJECTED": {
+        "n": 57,
+        "median_relative_residual": -0.014246751334090847,
+        "sigma68_relative_residual": 0.38451375046428904
+      },
+      "VYPER_TRUTHNU_PT": {
+        "n": 57,
+        "median_relative_residual": -0.005425619483161061,
+        "sigma68_relative_residual": 0.11293459744954962
+      },
+      "VYPER_TRUTHNU_PZ": {
+        "n": 57,
+        "median_relative_residual": -0.015308083652618477,
+        "sigma68_relative_residual": 0.33010366949636694
+      },
+      "VYPER_TRUTHNU": {
+        "n": 57,
+        "median_relative_residual": -0.018105000372561204,
+        "sigma68_relative_residual": 0.06972438257403125
+      }
+    },
+    "pz": {
+      "VYPER_NATIVE": {
+        "top": {
+          "sigma68_GeV": 239.8554216417579,
+          "wrong_sign_fraction": 0.3157894736842105
+        },
+        "antitop": {
+          "sigma68_GeV": 165.27771527538243,
+          "wrong_sign_fraction": 0.2631578947368421
+        }
+      },
+      "NUFLOWS": {
+        "top": {
+          "sigma68_GeV": 129.64110914062496,
+          "wrong_sign_fraction": 0.19298245614035087
+        },
+        "antitop": {
+          "sigma68_GeV": 130.62978789062498,
+          "wrong_sign_fraction": 0.14035087719298245
+        }
+      }
+    },
+    "met_pair_closure": {
+      "VYPER_NATIVE": {
+        "median_delta_GeV": 39.99360012821007,
+        "median_relative_mismatch": 0.43610978202007
+      },
+      "NUFLOWS": {
+        "median_delta_GeV": 29.030850107556024,
+        "median_relative_mismatch": 0.3069226877252026
+      },
+      "VYPER_METPROJECTED": {
+        "median_delta_GeV": 7.105427357601002e-15,
+        "median_relative_mismatch": 9.596028600794108e-17
+      }
+    },
+    "met_projection_sigma68_GeV": 1.5205640252533206e-14
+  },
+  "raw_topology": {
+    "files": 19,
+    "entries": 506859,
+    "identity_key_audit": "PASS",
+    "within_file_duplicate_keys": 0,
+    "cross_file_overlaps_within_dsid": 0,
+    "samples": [
+      {
+        "dsid": 410472,
+        "mass_GeV": null,
+        "n_direct_truth_2l": 44621,
+        "n_all_selected": 41120,
+        "n_direct_truth_2l_selected": 37167,
+        "selected_given_direct_truth_2l": 0.832948611640259,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.771921328059838,
+        "strict_object_match_given_direct_truth_2l_selected": 0.7697150698200016,
+        "n_selected_with_w_tau_daughter_proxy": 3940,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.0958171206225681
+      },
+      {
+        "dsid": 574793,
+        "mass_GeV": 400,
+        "n_direct_truth_2l": 82330,
+        "n_all_selected": 75156,
+        "n_direct_truth_2l_selected": 67279,
+        "selected_given_direct_truth_2l": 0.8171869306449654,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.7372434191946967,
+        "strict_object_match_given_direct_truth_2l_selected": 0.7351625321422732,
+        "n_selected_with_w_tau_daughter_proxy": 7867,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.10467560806855075
+      },
+      {
+        "dsid": 574794,
+        "mass_GeV": 500,
+        "n_direct_truth_2l": 100902,
+        "n_all_selected": 94762,
+        "n_direct_truth_2l_selected": 83583,
+        "selected_given_direct_truth_2l": 0.8283582089552238,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.7439910029551464,
+        "strict_object_match_given_direct_truth_2l_selected": 0.7428304798822727,
+        "n_selected_with_w_tau_daughter_proxy": 11171,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.11788480614592348
+      },
+      {
+        "dsid": 574797,
+        "mass_GeV": 1000,
+        "n_direct_truth_2l": 114696,
+        "n_all_selected": 116365,
+        "n_direct_truth_2l_selected": 98696,
+        "selected_given_direct_truth_2l": 0.8605008021203878,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.7623510577936289,
+        "strict_object_match_given_direct_truth_2l_selected": 0.7613986382426846,
+        "n_selected_with_w_tau_daughter_proxy": 17669,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.15184118936106217
+      },
+      {
+        "dsid": 574801,
+        "mass_GeV": 2000,
+        "n_direct_truth_2l": 56595,
+        "n_all_selected": 52327,
+        "n_direct_truth_2l_selected": 43792,
+        "selected_given_direct_truth_2l": 0.7737786023500309,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.5922771282426014,
+        "strict_object_match_given_direct_truth_2l_selected": 0.5913408841797588,
+        "n_selected_with_w_tau_daughter_proxy": 8534,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.163089800676515
+      },
+      {
+        "dsid": 574803,
+        "mass_GeV": 3000,
+        "n_direct_truth_2l": 26449,
+        "n_all_selected": 21430,
+        "n_direct_truth_2l_selected": 17836,
+        "selected_given_direct_truth_2l": 0.6743544179364059,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.4967481498093743,
+        "strict_object_match_given_direct_truth_2l_selected": 0.4952343574792554,
+        "n_selected_with_w_tau_daughter_proxy": 3594,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.1677088194120392
+      },
+      {
+        "dsid": 574807,
+        "mass_GeV": 5000,
+        "n_direct_truth_2l": 13675,
+        "n_all_selected": 11036,
+        "n_direct_truth_2l_selected": 9203,
+        "selected_given_direct_truth_2l": 0.6729798903107861,
+        "unique_b_pair_given_direct_truth_2l_selected": 0.5295012495925242,
+        "strict_object_match_given_direct_truth_2l_selected": 0.5274367054221449,
+        "n_selected_with_w_tau_daughter_proxy": 1833,
+        "w_tau_daughter_proxy_fraction_all_selected": 0.16609278724175425
+      }
+    ],
+    "cutflow_output": "plots/presentation/raw_acceptance_multitag/raw_acceptance_cutflow.csv",
+    "differential_output": "plots/presentation/raw_acceptance_multitag/raw_acceptance_differential.csv",
+    "plots": [
+      "plots/presentation/raw_acceptance_multitag/raw_acceptance_representative.png",
+      "plots/presentation/raw_acceptance_multitag/raw_acceptance_vs_truth_kinematics.png",
+      "plots/presentation/raw_acceptance_multitag/raw_topology_resolution_by_input.png"
+    ]
+  },
+  "rich_output_status": {
+    "directory_exists": false,
+    "root_file_count": 0,
+    "schema_audit": "not run because no rich ROOT outputs are present"
+  },
+  "plots_inspected": [
+    "/home/leet/FF/atlastohyper/plots/presentation/pilot_1TeV/kk_574797_mg1000/physics/neutrino_causal_diagnostics.png",
+    "/home/leet/FF/atlastohyper/plots/presentation/pilot_1TeV/kk_574797_mg1000/physics/topside_response.png",
+    "plots/presentation/raw_acceptance_multitag/raw_acceptance_vs_truth_kinematics.png"
+  ],
+  "machine_readable_metrics": {
+    "study_json": "plots/presentation/pilot_1TeV/summary/study_metrics.json",
+    "neutrino_csv": "plots/presentation/pilot_1TeV/summary/neutrino_metrics.csv",
+    "neutrino_differential_csv": "plots/presentation/pilot_1TeV/summary/neutrino_differential.csv"
+  },
+  "validation": {
+    "assertions": "PASS",
+    "canonical_study": "PASS",
+    "compile_checks": "PASS",
+    "python_tests": 41
+  },
+  "raw_cutflow_pilot_smoke": {
+    "raw_entries": 100,
+    "direct_truth_2l": 85,
+    "direct_truth_2l_selected": 75,
+    "all_selected": 88,
+    "unique_b_pair": 63,
+    "strict_reco_object_match": 63,
+    "selected_w_tau_daughter_proxy": 13,
+    "selected_identity_closure": {
+      "selected_raw": 88,
+      "selected_output": 88,
+      "missing_from_output": 0,
+      "extra_in_output": 0
+    },
+    "status": "PASS"
+  }
+}

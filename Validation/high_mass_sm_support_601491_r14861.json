@@ -1,0 +1,82 @@
+{
+  "dataset": "user.leet.601491.PhPy8EG.DAOD_PHYS.e8441_a907_r14861_p7266.TtNT_2L_2Lsys_b71171e_output",
+  "scope": "one exact local ntuple directory; raw generated events before analysis selection",
+  "input_directory": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.601491.PhPy8EG.DAOD_PHYS.e8441_a907_r14861_p7266.TtNT_2L_2Lsys_b71171e_output",
+  "file_count": 1762,
+  "tree": "reco",
+  "truth_mtt_branch": "Ttbar_MC_ttbar_afterFSR_m",
+  "truth_mtt_units_in_file": "MeV; converted to GeV for counts",
+  "direct_2l_definition": "one after-FSR e/mu charged daughter on each top side using daughter PDG IDs",
+  "raw_tree_entries": 15635425,
+  "finite_positive_mtt_entries": 15635425,
+  "direct_2l_entries": 14117687,
+  "max_finite_mtt_GeV": 4575.81,
+  "max_direct_2l_mtt_GeV": 4533.962,
+  "mtt_bin_edges_GeV": [
+    0.0,
+    500.0,
+    1000.0,
+    1500.0,
+    2000.0,
+    3000.0,
+    4000.0,
+    5000.0,
+    6000.0,
+    10000.0
+  ],
+  "all_event_counts_by_mtt_bin": [
+    8455808,
+    6766212,
+    370997,
+    36382,
+    5843,
+    174,
+    9,
+    0,
+    0
+  ],
+  "direct_2l_counts_by_mtt_bin": [
+    7719310,
+    6037987,
+    323623,
+    31563,
+    5055,
+    143,
+    6,
+    0,
+    0
+  ],
+  "thresholds_GeV": [
+    1000,
+    1600,
+    2000,
+    3000,
+    4000,
+    5000,
+    6000
+  ],
+  "all_event_counts_above_threshold": {
+    "1000": 413405,
+    "1600": 28046,
+    "2000": 6026,
+    "3000": 183,
+    "4000": 9,
+    "5000": 0,
+    "6000": 0
+  },
+  "direct_2l_counts_above_threshold": {
+    "1000": 360390,
+    "1600": 24283,
+    "2000": 5204,
+    "3000": 149,
+    "4000": 6,
+    "5000": 0,
+    "6000": 0
+  },
+  "warning": "Counts are raw support only; analysis-selected, truth-reconstructible and candidate-supported counts are lower.",
+  "local_metadata_campaign": "mc20e",
+  "local_metadata_simulation": "fastsim",
+  "local_metadata_source": "metadata_kkgraviton/filelist.txt; corroborated by metadata_ttbar2L_16_2/filelist.txt and metadata_ttbar2L_run2_run3/filelist.txt",
+  "sample_treatment": "Powheg+Pythia8 ttbar pTHard variation; alternate fast-simulation control, not nominal full-simulation SM denominator",
+  "official_generator_classification_source": "https://atlas-sw-doxygen.web.cern.ch/atlas-sw-doxygen/atlas_main--Doxygen/docs/html/d9/ddd/HadronOriginClassifier_8cxx_source.html"
+}

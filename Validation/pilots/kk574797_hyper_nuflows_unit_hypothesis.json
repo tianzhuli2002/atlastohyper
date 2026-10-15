@@ -1,0 +1,103 @@
+{
+  "raw": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+  "fastframes": "/data/leet/FFTutorial/output_ntuples_kk_graviton_pilot_reco/kkgrav_pilot_574797_mc20a_fullsim.root",
+  "events_joined_by_eventNumber": 88,
+  "units_observation": "HyPER constituent p4 branches are on a MeV scale; NuFlows p4 branches are on a GeV scale",
+  "custom_native_note": "The custom path re-decodes the HyPER assignment and charge-orders leptons. Its difference from the native combined branch remains unclassified; do not treat the constituent residual as a validated custom-versus-native comparison.",
+  "methods": {
+    "top": {
+      "native_vs_b_plus_lepton_plus_unscaled_GeV_nu": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          0.004749271989567205,
+          0.0038356623117579147,
+          0.0041080589217017405,
+          0.005880401047761552
+        ],
+        "max_abs_by_cartesian_component": [
+          0.019802581606199965,
+          0.045825567649444565,
+          0.05382628343068063,
+          0.0522674429230392
+        ]
+      },
+      "native_vs_b_plus_lepton_plus_GeV_to_MeV_nu": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          38552.30994092596,
+          47506.38183509384,
+          45118.00842822208,
+          110138.33858298481
+        ],
+        "max_abs_by_cartesian_component": [
+          358119.416617542,
+          409407.9466872014,
+          986532.4639028967,
+          1000756.2177031668
+        ]
+      },
+      "custom_vs_native": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          41873.15775971279,
+          62767.042111830524,
+          85208.32697994822,
+          130540.53541134449
+        ],
+        "max_abs_by_cartesian_component": [
+          389616.2526925521,
+          409407.92944986,
+          871918.8893007837,
+          936833.66263603
+        ]
+      }
+    },
+    "antitop": {
+      "native_vs_b_plus_lepton_plus_unscaled_GeV_nu": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          0.005877050534763839,
+          0.006264515483053401,
+          0.0045383249744190834,
+          0.007843312952900305
+        ],
+        "max_abs_by_cartesian_component": [
+          0.029117914411472157,
+          0.03991677494923351,
+          0.07833964214660227,
+          0.07561295037157834
+        ]
+      },
+      "native_vs_b_plus_lepton_plus_GeV_to_MeV_nu": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          50659.270297781564,
+          60886.17309981806,
+          70189.33289935935,
+          149788.736568067
+        ],
+        "max_abs_by_cartesian_component": [
+          389110.18255064357,
+          389553.70820856886,
+          963128.470153451,
+          1061911.4397402657
+        ]
+      },
+      "custom_vs_native": {
+        "events": 88,
+        "median_abs_by_cartesian_component": [
+          47211.40483269989,
+          53256.947673817376,
+          47065.49077668511,
+          120358.18947913614
+        ],
+        "max_abs_by_cartesian_component": [
+          367503.7490066765,
+          389553.8119781385,
+          987369.8683571297,
+          1061911.2601428512
+        ]
+      }
+    }
+  }
+}

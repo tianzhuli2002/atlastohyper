@@ -1,0 +1,532 @@
+{
+  "KK574797-rich": {
+    "path": "/data/leet/FFTutorial/output_ntuples_kk_graviton_pilot_reco/kkgrav_pilot_574797_mc20a_fullsim.root",
+    "entries": 88,
+    "branches": 1057,
+    "eventNumber_unique": 88,
+    "mcChannelNumber_unique": [
+      574797
+    ],
+    "is_fully_matched_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": -1.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "n_jets_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": 2.0,
+      "median": 3.0,
+      "max": 7.0
+    },
+    "n_bjets_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": 1.0,
+      "median": 2.0,
+      "max": 3.0
+    },
+    "neutrino_both_nonzero_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": 1.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "mttbar_TRUTH_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": -1.0,
+      "median": 930313.6875,
+      "max": 1543628.5
+    },
+    "mttbar_truth_assignment_valid_NOSYS": {
+      "finite": 88,
+      "nonfinite": 0,
+      "min": 0.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "spin_branches": {
+      "spin_TtbarDiLepton_DA_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9906750321388245,
+          0.9960129857063293
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9865296483039856,
+          0.9600175023078918
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.7539986968040466,
+          0.9952062964439392
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.7224539518356323,
+          0.9976592063903809
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9884627461433411,
+          0.9882679581642151
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.96942138671875,
+          0.9793136119842529
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9929684996604919,
+          0.833229124546051
+        ]
+      },
+      "spin_TtbarDiLepton_DA_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9968633651733398,
+          0.9997098445892334
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          0.0,
+          0.9949246644973755
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9995223879814148,
+          0.0
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9913521409034729,
+          -0.0
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9848459362983704,
+          0.0
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.41579142212867737,
+          0.7135596871376038
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.42203453183174133,
+          0.530933678150177
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.5060158967971802,
+          0.46707800030708313
+        ]
+      },
+      "spin_TtbarDiLepton_EM_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.6737005710601807,
+          0.41232138872146606
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9440323710441589,
+          0.9718974828720093
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9904227256774902,
+          0.9613328576087952
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.8443222045898438,
+          0.9277467727661133
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.8217625617980957,
+          0.9335150718688965
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9943711757659912,
+          0.9911901950836182
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9733127355575562,
+          0.969414234161377
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9829962849617004,
+          0.954246997833252
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_EM_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9932816624641418,
+          0.9859681725502014
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.94497150182724,
+          0.9719502925872803
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.990328311920166,
+          0.960473895072937
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.8442373275756836,
+          0.9277520775794983
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.8217536807060242,
+          0.931913435459137
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.994225263595581,
+          0.9911911487579346
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9733275771141052,
+          0.9694923162460327
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9829962849617004,
+          0.9540296792984009
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NW_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.99335777759552,
+          0.9859060645103455
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.94742351770401,
+          0.9719110131263733
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.990362286567688,
+          0.9561607837677002
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.840609610080719,
+          0.9282604455947876
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.8189444541931152,
+          0.9341391921043396
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9925050139427185,
+          0.9911980628967285
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9738753437995911,
+          0.970432460308075
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9829026460647583,
+          0.9515272378921509
+        ]
+      },
+      "spin_TtbarDiLepton_HyPER_plus_NuFlows_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9932575225830078,
+          0.9852944612503052
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          0.0,
+          0.9998705983161926
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9999538660049438,
+          0.0
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9999005794525146,
+          -0.0
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9999497532844543,
+          0.0
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.5680224299430847,
+          0.7204023599624634
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.4265572428703308,
+          0.6283191442489624
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.44197410345077515,
+          0.5379904508590698
+        ]
+      },
+      "spin_TtbarDiLepton_NW_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.667486310005188,
+          0.6140934228897095
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_han_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9759767055511475,
+          0.9842676520347595
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_phi_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9925581216812134,
+          0.9833842515945435
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_helicity_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.847174346446991,
+          0.9710175395011902
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_helicity_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.7702983021736145,
+          0.9986744523048401
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_raxis_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9643387198448181,
+          0.97251296043396
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_raxis_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9593379497528076,
+          0.9933584928512573
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_transverse_m_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9638045430183411,
+          0.8221897482872009
+        ]
+      },
+      "spin_TtbarDiLepton_VyPER_cos_theta_transverse_p_NOSYS": {
+        "finite": 88,
+        "sentinel_minus999": 0,
+        "range_finite": [
+          -0.9765282273292542,
+          0.9440051913261414
+        ]
+      }
+    },
+    "neutrino_vector": {
+      "finite_events": 88,
+      "duplicate_pair_events": 0,
+      "component_min": -1095.60693359375,
+      "component_max": 1185.2901611328125
+    }
+  },
+  "SM410472-minimal": {
+    "path": "/data/leet/FFTutorial/output_ntuples_sm_vyper_pilot/sm_pilot_410472_mc20d_410472_mc20d_fullsim.root",
+    "entries": 72,
+    "branches": 30,
+    "eventNumber_unique": 72,
+    "mcChannelNumber_unique": [
+      410472
+    ],
+    "is_fully_matched_NOSYS": {
+      "finite": 72,
+      "nonfinite": 0,
+      "min": 1.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "spin_branches": {},
+    "neutrino_vector": {
+      "finite_events": 72,
+      "duplicate_pair_events": 0,
+      "component_min": -410.3463439941406,
+      "component_max": 552.3914794921875
+    }
+  }
+}

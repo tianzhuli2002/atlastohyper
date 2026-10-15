@@ -1,0 +1,24 @@
+{
+  "raw_input": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+  "pilot_input": "Validation/pilots/artifacts/root/kk574797_reco_leptonmatch_pilot.root",
+  "raw_rows_inspected": 100,
+  "selection_replay": {
+    "raw_selected": 88,
+    "pilot_selected": 88,
+    "missing": 0,
+    "extra": 0,
+    "evidence": "Validation/audit_raw_acceptance.py --max-events 100 --selected-root ..."
+  },
+  "strict_population": {
+    "raw_truth_reconstructible": 63,
+    "raw_candidate_supported": 63,
+    "pilot_truth_reconstructible": 63,
+    "pilot_candidate_supported": 63
+  },
+  "matched_event_keys": 88,
+  "unique_matched_event_keys": 88,
+  "native_mtt_max_abs_difference_GeV": 5.684341886080801e-13,
+  "truth_mtt_max_abs_difference_GeV": 6.247910368983867e-05,
+  "oracle_mtt_max_abs_difference_MeV": 0.06182808101584669,
+  "status": "PASS"
+}

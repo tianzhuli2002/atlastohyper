@@ -1,0 +1,70 @@
+{
+  "file": "/data/leet/FFTutorial/output_ntuples_kk_graviton_pilot_reco/kkgrav_pilot_574797_mc20a_fullsim.root",
+  "events": 88,
+  "method": "custom HyPER assignment + NuFlows vs native HyPER+NuFlows",
+  "units": "MeV for pt and mass; dimensionless eta; rad phi",
+  "component_comparisons": {
+    "top_pt": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Top_NOSYS/fCoordinates/fCoordinates.fPt",
+      "custom_branch": "top_pt_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 409430.609375,
+      "exact": false
+    },
+    "top_eta": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Top_NOSYS/fCoordinates/fCoordinates.fEta",
+      "custom_branch": "top_eta_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 1.2775477170944214,
+      "exact": false
+    },
+    "top_phi": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Top_NOSYS/fCoordinates/fCoordinates.fPhi",
+      "custom_branch": "top_phi_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 6.07686185836792,
+      "exact": false
+    },
+    "top_m": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Top_NOSYS/fCoordinates/fCoordinates.fM",
+      "custom_branch": "top_m_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 1011328.5625,
+      "exact": false
+    },
+    "antitop_pt": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Tbar_NOSYS/fCoordinates/fCoordinates.fPt",
+      "custom_branch": "antitop_pt_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 446981.96875,
+      "exact": false
+    },
+    "antitop_eta": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Tbar_NOSYS/fCoordinates/fCoordinates.fEta",
+      "custom_branch": "antitop_eta_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 1.4679783284664154,
+      "exact": false
+    },
+    "antitop_phi": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Tbar_NOSYS/fCoordinates/fCoordinates.fPhi",
+      "custom_branch": "antitop_phi_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 6.147299289703369,
+      "exact": false
+    },
+    "antitop_m": {
+      "native_branch": "TtbarDiLepton_HyPER_plus_NuFlows_Tbar_NOSYS/fCoordinates/fCoordinates.fM",
+      "custom_branch": "antitop_m_HYPER_NUFLOWS_NOSYS",
+      "paired": 88,
+      "max_abs_diff": 501063.953125,
+      "exact": false
+    }
+  },
+  "mttbar_component_sum": {
+    "branch": "mttbar_HYPER_NUFLOWS_NOSYS",
+    "paired": 88,
+    "max_abs_diff_MeV": 864354.1505906531,
+    "median_abs_diff_MeV": 271630.9589056678
+  }
+}

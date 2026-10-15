@@ -1,0 +1,23 @@
+{
+  "assignment_valid_fraction": 1.0,
+  "comparison_tolerance_MeV": 1.0,
+  "entries_read": 88,
+  "failure_code_counts": {
+    "0": 88
+  },
+  "flow_input_units": "GeV",
+  "hybrid_kinematic_output_units": "MeV for pT, pz and mtt; radians for angular quantities",
+  "input": "/data/leet/FFTutorial/output_ntuples_kk574797_pilot_reproduced_reco/kk574797_mc20a_pilot_reco_574797_mc20a_fullsim_Njobs_1_jobIndex_0.root",
+  "invalid_rows": 0,
+  "maximum_charge_ordered_neutrino_kinematic_difference_MeV": 0.51806640625,
+  "maximum_independent_mtt_difference_MeV": 0.1793556718621403,
+  "maximum_top_component_mtt_difference_MeV": 0.1793556718621403,
+  "mtt_max_GeV": 1977.315125,
+  "mtt_median_GeV": 937.1756250000001,
+  "mtt_min_GeV": 504.508375,
+  "neutrino_ordering": "positive charged lepton -> top nu; negative charged lepton -> antitop nubar",
+  "neutrino_valid_fraction": 1.0,
+  "reco_valid_fraction": 1.0,
+  "tree": "reco",
+  "valid_rows_checked": 88
+}

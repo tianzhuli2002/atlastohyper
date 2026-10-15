@@ -1,0 +1,15 @@
+analysis_selected_events,available,branch,category,correct,efficiency_on_valid_assignment_events,incorrect,invalid_or_unmatched,method,metric,valid_assignment_events,value
+88,True,HYPER_correct_NOSYS,assignment,62,0.8378378378378378,12,14,HYPER_adapter,,74,
+88,True,CHI2_correct_NOSYS,assignment,31,0.4189189189189189,43,14,CHI2,,74,
+88,True,DELTAR_correct_NOSYS,assignment,58,0.7837837837837838,16,14,DELTAR,,74,
+88,True,PT_correct_NOSYS,assignment,43,0.581081081081081,31,14,PT,,74,
+,,,mttbar_absolute_residual_GeV,,,,,VYPER_NATIVE,median,,-45.27766622785964
+,,,mttbar_absolute_residual_GeV,,,,,VYPER_NATIVE,p16,,-238.21759879233716
+,,,mttbar_absolute_residual_GeV,,,,,VYPER_NATIVE,p84,,115.90540493642352
+,,,mttbar_absolute_residual_GeV,,,,,VYPER_NATIVE,central_68_width,,354.1230037287607
+,,,mttbar_absolute_residual_GeV,,,,,VYPER_NATIVE,rms,,225.809382019157
+,,,mttbar_relative_residual,,,,,VYPER_NATIVE,median,,-0.04510380434611509
+,,,mttbar_relative_residual,,,,,VYPER_NATIVE,p16,,-0.24832608367960704
+,,,mttbar_relative_residual,,,,,VYPER_NATIVE,p84,,0.11710497914165269
+,,,mttbar_relative_residual,,,,,VYPER_NATIVE,rms,,0.2463408802766427
+,,,mttbar_relative_residual,,,,,VYPER_NATIVE,fraction_abs_gt_0p2,,0.2840909090909091

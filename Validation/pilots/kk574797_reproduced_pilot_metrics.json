@@ -1,0 +1,78 @@
+{
+  "sample": "KK candidate DSID 574797, mc20a, fullsim; mass/benchmark not AMI-verified",
+  "root": "/data/leet/FFTutorial/output_ntuples_kk574797_pilot_reproduced_reco/kk574797_mc20a_pilot_reco_574797_mc20a_fullsim_Njobs_1_jobIndex_0.root",
+  "region": "ttll_analysis",
+  "event_identity": "eventNumber (unique in this single-DSID pilot)",
+  "population": {
+    "analysis_selected_events": 88,
+    "truth_assignment_valid_events": 74
+  },
+  "assignment": {
+    "HYPER_adapter": {
+      "available": true,
+      "branch": "HYPER_correct_NOSYS",
+      "analysis_selected_events": 88,
+      "valid_assignment_events": 74,
+      "correct": 62,
+      "incorrect": 12,
+      "invalid_or_unmatched": 14,
+      "efficiency_on_valid_assignment_events": 0.8378378378378378
+    },
+    "CHI2": {
+      "available": true,
+      "branch": "CHI2_correct_NOSYS",
+      "analysis_selected_events": 88,
+      "valid_assignment_events": 74,
+      "correct": 31,
+      "incorrect": 43,
+      "invalid_or_unmatched": 14,
+      "efficiency_on_valid_assignment_events": 0.4189189189189189
+    },
+    "DELTAR": {
+      "available": true,
+      "branch": "DELTAR_correct_NOSYS",
+      "analysis_selected_events": 88,
+      "valid_assignment_events": 74,
+      "correct": 58,
+      "incorrect": 16,
+      "invalid_or_unmatched": 14,
+      "efficiency_on_valid_assignment_events": 0.7837837837837838
+    },
+    "PT": {
+      "available": true,
+      "branch": "PT_correct_NOSYS",
+      "analysis_selected_events": 88,
+      "valid_assignment_events": 74,
+      "correct": 43,
+      "incorrect": 31,
+      "invalid_or_unmatched": 14,
+      "efficiency_on_valid_assignment_events": 0.581081081081081
+    }
+  },
+  "native_vyper_mttbar": {
+    "analysis_selected_events": 88,
+    "valid_native_vyper_and_truth_pairs": 88,
+    "invalid_pairs": 0,
+    "reco_unit": "GeV",
+    "truth_unit": "GeV",
+    "display_unit": "GeV",
+    "reco_median_GeV": 922.3800622190669,
+    "truth_median_GeV": 979.442442097047,
+    "absolute_residual_GeV": {
+      "median": -45.27766622785964,
+      "p16": -238.21759879233716,
+      "p84": 115.90540493642352,
+      "central_68_width": 354.1230037287607,
+      "rms": 225.809382019157
+    },
+    "relative_residual": {
+      "median": -0.04510380434611509,
+      "p16": -0.24832608367960704,
+      "p84": 0.11710497914165269,
+      "rms": 0.2463408802766427,
+      "fraction_abs_gt_0p2": 0.2840909090909091
+    },
+    "truth_definition": "partonic top and antitop after FSR from Ttbar_MC_* branches"
+  },
+  "interpretation_limit": "Single low-statistics pilot file; not a resonance-mass result or checkpoint zero-shot evaluation."
+}

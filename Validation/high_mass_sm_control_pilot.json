@@ -1,0 +1,195 @@
+{
+  "dataset": "MC20a nominal Powheg+Pythia8 ttbar, DSID 410472, r13167",
+  "pilot_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697341._000028.output.root",
+  "representative_overlap_excluded": true,
+  "truth_cut": "(Ttbar_MC_ttbar_afterFSR_m > 1600000) & ((Ttbar_MC_Wdecay1_afterFSR_from_t_pdgId == -11) | (Ttbar_MC_Wdecay1_afterFSR_from_t_pdgId == -13) | (Ttbar_MC_Wdecay2_afterFSR_from_t_pdgId == -11) | (Ttbar_MC_Wdecay2_afterFSR_from_t_pdgId == -13)) & ((Ttbar_MC_Wdecay1_afterFSR_from_tbar_pdgId == 11) | (Ttbar_MC_Wdecay1_afterFSR_from_tbar_pdgId == 13) | (Ttbar_MC_Wdecay2_afterFSR_from_tbar_pdgId == 11) | (Ttbar_MC_Wdecay2_afterFSR_from_tbar_pdgId == 13))",
+  "raw_direct_dilepton_mtt_gt_1600_GeV": 74,
+  "selected_direct_dilepton": 58,
+  "truth_reconstructible": 45,
+  "candidate_supported": 45,
+  "denominator": "selected direct after-FSR W->e/mu on both sides, truth reconstructible, candidate supported",
+  "assignment": {
+    "VYPER": {
+      "n_valid_in_supported": 45,
+      "n_correct_in_supported": 44,
+      "efficiency_correct_given_valid": 0.9777777777777777,
+      "category_counts_truth_reconstructible": {
+        "CORRECT": 44,
+        "SWAPPED": 0,
+        "ONE_WRONG": 1,
+        "BOTH_WRONG": 0,
+        "INVALID": 0,
+        "UNSUPPORTED": 0
+      }
+    },
+    "HYPER": {
+      "n_valid_in_supported": 45,
+      "n_correct_in_supported": 44,
+      "efficiency_correct_given_valid": 0.9777777777777777,
+      "category_counts_truth_reconstructible": {
+        "CORRECT": 44,
+        "SWAPPED": 0,
+        "ONE_WRONG": 1,
+        "BOTH_WRONG": 0,
+        "INVALID": 0,
+        "UNSUPPORTED": 0
+      }
+    },
+    "EM": {
+      "n_valid_in_supported": 32,
+      "n_correct_in_supported": 31,
+      "efficiency_correct_given_valid": 0.96875,
+      "category_counts_truth_reconstructible": {
+        "CORRECT": 31,
+        "SWAPPED": 0,
+        "ONE_WRONG": 1,
+        "BOTH_WRONG": 0,
+        "INVALID": 13,
+        "UNSUPPORTED": 0
+      }
+    },
+    "NW": {
+      "n_valid_in_supported": 44,
+      "n_correct_in_supported": 27,
+      "efficiency_correct_given_valid": 0.6136363636363636,
+      "category_counts_truth_reconstructible": {
+        "CORRECT": 27,
+        "SWAPPED": 15,
+        "ONE_WRONG": 1,
+        "BOTH_WRONG": 1,
+        "INVALID": 1,
+        "UNSUPPORTED": 0
+      }
+    },
+    "DA": {
+      "n_valid_in_supported": 45,
+      "n_correct_in_supported": 43,
+      "efficiency_correct_given_valid": 0.9555555555555556,
+      "category_counts_truth_reconstructible": {
+        "CORRECT": 43,
+        "SWAPPED": 0,
+        "ONE_WRONG": 2,
+        "BOTH_WRONG": 0,
+        "INVALID": 0,
+        "UNSUPPORTED": 0
+      }
+    }
+  },
+  "unit_validation": {
+    "EM": {
+      "b_units": "MeV",
+      "charged_lepton_units": "GeV",
+      "neutrino_units": "GeV",
+      "lepton_and_neutrino_scale_to_MeV": 1000,
+      "n_W_constraint_pairs": 74,
+      "W_mass_median_GeV": 80.39990631141876,
+      "W_mass_p16_p84_GeV": [
+        80.39821204001103,
+        80.4035666690924
+      ],
+      "neutrino_pair_MET_residual_median_GeV_by_scale": {
+        "1": 85.14441097678298,
+        "1000": 1.9218212780904345
+      }
+    },
+    "NW": {
+      "b_units": "MeV",
+      "charged_lepton_units": "GeV",
+      "neutrino_units": "GeV",
+      "lepton_and_neutrino_scale_to_MeV": 1000,
+      "n_W_constraint_pairs": 138,
+      "W_mass_median_GeV": 80.40004668134398,
+      "W_mass_p16_p84_GeV": [
+        80.39999780509065,
+        80.40007026995691
+      ],
+      "neutrino_pair_MET_residual_median_GeV_by_scale": {
+        "1": 95.58667589273416,
+        "1000": 14.46352123605047
+      }
+    },
+    "DA": {
+      "status": "assignment usable; complete top reconstruction excluded because W constraint fails",
+      "branch_units": "p4 fields numerically in MeV",
+      "n_W_constraint_pairs": 142,
+      "W_mass_median_GeV": 54.15839431960562,
+      "W_mass_p16_p84_GeV": [
+        33.14316274293737,
+        74.38448086316858
+      ],
+      "fraction_within_5GeV_of_80p4": 0.07746478873239436
+    }
+  },
+  "closure": {
+    "EM": {
+      "units": "raw numeric branch units; EM/NW stored composite branches mix MeV b jets with GeV lepton/neutrino terms",
+      "meaning": "stored composite equals the raw numeric constituent sum; this is serialization closure, not physical-unit validation",
+      "n_top": 37,
+      "n_antitop": 37,
+      "max_top_component_residual_MeV": 0.08799379435367882,
+      "max_antitop_component_residual_MeV": 0.07061234785942361,
+      "n_top_closure_failures_over_1MeV": 0,
+      "n_antitop_closure_failures_over_1MeV": 0,
+      "closure_status": "passed"
+    },
+    "NW": {
+      "units": "raw numeric branch units; EM/NW stored composite branches mix MeV b jets with GeV lepton/neutrino terms",
+      "meaning": "stored composite equals the raw numeric constituent sum; this is serialization closure, not physical-unit validation",
+      "n_top": 69,
+      "n_antitop": 69,
+      "max_top_component_residual_MeV": 0.06903246382717043,
+      "max_antitop_component_residual_MeV": 0.0729085907805711,
+      "n_top_closure_failures_over_1MeV": 0,
+      "n_antitop_closure_failures_over_1MeV": 0,
+      "closure_status": "passed"
+    },
+    "DA": {
+      "units": "raw numeric branch units; EM/NW stored composite branches mix MeV b jets with GeV lepton/neutrino terms",
+      "meaning": "stored composite equals the raw numeric constituent sum; this is serialization closure, not physical-unit validation",
+      "n_top": 71,
+      "n_antitop": 71,
+      "max_top_component_residual_MeV": 0.15278511075302958,
+      "max_antitop_component_residual_MeV": 0.19826105004176497,
+      "n_top_closure_failures_over_1MeV": 0,
+      "n_antitop_closure_failures_over_1MeV": 0,
+      "closure_status": "passed"
+    },
+    "TRUTHASSIGN_TRUTHNU": {
+      "meaning": "independent truth-assignment + selected-lepton + truth-neutrino mtt closure",
+      "n_strict": 45,
+      "max_mtt_component_residual_MeV": 9.094947017729282e-10
+    }
+  },
+  "assignment_order_validation": {
+    "VYPER": {
+      "n_supported_assignments_checked": 45,
+      "n_top_positive_and_antitop_negative_matches": 45,
+      "maximum_component_difference_MeV": 0.04751690453849733,
+      "charged_lepton_scale_to_MeV": 1.0
+    },
+    "HYPER": {
+      "n_supported_assignments_checked": 45,
+      "n_top_positive_and_antitop_negative_matches": 45,
+      "maximum_component_difference_MeV": 0.04751690453849733,
+      "charged_lepton_scale_to_MeV": 1.0
+    },
+    "EM": {
+      "n_supported_assignments_checked": 32,
+      "n_top_positive_and_antitop_negative_matches": 32,
+      "maximum_component_difference_MeV": 0.041568942251615226,
+      "charged_lepton_scale_to_MeV": 1000.0
+    },
+    "NW": {
+      "n_supported_assignments_checked": 44,
+      "n_top_positive_and_antitop_negative_matches": 44,
+      "maximum_component_difference_MeV": 0.04310105787590146,
+      "charged_lepton_scale_to_MeV": 1000.0
+    },
+    "DA": {
+      "n_supported_assignments_checked": 45,
+      "n_top_positive_and_antitop_negative_matches": 45,
+      "maximum_component_difference_MeV": 0.04751690453849733,
+      "charged_lepton_scale_to_MeV": 1.0
+    }
+  }
+}

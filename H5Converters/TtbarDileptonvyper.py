@@ -62,23 +62,48 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
     mu_pt    = tree["Muon_pt"].array(library='np')
     mu_q     = tree["Muon_q"].array(library='np')
     
-
-    
-
-    nu_e_px  = tree["nu_e_px"].array(library='np')
-    nu_e_py = tree["nu_e_py"].array(library='np')
-    nu_e_pz = tree["nu_e_pz"].array(library='np')
-    
-    nu_mu_px  = tree["nu_mu_px"].array(library='np')
-    nu_mu_py = tree["nu_mu_py"].array(library='np')
-    nu_mu_pz = tree["nu_mu_pz"].array(library='np')
-    
-    nu_px = [np.concatenate([np.atleast_1d(nu_e), np.atleast_1d(nu_mu)], axis=0)
-          for nu_e, nu_mu in zip(nu_e_px, nu_mu_px)]
-    nu_py = [np.concatenate([np.atleast_1d(nu_e), np.atleast_1d(nu_mu)], axis=0)
-          for nu_e, nu_mu in zip(nu_e_py, nu_mu_py)]
-    nu_pz = [np.concatenate([np.atleast_1d(nu_e), np.atleast_1d(nu_mu)], axis=0)
-          for nu_e, nu_mu in zip(nu_e_pz, nu_mu_pz)]
+    # Preserve the established six-component target contract.  The frame packs
+    # electron-flavour neutrinos first, then muon-flavour neutrinos; when one
+    # flavour slot is absent it fills remaining slots from available parent-t /
+    # parent-tbar electron or muon neutrino candidates.  Same-flavour ordering
+    # is parent-t then parent-tbar.  Components are Cartesian and in GeV.
+    # Older ntuples expose the legacy nu_e / nu_mu scalar components instead.
+    branches = set(tree.keys(recursive=False))
+    vector_branch = next(
+        (name for name in ("neutrino_vector_NOSYS", "neutrino_vector") if name in branches),
+        None,
+    )
+    if vector_branch is not None:
+        packed_neutrinos = tree[vector_branch].array(library="ak")
+        if len(packed_neutrinos) != num_entries or any(
+            np.asarray(event).size != 6 for event in packed_neutrinos
+        ):
+            raise ValueError(
+                f"{input}: branch {vector_branch} must contain exactly six Cartesian "
+                "components per event in electron-flavour-first, then muon-flavour, "
+                "with parent-t/parent-tbar fallback order"
+            )
+        packed_neutrinos = ak.to_numpy(packed_neutrinos).astype(np.float32, copy=False)
+        nu_px = packed_neutrinos[:, [0, 3]]
+        nu_py = packed_neutrinos[:, [1, 4]]
+        nu_pz = packed_neutrinos[:, [2, 5]]
+    else:
+        component_branches = [f"nu_{flavour}_{axis}" for flavour in ("e", "mu") for axis in ("px", "py", "pz")]
+        missing = [name for name in component_branches if name not in branches]
+        if missing:
+            raise KeyError(
+                f"{input}: missing neutrino_vector_NOSYS/neutrino_vector and "
+                f"legacy component branches {missing}"
+            )
+        nu_px = np.column_stack(
+            [tree["nu_e_px"].array(library="np"), tree["nu_mu_px"].array(library="np")]
+        )
+        nu_py = np.column_stack(
+            [tree["nu_e_py"].array(library="np"), tree["nu_mu_py"].array(library="np")]
+        )
+        nu_pz = np.column_stack(
+            [tree["nu_e_pz"].array(library="np"), tree["nu_mu_pz"].array(library="np")]
+        )
     
     
     # nu_from_t_eta  = tree["nu_from_t_eta"].array(library='np')
@@ -137,11 +162,18 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
     met_pt    = tree["Met_pt"].array(library='np')
 
     # Global features (eventNumber only used for the splitting)
-    N = len(tree["Jet_pt"].array(library='np'))
-    event_number = np.arange(N)
-    #event_number = tree["eventNumber"].array(library='np')
+    N = len(jet_pt)
+    if "eventNumber" not in branches:
+        raise KeyError(f"{input}: required eventNumber branch is missing")
+    event_number = tree["eventNumber"].array(library="np")
+    mc_channel_number = (
+        tree["mcChannelNumber"].array(library="np")
+        if "mcChannelNumber" in branches
+        else None
+    )
     njet         = (ak.count(tree["Jet_pt"].array(),axis=1).to_numpy()).reshape(-1,1)
-    nlep         = (ak.count(tree["Electron_pt"].array(),axis=1).to_numpy()).reshape(-1,1) + (ak.count(tree["Muon_pt"].array(),axis=1).to_numpy()).reshape(-1,1) #np.count_nonzero(~np.isnan(lep_pt), axis=1)
+    nelectron    = num_electrons_per_event.reshape(-1, 1)
+    nmuon        = num_muons_per_event.reshape(-1, 1)
     #nbTagged_100 = tree["nBjets_GN2v01_100_NOSYS"].array(library='np')
     nbTagged_90  = tree["nBjets_GN2v01_90_NOSYS"].array(library='np')
     nbTagged_85  = tree["nBjets_GN2v01_85_NOSYS"].array(library='np')
@@ -172,15 +204,13 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
     # ---------------------------------------------------
 
     if includeBTag:
-        node_dt = np.dtype([('e', np.float32), ('eta', np.float32), ('phi', np.float32), ('pt', np.float32), ('btag', np.float32), ('charge', np.float32)])
+        node_dt = np.dtype([('e', np.float32), ('eta', np.float32), ('phi', np.float32), ('cos_phi', np.float32), ('sin_phi', np.float32), ('pt', np.float32), ('btag', np.float32), ('charge', np.float32)])
     else:
-        node_dt = np.dtype([('e', np.float32), ('eta', np.float32), ('phi', np.float32), ('pt', np.float32), ('charge', np.float32)])
+        node_dt = np.dtype([('e', np.float32), ('eta', np.float32), ('phi', np.float32), ('cos_phi', np.float32), ('sin_phi', np.float32), ('pt', np.float32), ('charge', np.float32)])
 
     jet_data = np.full((num_events_to_save, pad_to_jet), np.nan, dtype=node_dt)
     el_data = np.full((num_events_to_save, pad_to_lepton), np.nan, dtype=node_dt)
     mu_data = np.full((num_events_to_save, pad_to_lepton), np.nan, dtype=node_dt)
-    met_data = np.full((num_events_to_save, 1), np.nan, dtype=node_dt)
-    
     pad_to_nu = 2
 
     # nu_dt = np.dtype([
@@ -190,24 +220,24 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
     # ])
     nu_dt = np.dtype([('px',np.float32), ('py', np.float32), ('pz', np.float32)])
 
-    nu_data = np.full((num_events_to_save, pad_to_nu), np.nan, dtype=node_dt)
     nu_labels = np.full((num_events_to_save, pad_to_nu), np.nan, dtype = nu_dt)
 
 
     #Define global var
     if includeBTag:
-        global_dt = np.dtype([('njet', np.float32), ('met_pt', np.float32), ('met_phi', np.float32),('nBJets_90', np.float32), ('nBJets_85', np.float32), ('nBJets_77', np.float32), ('nBJets_70', np.float32), ('nBJets_65', np.float32)])
+        global_dt = np.dtype([('njet', np.float32), ('nelectron', np.float32), ('nmuon', np.float32), ('met_met', np.float32), ('met_phi', np.float32), ('met_cosphi', np.float32), ('met_sinphi', np.float32), ('nBJets_90', np.float32), ('nBJets_85', np.float32), ('nBJets_77', np.float32), ('nBJets_70', np.float32), ('nBJets_65', np.float32)])
     else:
-        global_dt = np.dtype([('njet', np.float32), ('met_pt', np.float32), ('met_phi', np.float32)])
+        global_dt = np.dtype([('njet', np.float32), ('nelectron', np.float32), ('nmuon', np.float32), ('met_met', np.float32), ('met_phi', np.float32), ('met_cosphi', np.float32), ('met_sinphi', np.float32)])
     
     global_data = np.zeros((num_events_to_save, 1), dtype=global_dt)
 
 
     # We need `VertexID` to label truth edges and hyperedges
-    jet_labels      = np.full((num_events_to_save, pad_to_jet), np.nan)  # use -9 for none filled values
-    el_labels   = np.full((num_events_to_save, pad_to_lepton), np.nan)
-    mu_labels   = np.full((num_events_to_save, pad_to_lepton), np.nan)
-    met_labels      = np.full((num_events_to_save, 1), np.nan)
+    # The established H5 contract stores categorical object labels as float32
+    # so NaN padding remains representable without widening the datasets.
+    jet_labels = np.full((num_events_to_save, pad_to_jet), np.nan, dtype=np.float32)
+    el_labels = np.full((num_events_to_save, pad_to_lepton), np.nan, dtype=np.float32)
+    mu_labels = np.full((num_events_to_save, pad_to_lepton), np.nan, dtype=np.float32)
     global_labels   = np.full((num_events_to_save, 1), np.nan)
 
     # ---------------------------------------------------
@@ -219,6 +249,12 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
 
     print(f'Saving {num_events_to_save} events')
     save_index = 0
+    saved_event_number = np.empty(num_events_to_save, dtype=event_number.dtype)
+    saved_mc_channel_number = (
+        np.empty(num_events_to_save, dtype=mc_channel_number.dtype)
+        if mc_channel_number is not None
+        else None
+    )
     for i in tqdm(range(num_entries), desc='Creating HDF5 dataset', unit='events'):
 
         # Skip if splitting and event doesn't match
@@ -229,34 +265,39 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
 
         # Fill jets
         num_jets = njet[i][0]
-        for j in range(num_jets):
+        # The established converter clips object arrays to the fixed H5 width.
+        # Keep that training contract while recording jet truncation in META.
+        for j in range(min(num_jets, pad_to_jet)):
+            phi = float(jet_phi[i][j])
             if includeBTag:
-                jet_data[save_index][j] = (jet_e[i][j], jet_eta[i][j], jet_phi[i][j], jet_pt[i][j], jet_bTag[i][j], 0)
+                jet_data[save_index][j] = (jet_e[i][j], jet_eta[i][j], phi, np.cos(phi), np.sin(phi), jet_pt[i][j], jet_bTag[i][j], 0)
             else:
-                jet_data[save_index][j] = (jet_e[i][j], jet_eta[i][j], jet_phi[i][j], jet_pt[i][j], 0)
+                jet_data[save_index][j] = (jet_e[i][j], jet_eta[i][j], phi, np.cos(phi), np.sin(phi), jet_pt[i][j], 0)
 
         # Fill leptons
         num_el = el_pt[i].size
         num_mu = mu_pt[i].size
         #num_nu = nu_pt[i].size
 
-        existent_el_labels = np.full(pad_to_lepton, np.nan)
-        existent_mu_labels = np.full(pad_to_lepton, np.nan)
-        existent_nu_labels = np.full(pad_to_nu, np.nan)
+        existent_el_labels = np.full(pad_to_lepton, np.nan, dtype=np.float32)
+        existent_mu_labels = np.full(pad_to_lepton, np.nan, dtype=np.float32)
+        existent_nu_labels = np.full(pad_to_nu, np.nan, dtype=np.float32)
 
         for j in range(min(num_el, pad_to_lepton)):
+            phi = float(el_phi[i][j])
             if includeBTag:
-                el_data[save_index][j] = (el_e[i][j], el_eta[i][j], el_phi[i][j], el_pt[i][j], 0, el_q[i][j])
+                el_data[save_index][j] = (el_e[i][j], el_eta[i][j], phi, np.cos(phi), np.sin(phi), el_pt[i][j], 0, el_q[i][j])
             else:
-                el_data[save_index][j] = (el_e[i][j], el_eta[i][j], el_phi[i][j], el_pt[i][j], el_q[i][j])
+                el_data[save_index][j] = (el_e[i][j], el_eta[i][j], phi, np.cos(phi), np.sin(phi), el_pt[i][j], el_q[i][j])
                 
             existent_el_labels[j] = 1 if el_q[i][j] > 0 else 2
 
         for j in range(min(num_mu, pad_to_lepton)):
+            phi = float(mu_phi[i][j])
             if includeBTag:
-                mu_data[save_index][j] = (mu_e[i][j], mu_eta[i][j], mu_phi[i][j], mu_pt[i][j], 0, mu_q[i][j])
+                mu_data[save_index][j] = (mu_e[i][j], mu_eta[i][j], phi, np.cos(phi), np.sin(phi), mu_pt[i][j], 0, mu_q[i][j])
             else:
-                mu_data[save_index][j] = (mu_e[i][j], mu_eta[i][j], mu_phi[i][j], mu_pt[i][j], mu_q[i][j])
+                mu_data[save_index][j] = (mu_e[i][j], mu_eta[i][j], phi, np.cos(phi), np.sin(phi), mu_pt[i][j], mu_q[i][j])
             existent_mu_labels[j] = 1 if mu_q[i][j] > 0 else 2
 
 
@@ -273,31 +314,30 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
 
         nu_labels[save_index][0] = (nu_px[i][0], nu_py[i][0], nu_pz[i][0])
         nu_labels[save_index][1] = (nu_px[i][1], nu_py[i][1], nu_pz[i][1])
-        # Fill MET
-        
-        if includeBTag:
-            met_data[save_index][0] = (met_pt[i], 0, met_phi[i], met_pt[i], 0, 0)
-        else:
-            met_data[save_index][0] = (met_pt[i], 0, met_phi[i], met_pt[i], 0)
-        met_labels[save_index][0] = 1
-
         # Global data
+        met_phi_value = float(met_phi[i])
         if includeBTag:
-            global_data[save_index] = (njet[i], met_pt[i], met_phi[i], nbTagged_90[i], nbTagged_85[i], nbTagged_77[i], nbTagged_70[i], nbTagged_65[i])
+            global_data[save_index] = (njet[i][0], nelectron[i][0], nmuon[i][0], met_pt[i], met_phi_value, np.cos(met_phi_value), np.sin(met_phi_value), nbTagged_90[i], nbTagged_85[i], nbTagged_77[i], nbTagged_70[i], nbTagged_65[i])
         else:
-            global_data[save_index] = (njet[i], met_pt[i], met_phi[i])
+            global_data[save_index] = (njet[i][0], nelectron[i][0], nmuon[i][0], met_pt[i], met_phi_value, np.cos(met_phi_value), np.sin(met_phi_value))
 
         # Jet labels
-        existent_jet_labels = np.array([0] * num_jets + [np.nan] * (pad_to_jet - num_jets))
-        if 0 <= bhad_index[i] < num_jets:
+        stored_njets = min(num_jets, pad_to_jet)
+        existent_jet_labels = np.array(
+            [0] * stored_njets + [np.nan] * (pad_to_jet - stored_njets), dtype=np.float32
+        )
+        if 0 <= bhad_index[i] < stored_njets:
             existent_jet_labels[bhad_index[i]] = 1
-        if 0 <= bbarhad_index[i] < num_jets:
+        if 0 <= bbarhad_index[i] < stored_njets:
             existent_jet_labels[bbarhad_index[i]] = 2
 
         jet_labels[save_index] = existent_jet_labels
         el_labels[save_index] = existent_el_labels
         mu_labels[save_index] = existent_mu_labels
         #nu_labels[save_index] = existent_nu_labels
+        saved_event_number[save_index] = event_number[i]
+        if saved_mc_channel_number is not None:
+            saved_mc_channel_number[save_index] = mc_channel_number[i]
 
         save_index += 1
 
@@ -305,49 +345,58 @@ def MakeDatasetTtbarDileptonvyper(args, loop_storage, output: str, split: bool =
 
     #Eventually filter the dataset to keep only the fully matched events (preferably done with FastFrames)
     if fullyMatch:
-        required_jet_ids = {1, 2} #DILEPTON NTUPLES ARE ALREADY FULLY MATCHED IN FASTFRAMES CODE
-        #required_lep_ids = {1, 2}
-        #required_met_ids = {1}
-
-        keep_indices = [
-            i for i in range(len(jet_labels)) 
-            if required_jet_ids.issubset( #Check indices in union of the sets
-                set(np.nan_to_num(jet_labels[i], nan=-1))         
-            ) and ((el_labels[i][0] == 1 and mu_labels[i][0] == 2) or (el_labels[i][0] == 2 and mu_labels[i][0] == 1))
-            # ) & required_met_ids.issubset(
-            #     set(np.nan_to_num(met_labels[i], nan=-1))
-            # )
-        ]
+        jet_match = np.any(jet_labels == 1, axis=1) & np.any(jet_labels == 2, axis=1)
+        electron_valid = np.isfinite(el_data["pt"])
+        muon_valid = np.isfinite(mu_data["pt"])
+        n_leptons = electron_valid.sum(axis=1) + muon_valid.sum(axis=1)
+        electron_charge = np.sum(np.where(electron_valid, el_data["charge"], 0.0), axis=1)
+        muon_charge = np.sum(np.where(muon_valid, mu_data["charge"], 0.0), axis=1)
+        keep_indices = np.flatnonzero(jet_match & (n_leptons == 2) & ((electron_charge + muon_charge) == 0.0))
 
         jet_labels    = jet_labels[keep_indices]
-        #lepton_labels = lepton_labels[keep_indices]
         el_labels     = el_labels[keep_indices]
         mu_labels     = mu_labels[keep_indices]
-        met_labels    = met_labels[keep_indices]
         jet_data      = jet_data[keep_indices]
-        #lep_data      = lep_data[keep_indices]
         el_data       = el_data[keep_indices]
         mu_data       = mu_data[keep_indices]
-        met_data      = met_data[keep_indices]
         global_data   = global_data[keep_indices]
         global_labels = global_labels[keep_indices]
         nu_labels     = nu_labels[keep_indices]
-        nu_data       = nu_data[keep_indices]
+        saved_event_number = saved_event_number[:save_index][keep_indices]
+        if saved_mc_channel_number is not None:
+            saved_mc_channel_number = saved_mc_channel_number[:save_index][keep_indices]
+    else:
+        saved_event_number = saved_event_number[:save_index]
+        if saved_mc_channel_number is not None:
+            saved_mc_channel_number = saved_mc_channel_number[:save_index]
     # random node (placeholder)
 
     #Inputs h5 datasets
     inputs_group.create_dataset("JET", data=jet_data)
     inputs_group.create_dataset("ELECTRON", data=el_data)
     inputs_group.create_dataset("MUON", data=mu_data)
-    inputs_group.create_dataset("MET", data=met_data)
     inputs_group.create_dataset("GLOBAL", data=global_data)
     #inputs_group.create_dataset("NEUTRINO", data=nu_data)
 
     labels_group.create_dataset("JET", data=jet_labels)
     labels_group.create_dataset("ELECTRON", data=el_labels)
     labels_group.create_dataset("MUON", data=mu_labels)
-    labels_group.create_dataset("MET", data=met_labels)
     labels_group.create_dataset("NEUTRINO", data=nu_labels)
+    meta_group = h5_file.create_group("META")
+    meta_group.create_dataset("eventNumber", data=saved_event_number.astype(np.uint64, copy=False))
+    if saved_mc_channel_number is not None:
+        meta_group.create_dataset("mcChannelNumber", data=saved_mc_channel_number)
+    meta_group.attrs["neutrino_slot_order"] = (
+        "electron_flavour_candidates_then_muon_flavour_candidates; "
+        "remaining_slots_filled_by_parent_t_then_parent_tbar_candidates"
+    )
+    meta_group.attrs["neutrino_components"] = "px,py,pz in GeV"
+    meta_group.attrs["neutrino_source"] = vector_branch or "legacy_nu_e_nu_mu_scalar_components"
+    meta_group.attrs["split_scheme"] = "eventNumber_mod_2" if split else "unsplit"
+    meta_group.attrs["jet_padding"] = pad_to_jet
+    meta_group.attrs["events_with_more_than_20_jets"] = int(
+        np.count_nonzero(njet[:save_index, 0] > pad_to_jet)
+    )
     #labels_group.create_dataset("GLOBAL", data=global_labels)
     # Close the HDF5 file
     h5_file.close()

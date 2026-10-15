@@ -1,0 +1,118 @@
+{
+  "inputs": [
+    {
+      "path": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697341._000027.output.root",
+      "entries": 49386,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 3,
+          "required": 11,
+          "missing": [
+            "Truth_had_b_index",
+            "Truth_had_bbar_index",
+            "mttbar_TRUTH_NOSYS",
+            "mttbar_truth_assignment_valid_NOSYS",
+            "mttbar_truth_bbarjet_index_NOSYS",
+            "mttbar_truth_bjet_index_NOSYS",
+            "truth_nu1_pz_NOSYS",
+            "truth_nu2_pz_NOSYS"
+          ]
+        },
+        "objects_and_candidates": {
+          "present": 7,
+          "required": 8,
+          "missing": [
+            "n_jets_NOSYS"
+          ]
+        },
+        "native_and_mechanism": {
+          "present": 4,
+          "required": 9,
+          "missing": [
+            "VYPER_NATIVE_reco_valid_NOSYS",
+            "mttbar_VYPER_NUFLOWS_NOSYS",
+            "mttbar_VYPER_TRUTHNU_NOSYS",
+            "nuflows_nu1_pz_NOSYS",
+            "nuflows_nu2_pz_NOSYS"
+          ]
+        },
+        "strict_lepton_match": {
+          "present": 12,
+          "required": 12,
+          "missing": []
+        }
+      },
+      "identity": {
+        "n_rows": 49386,
+        "n_unique_channel_event": 49386,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": false,
+      "strict_lepton_match_present": true,
+      "sidecar_required": false
+    },
+    {
+      "path": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697205._000001.output.root",
+      "entries": 37973,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 3,
+          "required": 11,
+          "missing": [
+            "Truth_had_b_index",
+            "Truth_had_bbar_index",
+            "mttbar_TRUTH_NOSYS",
+            "mttbar_truth_assignment_valid_NOSYS",
+            "mttbar_truth_bbarjet_index_NOSYS",
+            "mttbar_truth_bjet_index_NOSYS",
+            "truth_nu1_pz_NOSYS",
+            "truth_nu2_pz_NOSYS"
+          ]
+        },
+        "objects_and_candidates": {
+          "present": 7,
+          "required": 8,
+          "missing": [
+            "n_jets_NOSYS"
+          ]
+        },
+        "native_and_mechanism": {
+          "present": 4,
+          "required": 9,
+          "missing": [
+            "VYPER_NATIVE_reco_valid_NOSYS",
+            "mttbar_VYPER_NUFLOWS_NOSYS",
+            "mttbar_VYPER_TRUTHNU_NOSYS",
+            "nuflows_nu1_pz_NOSYS",
+            "nuflows_nu2_pz_NOSYS"
+          ]
+        },
+        "strict_lepton_match": {
+          "present": 12,
+          "required": 12,
+          "missing": []
+        }
+      },
+      "identity": {
+        "n_rows": 37973,
+        "n_unique_channel_event": 37973,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": false,
+      "strict_lepton_match_present": true,
+      "sidecar_required": false
+    }
+  ]
+}

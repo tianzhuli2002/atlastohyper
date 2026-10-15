@@ -1,0 +1,1386 @@
+{
+  "Validation/pilots/artifacts/h5/kk574797_vyper_pilot_even.h5": {
+    "file": "Validation/pilots/artifacts/h5/kk574797_vyper_pilot_even.h5",
+    "groups": {
+      "INPUTS": {
+        "ELECTRON": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": 66.1640396118164,
+              "median": 207.2417755126953,
+              "max": 810.4113159179688
+            },
+            "eta": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": -2.181589365005493,
+              "median": -0.09529963880777359,
+              "max": 1.6942155361175537
+            },
+            "phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": -3.019704818725586,
+              "median": -0.18427640199661255,
+              "max": 3.124330997467041
+            },
+            "cos_phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": -0.9998510479927063,
+              "median": -0.1876375377178192,
+              "max": 0.9940193891525269
+            },
+            "sin_phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": -0.9978669285774231,
+              "median": -0.12497659772634506,
+              "max": 0.9874899387359619
+            },
+            "pt": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": 30.91632652282715,
+              "median": 151.65625,
+              "max": 342.5793151855469
+            },
+            "btag": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            },
+            "charge": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 34,
+              "min": -1.0,
+              "median": -1.0,
+              "max": 1.0
+            }
+          }
+        },
+        "GLOBAL": {
+          "shape": [
+            36,
+            1
+          ],
+          "dtype": "[('njet', '<f4'), ('nelectron', '<f4'), ('nmuon', '<f4'), ('met_met', '<f4'), ('met_phi', '<f4'), ('met_cosphi', '<f4'), ('met_sinphi', '<f4'), ('nBJets_90', '<f4'), ('nBJets_85', '<f4'), ('nBJets_77', '<f4'), ('nBJets_70', '<f4'), ('nBJets_65', '<f4')]",
+          "dtype_fields": [
+            "njet",
+            "nelectron",
+            "nmuon",
+            "met_met",
+            "met_phi",
+            "met_cosphi",
+            "met_sinphi",
+            "nBJets_90",
+            "nBJets_85",
+            "nBJets_77",
+            "nBJets_70",
+            "nBJets_65"
+          ],
+          "fields": {
+            "njet": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 2.0,
+              "median": 3.0,
+              "max": 6.0
+            },
+            "nelectron": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 1.0,
+              "max": 2.0
+            },
+            "nmuon": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 1.0,
+              "max": 2.0
+            },
+            "met_met": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 3.9366681575775146,
+              "median": 104.66783142089844,
+              "max": 335.1615295410156
+            },
+            "met_phi": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": -2.6348154544830322,
+              "median": -0.2106422781944275,
+              "max": 2.5073680877685547
+            },
+            "met_cosphi": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": -0.8743132948875427,
+              "median": 0.2471797913312912,
+              "max": 0.9980067610740662
+            },
+            "met_sinphi": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": -0.9998026490211487,
+              "median": -0.2089429795742035,
+              "max": 0.9994673728942871
+            },
+            "nBJets_90": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 3.0
+            },
+            "nBJets_85": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 3.0
+            },
+            "nBJets_77": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 2.0
+            },
+            "nBJets_70": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 2.0
+            },
+            "nBJets_65": {
+              "shape": [
+                36,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 36,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 2.0,
+              "max": 2.0
+            }
+          }
+        },
+        "JET": {
+          "shape": [
+            36,
+            20
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": 25.094289779663086,
+              "median": 110.0696029663086,
+              "max": 1892.74658203125
+            },
+            "eta": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": -2.367220640182495,
+              "median": 0.10254409909248352,
+              "max": 2.489312171936035
+            },
+            "phi": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": -3.132880449295044,
+              "median": -0.20320813357830048,
+              "max": 3.122007131576538
+            },
+            "cos_phi": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": -0.9999620318412781,
+              "median": 0.038180917501449585,
+              "max": 0.9999458193778992
+            },
+            "sin_phi": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": -0.9992708563804626,
+              "median": -0.05111497640609741,
+              "max": 0.9999797940254211
+            },
+            "pt": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": 20.659900665283203,
+              "median": 79.6999282836914,
+              "max": 402.6024169921875
+            },
+            "btag": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": 1.0,
+              "median": 3.0,
+              "max": 6.0
+            },
+            "charge": {
+              "shape": [
+                36,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 125,
+              "nonfinite": 595,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            }
+          }
+        },
+        "MUON": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": 26.76061248779297,
+              "median": 157.02426147460938,
+              "max": 486.7342529296875
+            },
+            "eta": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": -1.386784553527832,
+              "median": 0.166798934340477,
+              "max": 2.414299249649048
+            },
+            "phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": -3.1102263927459717,
+              "median": -0.1533852070569992,
+              "max": 2.988673210144043
+            },
+            "cos_phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": -0.9995081424713135,
+              "median": 0.3209564685821533,
+              "max": 0.9923782348632812
+            },
+            "sin_phi": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": -0.9661837816238403,
+              "median": -0.06199205666780472,
+              "max": 0.9920567274093628
+            },
+            "pt": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": 25.840852737426758,
+              "median": 97.36791229248047,
+              "max": 429.75738525390625
+            },
+            "btag": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            },
+            "charge": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 34,
+              "nonfinite": 38,
+              "min": -1.0,
+              "median": 1.0,
+              "max": 1.0
+            }
+          }
+        }
+      },
+      "LABELS": {
+        "ELECTRON": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 38,
+          "nonfinite": 34,
+          "min": 1.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "JET": {
+          "shape": [
+            36,
+            20
+          ],
+          "dtype": "float32",
+          "finite": 125,
+          "nonfinite": 595,
+          "min": 0.0,
+          "median": 1.0,
+          "max": 2.0
+        },
+        "MUON": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 34,
+          "nonfinite": 38,
+          "min": 1.0,
+          "median": 1.0,
+          "max": 2.0
+        },
+        "NEUTRINO": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "[('px', '<f4'), ('py', '<f4'), ('pz', '<f4')]",
+          "dtype_fields": [
+            "px",
+            "py",
+            "pz"
+          ],
+          "fields": {
+            "px": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 72,
+              "nonfinite": 0,
+              "min": -230.68014526367188,
+              "median": 0.6232020258903503,
+              "max": 312.5428771972656
+            },
+            "py": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 72,
+              "nonfinite": 0,
+              "min": -233.88858032226562,
+              "median": 7.227569580078125,
+              "max": 243.87681579589844
+            },
+            "pz": {
+              "shape": [
+                36,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 72,
+              "nonfinite": 0,
+              "min": -1095.60693359375,
+              "median": 1.517888069152832,
+              "max": 739.7286376953125
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "jet_class_counts": {
+        "0": 53,
+        "1": 36,
+        "2": 36
+      },
+      "events_with_b_and_bbar_labels": 36,
+      "electron_class_counts": {
+        "1": 17,
+        "2": 21
+      },
+      "muon_class_counts": {
+        "1": 19,
+        "2": 15
+      },
+      "neutrinos": {
+        "px": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 72,
+          "nonfinite": 0,
+          "min": -230.68014526367188,
+          "median": 0.6232020258903503,
+          "max": 312.5428771972656
+        },
+        "py": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 72,
+          "nonfinite": 0,
+          "min": -233.88858032226562,
+          "median": 7.227569580078125,
+          "max": 243.87681579589844
+        },
+        "pz": {
+          "shape": [
+            36,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 72,
+          "nonfinite": 0,
+          "min": -1095.60693359375,
+          "median": 1.517888069152832,
+          "max": 739.7286376953125
+        }
+      }
+    },
+    "metadata": {
+      "eventNumber": {
+        "count": 36,
+        "unique": 36,
+        "even": 36,
+        "odd": 0
+      },
+      "events_with_more_than_20_jets": "0",
+      "jet_padding": "20",
+      "neutrino_components": "px,py,pz in GeV",
+      "neutrino_slot_order": "electron_flavour_candidates_then_muon_flavour_candidates; remaining_slots_filled_by_parent_t_then_parent_tbar_candidates",
+      "neutrino_source": "neutrino_vector_NOSYS",
+      "split_scheme": "eventNumber_mod_2"
+    },
+    "event_object_counts": {
+      "njet": {
+        "min": 2.0,
+        "median": 3.0,
+        "max": 6.0
+      },
+      "nelectron": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 2.0
+      },
+      "nmuon": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 2.0
+      }
+    }
+  },
+  "Validation/pilots/artifacts/h5/kk574797_vyper_pilot_odd.h5": {
+    "file": "Validation/pilots/artifacts/h5/kk574797_vyper_pilot_odd.h5",
+    "groups": {
+      "INPUTS": {
+        "ELECTRON": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": 51.115379333496094,
+              "median": 204.68951416015625,
+              "max": 569.026123046875
+            },
+            "eta": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": -1.7848739624023438,
+              "median": 0.057973481714725494,
+              "max": 1.6654856204986572
+            },
+            "phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": -2.9802708625793457,
+              "median": 0.2552964687347412,
+              "max": 2.488506317138672
+            },
+            "cos_phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": -0.9870158433914185,
+              "median": 0.03280213475227356,
+              "max": 0.9845691323280334
+            },
+            "sin_phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": -0.9994618892669678,
+              "median": 0.2525322735309601,
+              "max": 0.9953238368034363
+            },
+            "pt": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": 37.61558151245117,
+              "median": 169.1907958984375,
+              "max": 404.56103515625
+            },
+            "btag": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            },
+            "charge": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 45,
+              "nonfinite": 31,
+              "min": -1.0,
+              "median": 1.0,
+              "max": 1.0
+            }
+          }
+        },
+        "GLOBAL": {
+          "shape": [
+            38,
+            1
+          ],
+          "dtype": "[('njet', '<f4'), ('nelectron', '<f4'), ('nmuon', '<f4'), ('met_met', '<f4'), ('met_phi', '<f4'), ('met_cosphi', '<f4'), ('met_sinphi', '<f4'), ('nBJets_90', '<f4'), ('nBJets_85', '<f4'), ('nBJets_77', '<f4'), ('nBJets_70', '<f4'), ('nBJets_65', '<f4')]",
+          "dtype_fields": [
+            "njet",
+            "nelectron",
+            "nmuon",
+            "met_met",
+            "met_phi",
+            "met_cosphi",
+            "met_sinphi",
+            "nBJets_90",
+            "nBJets_85",
+            "nBJets_77",
+            "nBJets_70",
+            "nBJets_65"
+          ],
+          "fields": {
+            "njet": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 2.0,
+              "median": 3.5,
+              "max": 7.0
+            },
+            "nelectron": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 1.0,
+              "max": 2.0
+            },
+            "nmuon": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 1.0,
+              "max": 2.0
+            },
+            "met_met": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 6.1945953369140625,
+              "median": 110.22710418701172,
+              "max": 282.15167236328125
+            },
+            "met_phi": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": -2.96173095703125,
+              "median": -0.43729639053344727,
+              "max": 3.1144583225250244
+            },
+            "met_cosphi": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": -0.9996318817138672,
+              "median": 0.1566028743982315,
+              "max": 0.9999715685844421
+            },
+            "met_sinphi": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": -0.9990074634552002,
+              "median": -0.2966597378253937,
+              "max": 0.9986727833747864
+            },
+            "nBJets_90": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 4.0
+            },
+            "nBJets_85": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 4.0
+            },
+            "nBJets_77": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 3.0
+            },
+            "nBJets_70": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 1.0,
+              "median": 2.0,
+              "max": 3.0
+            },
+            "nBJets_65": {
+              "shape": [
+                38,
+                1
+              ],
+              "dtype": "float32",
+              "finite": 38,
+              "nonfinite": 0,
+              "min": 0.0,
+              "median": 2.0,
+              "max": 3.0
+            }
+          }
+        },
+        "JET": {
+          "shape": [
+            38,
+            20
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": 21.410017013549805,
+              "median": 114.97285461425781,
+              "max": 1449.6904296875
+            },
+            "eta": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": -2.359323263168335,
+              "median": -0.03767908737063408,
+              "max": 2.240556240081787
+            },
+            "phi": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": -3.136270761489868,
+              "median": 0.09099645167589188,
+              "max": 3.1088242530822754
+            },
+            "cos_phi": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": -0.9999858140945435,
+              "median": -0.18464355170726776,
+              "max": 0.9999631643295288
+            },
+            "sin_phi": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": -0.9996449947357178,
+              "median": 0.035100214183330536,
+              "max": 0.9990222454071045
+            },
+            "pt": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": 20.099136352539062,
+              "median": 72.51713562011719,
+              "max": 467.7037048339844
+            },
+            "btag": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": 1.0,
+              "median": 3.5,
+              "max": 6.0
+            },
+            "charge": {
+              "shape": [
+                38,
+                20
+              ],
+              "dtype": "float32",
+              "finite": 138,
+              "nonfinite": 622,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            }
+          }
+        },
+        "MUON": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "[('e', '<f4'), ('eta', '<f4'), ('phi', '<f4'), ('cos_phi', '<f4'), ('sin_phi', '<f4'), ('pt', '<f4'), ('btag', '<f4'), ('charge', '<f4')]",
+          "dtype_fields": [
+            "e",
+            "eta",
+            "phi",
+            "cos_phi",
+            "sin_phi",
+            "pt",
+            "btag",
+            "charge"
+          ],
+          "fields": {
+            "e": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": 41.285545349121094,
+              "median": 187.24676513671875,
+              "max": 460.8589172363281
+            },
+            "eta": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": -2.280703067779541,
+              "median": -0.12167004495859146,
+              "max": 1.3846163749694824
+            },
+            "phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": -2.6684086322784424,
+              "median": -0.1658361852169037,
+              "max": 2.672161817550659
+            },
+            "cos_phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": -0.8918259143829346,
+              "median": 0.002045347820967436,
+              "max": 0.9994323253631592
+            },
+            "sin_phi": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": -0.9999979138374329,
+              "median": -0.1650771051645279,
+              "max": 0.9918795824050903
+            },
+            "pt": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": 29.529754638671875,
+              "median": 96.66105651855469,
+              "max": 300.43719482421875
+            },
+            "btag": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": 0.0,
+              "median": 0.0,
+              "max": 0.0
+            },
+            "charge": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 31,
+              "nonfinite": 45,
+              "min": -1.0,
+              "median": -1.0,
+              "max": 1.0
+            }
+          }
+        }
+      },
+      "LABELS": {
+        "ELECTRON": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 45,
+          "nonfinite": 31,
+          "min": 1.0,
+          "median": 1.0,
+          "max": 2.0
+        },
+        "JET": {
+          "shape": [
+            38,
+            20
+          ],
+          "dtype": "float32",
+          "finite": 138,
+          "nonfinite": 622,
+          "min": 0.0,
+          "median": 1.0,
+          "max": 2.0
+        },
+        "MUON": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 31,
+          "nonfinite": 45,
+          "min": 1.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "NEUTRINO": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "[('px', '<f4'), ('py', '<f4'), ('pz', '<f4')]",
+          "dtype_fields": [
+            "px",
+            "py",
+            "pz"
+          ],
+          "fields": {
+            "px": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 76,
+              "nonfinite": 0,
+              "min": -180.81222534179688,
+              "median": 1.5633435249328613,
+              "max": 254.97515869140625
+            },
+            "py": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 76,
+              "nonfinite": 0,
+              "min": -455.0304870605469,
+              "median": -5.66907262802124,
+              "max": 248.7600555419922
+            },
+            "pz": {
+              "shape": [
+                38,
+                2
+              ],
+              "dtype": "float32",
+              "finite": 76,
+              "nonfinite": 0,
+              "min": -355.9439697265625,
+              "median": -0.2336559295654297,
+              "max": 1185.2901611328125
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "jet_class_counts": {
+        "0": 62,
+        "1": 38,
+        "2": 38
+      },
+      "events_with_b_and_bbar_labels": 38,
+      "electron_class_counts": {
+        "1": 23,
+        "2": 22
+      },
+      "muon_class_counts": {
+        "1": 15,
+        "2": 16
+      },
+      "neutrinos": {
+        "px": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 76,
+          "nonfinite": 0,
+          "min": -180.81222534179688,
+          "median": 1.5633435249328613,
+          "max": 254.97515869140625
+        },
+        "py": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 76,
+          "nonfinite": 0,
+          "min": -455.0304870605469,
+          "median": -5.66907262802124,
+          "max": 248.7600555419922
+        },
+        "pz": {
+          "shape": [
+            38,
+            2
+          ],
+          "dtype": "float32",
+          "finite": 76,
+          "nonfinite": 0,
+          "min": -355.9439697265625,
+          "median": -0.2336559295654297,
+          "max": 1185.2901611328125
+        }
+      }
+    },
+    "metadata": {
+      "eventNumber": {
+        "count": 38,
+        "unique": 38,
+        "even": 0,
+        "odd": 38
+      },
+      "events_with_more_than_20_jets": "0",
+      "jet_padding": "20",
+      "neutrino_components": "px,py,pz in GeV",
+      "neutrino_slot_order": "electron_flavour_candidates_then_muon_flavour_candidates; remaining_slots_filled_by_parent_t_then_parent_tbar_candidates",
+      "neutrino_source": "neutrino_vector_NOSYS",
+      "split_scheme": "eventNumber_mod_2"
+    },
+    "event_object_counts": {
+      "njet": {
+        "min": 2.0,
+        "median": 3.5,
+        "max": 7.0
+      },
+      "nelectron": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 2.0
+      },
+      "nmuon": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 2.0
+      }
+    }
+  }
+}

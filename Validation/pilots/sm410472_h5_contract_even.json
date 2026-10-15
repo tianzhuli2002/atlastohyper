@@ -1,0 +1,161 @@
+{
+  "current": "Validation/pilots/h5_current/sm410472_local_even.h5",
+  "reference": "/data/leet/FFTutorial/output_h5_sm_vyper_pilot/sm410472_reference_even.h5",
+  "reference_has_event_identity": false,
+  "current_event_count": 29,
+  "reference_event_count": 29,
+  "datasets": {
+    "/INPUTS/ELECTRON": {
+      "shape": [
+        29,
+        2
+      ],
+      "dtype_fields": [
+        "e",
+        "eta",
+        "phi",
+        "cos_phi",
+        "sin_phi",
+        "pt",
+        "btag",
+        "charge"
+      ],
+      "max_abs_by_field": {
+        "e": 0.0,
+        "eta": 0.0,
+        "phi": 0.0,
+        "cos_phi": 5.960464477539063e-08,
+        "sin_phi": 5.960464477539063e-08,
+        "pt": 0.0,
+        "btag": 0.0,
+        "charge": 0.0
+      }
+    },
+    "/INPUTS/GLOBAL": {
+      "shape": [
+        29,
+        1
+      ],
+      "dtype_fields": [
+        "njet",
+        "nelectron",
+        "nmuon",
+        "met_met",
+        "met_phi",
+        "met_cosphi",
+        "met_sinphi",
+        "nBJets_90",
+        "nBJets_85",
+        "nBJets_77",
+        "nBJets_70",
+        "nBJets_65"
+      ],
+      "max_abs_by_field": {
+        "njet": 0.0,
+        "nelectron": 0.0,
+        "nmuon": 0.0,
+        "met_met": 0.0,
+        "met_phi": 0.0,
+        "met_cosphi": 2.9802322387695312e-08,
+        "met_sinphi": 5.960464477539063e-08,
+        "nBJets_90": 0.0,
+        "nBJets_85": 0.0,
+        "nBJets_77": 0.0,
+        "nBJets_70": 0.0,
+        "nBJets_65": 0.0
+      }
+    },
+    "/INPUTS/JET": {
+      "shape": [
+        29,
+        20
+      ],
+      "dtype_fields": [
+        "e",
+        "eta",
+        "phi",
+        "cos_phi",
+        "sin_phi",
+        "pt",
+        "btag",
+        "charge"
+      ],
+      "max_abs_by_field": {
+        "e": 0.0,
+        "eta": 0.0,
+        "phi": 0.0,
+        "cos_phi": 5.960464477539063e-08,
+        "sin_phi": 5.960464477539063e-08,
+        "pt": 0.0,
+        "btag": 0.0,
+        "charge": 0.0
+      }
+    },
+    "/INPUTS/MUON": {
+      "shape": [
+        29,
+        2
+      ],
+      "dtype_fields": [
+        "e",
+        "eta",
+        "phi",
+        "cos_phi",
+        "sin_phi",
+        "pt",
+        "btag",
+        "charge"
+      ],
+      "max_abs_by_field": {
+        "e": 0.0,
+        "eta": 0.0,
+        "phi": 0.0,
+        "cos_phi": 5.960464477539063e-08,
+        "sin_phi": 5.960464477539063e-08,
+        "pt": 0.0,
+        "btag": 0.0,
+        "charge": 0.0
+      }
+    },
+    "/LABELS/ELECTRON": {
+      "shape": [
+        29,
+        2
+      ],
+      "dtype": "float32",
+      "max_abs": 0.0
+    },
+    "/LABELS/JET": {
+      "shape": [
+        29,
+        20
+      ],
+      "dtype": "float32",
+      "max_abs": 0.0
+    },
+    "/LABELS/MUON": {
+      "shape": [
+        29,
+        2
+      ],
+      "dtype": "float32",
+      "max_abs": 0.0
+    },
+    "/LABELS/NEUTRINO": {
+      "shape": [
+        29,
+        2
+      ],
+      "dtype_fields": [
+        "px",
+        "py",
+        "pz"
+      ],
+      "max_abs_by_field": {
+        "px": 0.0,
+        "py": 0.0,
+        "pz": 0.0
+      }
+    }
+  }
+}

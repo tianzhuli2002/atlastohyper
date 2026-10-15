@@ -1,0 +1,263 @@
+# Shape-only Run-2 KK candidate study. Yield normalization is intentionally disabled.
+general:
+  debug_level: INFO
+  input_filelist_path: /home/leet/FF/metadata_kkgraviton/filelist.txt
+  input_sumweights_path: /home/leet/FF/metadata_kkgraviton/sum_of_weights.txt
+  output_path_histograms: /data/leet/FFTutorial/output_histograms_ttbarDilepton_reco_VyPERStudy_KKGraviton
+  output_path_ntuples: /data/leet/FFTutorial/output_ntuples_ttbarDilepton_reco_VyPERStudy_KKGraviton
+  default_sumweights: NOSYS
+  default_event_weights: weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS
+  default_reco_tree_name: reco
+  xsection_files:
+  - campaigns:
+    - mc20a
+    - mc20d
+    - mc20e
+    files:
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  luminosity:
+    mc20a: 36207.66
+    mc20d: 44307.4
+    mc20e: 58450.1
+  automatic_systematics: false
+  nominal_only: true
+  normalise_to_luminosity: false
+  use_rvec: true
+  number_of_cpus: 4
+  use_region_subfolders: false
+  custom_frame_name: PartonMatcher
+  custom_options:
+    class_name: TtbarDileptonFrameReco
+  create_tlorentz_vectors_for:
+  - jet
+  - el
+  - mu
+regions:
+- name: ttll_analysis
+  selection: region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS
+    >= 1
+  variables: &id001
+  - name: n_jet
+    type: unsigned long
+    title: Number of selected jets; nJets; Events
+    definition: n_jets_NOSYS
+    binning:
+      min: -0.5
+      max: 15.5
+      number_of_bins: 16
+- name: ttll_truth_reconstructible
+  selection: region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS
+    >= 1 && is_fully_matched_NOSYS == 1
+  variables: *id001
+ntuples:
+  regions:
+  - ttll_analysis
+  branches:
+  - eventNumber
+  - mcChannelNumber
+  - runNumber
+  - weight_.*
+  - weight_total_.*
+  - isTtbarDilepton_NOSYS
+  - is_fully_matched_NOSYS
+  - region_name_NOSYS
+  - n_jets_NOSYS
+  - n_bjets_NOSYS
+  - neutrino_both_nonzero_NOSYS
+  - jet_(pt|eta|phi|e)_NOSYS
+  - jet_(pt|eta|phi|e)$
+  - jet_GN2v01.*
+  - jet_select_.*
+  - el_(pt|eta|phi|e|charge|select_).*
+  - mu_(pt|eta|phi|e|charge|select_).*
+  - (el|mu)_dRmatched_to_Ttbar_MC_Wdecay[12]_afterFSR_from_(t|tbar)
+  - n_lep_matched_to_Ttbar_MC_Wdecay[12]_afterFSR_from_(t|tbar)
+  - met_.*
+  - Truth_had_b_index
+  - Truth_had_bbar_index
+  - Truth_.*_index
+  - TtbarDiLepton_(DA|EM|NW|NuFlows|HyPER|VyPER)_.*
+  - spin_TtbarDiLepton_(DA|EM|NW|VyPER|HyPER_plus_EM|HyPER_plus_NW|HyPER_plus_NuFlows)_.*
+  - neutrino_vector_NOSYS
+  - Ttbar_MC_.*
+  - truth_.*
+  - mttbar_.*
+  - llbb_.*
+  - betaStar_.*
+  - top_(pt|eta|phi|m)_.*
+  - antitop_(pt|eta|phi|m)_.*
+  - ttbar_(pt|eta|phi|m)_.*
+  - nu_.*_NOSYS
+  - nuflows_nu[12]_(pt|eta|phi|px|py|pz|m)_NOSYS
+  - .*_valid_NOSYS
+  - .*_failure_code_NOSYS
+  - has_native_.*_NOSYS
+  - .*_correct_NOSYS
+  - VYPER_NUFLOWS_.*
+  - nu[12]_(pt|pz)_VYPER_NUFLOWS_NOSYS
+samples:
+- name: kkgraviton_mc20a
+  dsids:
+  - 574758
+  - 574759
+  - 574760
+  - 574762
+  - 574763
+  - 574764
+  - 574765
+  - 574766
+  - 574767
+  - 574768
+  - 574769
+  - 574770
+  - 574771
+  - 574772
+  - 574773
+  - 574774
+  - 574775
+  - 574776
+  - 574777
+  - 574778
+  - 574779
+  - 574780
+  - 574781
+  - 574782
+  - 574783
+  - 574784
+  - 574785
+  - 574786
+  - 574787
+  - 574788
+  - 574789
+  - 574790
+  - 574791
+  - 574792
+  - 574793
+  - 574794
+  - 574795
+  - 574796
+  - 574797
+  - 574798
+  - 574799
+  - 574800
+  - 574801
+  - 574802
+  - 574803
+  - 574804
+  - 574805
+  - 574806
+  - 574807
+  - 574808
+  campaigns:
+  - mc20a
+  simulation_type: fullsim
+- name: kkgraviton_mc20d
+  dsids:
+  - 574758
+  - 574759
+  - 574760
+  - 574761
+  - 574762
+  - 574763
+  - 574764
+  - 574765
+  - 574766
+  - 574767
+  - 574768
+  - 574769
+  - 574770
+  - 574771
+  - 574772
+  - 574773
+  - 574774
+  - 574775
+  - 574776
+  - 574777
+  - 574778
+  - 574779
+  - 574780
+  - 574782
+  - 574783
+  - 574784
+  - 574785
+  - 574786
+  - 574787
+  - 574788
+  - 574789
+  - 574790
+  - 574791
+  - 574792
+  - 574793
+  - 574794
+  - 574795
+  - 574796
+  - 574797
+  - 574798
+  - 574799
+  - 574800
+  - 574801
+  - 574802
+  - 574803
+  - 574804
+  - 574805
+  - 574806
+  - 574807
+  - 574808
+  campaigns:
+  - mc20d
+  simulation_type: fullsim
+- name: kkgraviton_mc20e
+  dsids:
+  - 574758
+  - 574760
+  - 574761
+  - 574762
+  - 574763
+  - 574764
+  - 574765
+  - 574766
+  - 574767
+  - 574768
+  - 574769
+  - 574770
+  - 574771
+  - 574772
+  - 574773
+  - 574774
+  - 574775
+  - 574776
+  - 574777
+  - 574778
+  - 574779
+  - 574780
+  - 574781
+  - 574782
+  - 574783
+  - 574784
+  - 574785
+  - 574786
+  - 574787
+  - 574788
+  - 574789
+  - 574790
+  - 574791
+  - 574792
+  - 574793
+  - 574794
+  - 574795
+  - 574796
+  - 574797
+  - 574798
+  - 574799
+  - 574800
+  - 574801
+  - 574802
+  - 574803
+  - 574804
+  - 574805
+  - 574806
+  - 574807
+  - 574808
+  campaigns:
+  - mc20e
+  simulation_type: fullsim

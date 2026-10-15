@@ -1,9 +1,9 @@
 general:
   debug_level: INFO # Logger level
-  input_filelist_path: "/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/skimmedfilellist.txt" #"/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
-  input_sumweights_path: "/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/sum_of_weights.txt" #"/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
-  output_path_histograms: "/data/leet/FFTutorial/output_histograms_ttbarreco_2_4" # Path to the output histograms relative to fastframes directory
-  output_path_ntuples: "/data/leet/FFTutorial/output_ntuples_ttbarreco_8_4" # Path to the output ntuples relative to fastframes directory
+  input_filelist_path: "/home/leet/FF/metadata_ttbar_reco_17_5/skimmedfilellist.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/skimmedfilellist.txt" #"/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
+  input_sumweights_path: "/home/leet/FF/metadata_ttbar_reco_17_5/sum_of_weights.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/sum_of_weights.txt" #"/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
+  output_path_histograms: "/data/leet/FFTutorial/output_histograms_ttbarDilepton_23_5" # Path to the output histograms relative to fastframes directory
+  output_path_ntuples: "/data/leet/FFTutorial/output_ntuples_ttbarDilepton_23_5" # Path to the output ntuples relative to fastframes directory
   default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
   default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" #* weight_ftag_effSF_GN2v01_Continuous_NOSYS"
   default_reco_tree_name: "reco" # Name of the reco tree in the input files.
@@ -358,6 +358,46 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
           min: 0
           max: 1000000
           number_of_bins: 50
+      - name: mttbar_DILEPASSIGNER_NUFLOWS
+        title: "ttbar mass (DILEPASSIGNER, NUFLOWS) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_DILEPASSIGNER_NUFLOWS_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_DILEPASSIGNER_NUWEIGHT
+        title: "ttbar mass (DILEPASSIGNER, NUWEIGHT) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_DILEPASSIGNER_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_DILEPASSIGNER_DILEPASSIGNER
+        title: "ttbar mass (DILEPASSIGNER, DILEPASSIGNER) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_DILEPASSIGNER_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_HYPER_DILEPASSIGNER
+        title: "ttbar mass (HYPER, DILEPASSIGNER) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_HYPER_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
+      - name: mttbar_CHI2_DILEPASSIGNER
+        title: "ttbar mass (CHI2, DILEPASSIGNER) [GeV]; m_{tt} [GeV]; Events"
+        definition: mttbar_CHI2_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1000000
+          number_of_bins: 50
       - name: mttbar_TRUTH
         title: "ttbar mass (truth, from truth indices) [GeV]; m_{tt} truth [GeV]; Events"
         definition: mttbar_TRUTH_NOSYS
@@ -430,7 +470,73 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
           min: 0
           max: 1
           number_of_bins: 50
-          
+      - name: betaStar_DILEPASSIGNER_NUFLOWS
+        title: "betaStar (DILEPASSIGNER, NUFLOWS); beta*; Events"
+        definition: betaStar_DILEPASSIGNER_NUFLOWS_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_DILEPASSIGNER_NUWEIGHT
+        title: "betaStar (DILEPASSIGNER, NUWEIGHT); beta*; Events"
+        definition: betaStar_DILEPASSIGNER_NUWEIGHT_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_DILEPASSIGNER_DILEPASSIGNER
+        title: "betaStar (DILEPASSIGNER, DILEPASSIGNER); beta*; Events"
+        definition: betaStar_DILEPASSIGNER_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_HYPER_DILEPASSIGNER
+        title: "betaStar (HYPER, DILEPASSIGNER); beta*; Events"
+        definition: betaStar_HYPER_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: betaStar_CHI2_DILEPASSIGNER
+        title: "betaStar (CHI2, DILEPASSIGNER); beta*; Events"
+        definition: betaStar_CHI2_DILEPASSIGNER_NOSYS
+        type: float
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 50
+      - name: nuFlows_nu1_pz_diff
+        title: "NuFlows nu1 pz - truth [MeV]; Delta p_{z}^{nu1}; Events"
+        definition: "nuFlows_vs_truth_diff_NOSYS[2]"
+        type: float
+        binning:
+          min: -200000
+          max: 200000
+          number_of_bins: 100
+
+      - name: nuFlows_nu2_pz_diff
+        title: "NuFlows nu2 pz - truth [MeV]; Delta p_{z}^{nu2}; Events"
+        definition: "nuFlows_vs_truth_diff_NOSYS[6]"
+        type: float
+        binning:
+          min: -200000
+          max: 200000
+          number_of_bins: 100
+
+      - name: nuFlows_pairing_consistency
+        title: "NuFlows pairing consistency; 1=match,0=swapped,-1=unknown; Events"
+        definition: nuFlows_pairing_consistency_NOSYS
+        type: int
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+
       - name: mlb_pTdiff_true
         title: "mlb pT difference (truth) [GeV]; p_{T}^{mlb true b} - p_{T}^{mlb true bbar} [GeV]; Events"
         definition: mlb_pTdiff_true_NOSYS
@@ -441,8 +547,8 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
           number_of_bins: 80
       - name: HYPER_correct
         title: "HYPER pairing correct; HYPER pairing correct; Events"
-        definition: HyPER_correct_NOSYS
-        type: float
+        definition: HYPER_correct_NOSYS
+        type: int
         binning:
           min: -1.5
           max: 1.5
@@ -450,7 +556,7 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
       - name: CHI2_correct
         title: "CHI2 pairing correct; CHI2 pairing correct; Events"
         definition: CHI2_correct_NOSYS
-        type: float
+        type: int
         binning:
           min: -1.5
           max: 1.5
@@ -458,7 +564,7 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
       - name: PT_correct
         title: "PT pairing correct; PT pairing correct; Events"
         definition: PT_correct_NOSYS
-        type: float
+        type: int
         binning:
           min: -1.5
           max: 1.5
@@ -466,7 +572,15 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
       - name: DELTAR_correct
         title: "DELTAR pairing correct; DELTAR pairing correct; Events"
         definition: DELTAR_correct_NOSYS
-        type: float
+        type: int
+        binning:
+          min: -1.5
+          max: 1.5
+          number_of_bins: 3
+      - name: DILEPASSIGNER_correct
+        title: "DiLepAssigner pairing correct; DiLepAssigner pairing correct; Events"
+        definition: DILEPASSIGNER_correct_NOSYS
+        type: int
         binning:
           min: -1.5
           max: 1.5
@@ -582,14 +696,14 @@ ntuples: # Use this block to define the ntuples to be created.
     - hyper_TtbarDiLepton_Top2_IDs_NOSYS
     # - HyPER_Top1_Indices_NOSYS
     # - HyPER_Top2_Indices_NOSYS
-    - HyPER_Top1_bIndex_NOSYS
-    - HyPER_Top2_bIndex_NOSYS
-    - HyPER_Top1_converged_NOSYS
-    - HyPER_Top2_converged_NOSYS
-    - HyPER_two_tops_converged_NOSYS
-    - HyPER_Top1_correct_NOSYS
-    - HyPER_Top2_correct_NOSYS
-    - HyPER_both_tops_correct_NOSYS
+    # - HyPER_Top1_bIndex_NOSYS
+    # - HyPER_Top2_bIndex_NOSYS
+    # - HyPER_Top1_converged_NOSYS
+    # - HyPER_Top2_converged_NOSYS
+    # - HyPER_two_tops_converged_NOSYS
+    # - HyPER_Top1_correct_NOSYS
+    # - HyPER_Top2_correct_NOSYS
+    # - HyPER_both_tops_correct_NOSYS
     - pairing_chi2_correct_all_NOSYS
     - pairing_correct_NOSYS
     - pairing_deltaR_correct_NOSYS
@@ -601,6 +715,13 @@ ntuples: # Use this block to define the ntuples to be created.
     - mttbar_PT_NUWEIGHT_NOSYS
     - mttbar_DELTAR_NUFLOWS_NOSYS
     - mttbar_DELTAR_NUWEIGHT_NOSYS
+    - mttbar_DILEPASSIGNER_NUFLOWS_NOSYS
+    - mttbar_DILEPASSIGNER_NUWEIGHT_NOSYS
+    - mttbar_DILEPASSIGNER_DILEPASSIGNER_NOSYS
+    - mttbar_HYPER_DILEPASSIGNER_NOSYS
+    - mttbar_HYPER_DLACHI2_NOSYS
+    - mttbar_HYPER_NUCHI2_NOSYS
+    - mttbar_CHI2_DILEPASSIGNER_NOSYS
     - mttbar_TRUTH_NOSYS
     - llbb_HYPER_NUFLOWS_NOSYS
     - llbb_HYPER_NUWEIGHT_NOSYS
@@ -610,6 +731,13 @@ ntuples: # Use this block to define the ntuples to be created.
     - llbb_PT_NUWEIGHT_NOSYS
     - llbb_DELTAR_NUFLOWS_NOSYS
     - llbb_DELTAR_NUWEIGHT_NOSYS
+    - llbb_DILEPASSIGNER_NUFLOWS_NOSYS
+    - llbb_DILEPASSIGNER_NUWEIGHT_NOSYS
+    - llbb_DILEPASSIGNER_DILEPASSIGNER_NOSYS
+    - llbb_HYPER_DILEPASSIGNER_NOSYS
+    - llbb_HYPER_DLACHI2_NOSYS
+    - llbb_HYPER_NUCHI2_NOSYS
+    - llbb_CHI2_DILEPASSIGNER_NOSYS
     - llbb_TRUTH_NOSYS
     - mttbar_HYPER_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
     - mttbar_CHI2_compare_NUWEIGHT_vs_NUFLOWS_NOSYS
@@ -621,33 +749,69 @@ ntuples: # Use this block to define the ntuples to be created.
     - mttbar_truth_assignment_valid_NOSYS
     - mttbar_partonic_history_NOSYS
     - mttbar_partonic_history_valid_NOSYS
-    - mttbar_debug_HYPER_NUFLOWS_bjet1_index_NOSYS
-    - mttbar_debug_HYPER_NUFLOWS_bjet2_index_NOSYS
-    - mttbar_debug_HYPER_NUWEIGHT_bjet1_index_NOSYS
-    - mttbar_debug_HYPER_NUWEIGHT_bjet2_index_NOSYS
-    - mttbar_debug_CHI2_bjet1_index_NOSYS
-    - mttbar_debug_CHI2_bjet2_index_NOSYS
-    - mttbar_debug_PT_bjet1_index_NOSYS
-    - mttbar_debug_PT_bjet2_index_NOSYS
-    - mttbar_debug_DELTAR_bjet1_index_NOSYS
-    - mttbar_debug_DELTAR_bjet2_index_NOSYS
     - nuflows_nu1_pt_NOSYS
     - nuflows_nu1_eta_NOSYS
     - nuflows_nu1_phi_NOSYS
+    - nuflows_nu1_px_NOSYS
+    - nuflows_nu1_py_NOSYS
+    - nuflows_nu1_pz_NOSYS
     - nuflows_nu1_m_NOSYS
     - nuflows_nu2_pt_NOSYS
     - nuflows_nu2_eta_NOSYS
     - nuflows_nu2_phi_NOSYS
+    - nuflows_nu2_px_NOSYS
+    - nuflows_nu2_py_NOSYS
+    - nuflows_nu2_pz_NOSYS
     - nuflows_nu2_m_NOSYS
     - nuflows_validation_status_NOSYS
     - truth_nu1_pt_NOSYS
     - truth_nu1_eta_NOSYS
     - truth_nu1_phi_NOSYS
+    - truth_nu1_px_NOSYS
+    - truth_nu1_py_NOSYS
+    - truth_nu1_pz_NOSYS
     - truth_nu1_m_NOSYS
     - truth_nu2_pt_NOSYS
     - truth_nu2_eta_NOSYS
     - truth_nu2_phi_NOSYS
+    - truth_nu2_px_NOSYS
+    - truth_nu2_py_NOSYS
+    - truth_nu2_pz_NOSYS
     - truth_nu2_m_NOSYS
+    - dilepassigner_nu1_pt_NOSYS
+    - dilepassigner_nu1_eta_NOSYS
+    - dilepassigner_nu1_phi_NOSYS
+    - dilepassigner_nu1_px_NOSYS
+    - dilepassigner_nu1_py_NOSYS
+    - dilepassigner_nu1_pz_NOSYS
+    - dilepassigner_nu2_pt_NOSYS
+    - dilepassigner_nu2_eta_NOSYS
+    - dilepassigner_nu2_phi_NOSYS
+    - dilepassigner_nu2_px_NOSYS
+    - dilepassigner_nu2_py_NOSYS
+    - dilepassigner_nu2_pz_NOSYS
+    - dlachi2_nu1_pt_NOSYS
+    - dlachi2_nu1_eta_NOSYS
+    - dlachi2_nu1_phi_NOSYS
+    - dlachi2_nu1_pz_NOSYS
+    - dlachi2_nu2_pt_NOSYS
+    - dlachi2_nu2_eta_NOSYS
+    - dlachi2_nu2_phi_NOSYS
+    - dlachi2_nu2_pz_NOSYS
+    - dlachi2_chi2_NOSYS
+    - dlachi2_valid_NOSYS
+    - dlachi2_niter_NOSYS
+    - nuchi2_nu1_pt_NOSYS
+    - nuchi2_nu1_eta_NOSYS
+    - nuchi2_nu1_phi_NOSYS
+    - nuchi2_nu1_pz_NOSYS
+    - nuchi2_nu2_pt_NOSYS
+    - nuchi2_nu2_eta_NOSYS
+    - nuchi2_nu2_phi_NOSYS
+    - nuchi2_nu2_pz_NOSYS
+    - nuchi2_chi2_NOSYS
+    - nuchi2_valid_NOSYS
+    - nuchi2_niter_NOSYS
     - nu_pt_NOSYS
     - nu_eta_NOSYS
     - nu_phi_NOSYS
@@ -664,6 +828,7 @@ ntuples: # Use this block to define the ntuples to be created.
     - CHI2_correct_NOSYS
     - PT_correct_NOSYS
     - DELTAR_correct_NOSYS
+    - DILEPASSIGNER_correct_NOSYS
     - betaStar_HYPER_NUFLOWS_NOSYS
     - betaStar_HYPER_NUWEIGHT_NOSYS
     - betaStar_CHI2_NUFLOWS_NOSYS
@@ -672,7 +837,40 @@ ntuples: # Use this block to define the ntuples to be created.
     - betaStar_PT_NUWEIGHT_NOSYS
     - betaStar_DELTAR_NUFLOWS_NOSYS
     - betaStar_DELTAR_NUWEIGHT_NOSYS
+    - betaStar_DILEPASSIGNER_NUFLOWS_NOSYS
+    - betaStar_DILEPASSIGNER_NUWEIGHT_NOSYS
+    - betaStar_DILEPASSIGNER_DILEPASSIGNER_NOSYS
+    - betaStar_HYPER_DILEPASSIGNER_NOSYS
+    - betaStar_HYPER_DLACHI2_NOSYS
+    - betaStar_HYPER_NUCHI2_NOSYS
+    - betaStar_CHI2_DILEPASSIGNER_NOSYS
     - betaStar_TRUTH_NOSYS
+    - top_pt_HYPER_NUFLOWS_NOSYS
+    - top_eta_HYPER_NUFLOWS_NOSYS
+    - top_phi_HYPER_NUFLOWS_NOSYS
+    - top_m_HYPER_NUFLOWS_NOSYS
+    - antitop_pt_HYPER_NUFLOWS_NOSYS
+    - antitop_eta_HYPER_NUFLOWS_NOSYS
+    - antitop_phi_HYPER_NUFLOWS_NOSYS
+    - antitop_m_HYPER_NUFLOWS_NOSYS
+    - ttbar_pt_HYPER_NUFLOWS_NOSYS
+    - ttbar_eta_HYPER_NUFLOWS_NOSYS
+    - ttbar_phi_HYPER_NUFLOWS_NOSYS
+    - ttbar_m_HYPER_NUFLOWS_NOSYS
+    - top_pt_HYPER_NUCHI2_NOSYS
+    - top_eta_HYPER_NUCHI2_NOSYS
+    - top_phi_HYPER_NUCHI2_NOSYS
+    - top_m_HYPER_NUCHI2_NOSYS
+    - antitop_pt_HYPER_NUCHI2_NOSYS
+    - antitop_eta_HYPER_NUCHI2_NOSYS
+    - antitop_phi_HYPER_NUCHI2_NOSYS
+    - antitop_m_HYPER_NUCHI2_NOSYS
+    - ttbar_pt_HYPER_NUCHI2_NOSYS
+    - ttbar_eta_HYPER_NUCHI2_NOSYS
+    - ttbar_phi_HYPER_NUCHI2_NOSYS
+    - ttbar_m_HYPER_NUCHI2_NOSYS
+    - nuFlows_vs_truth_diff_NOSYS
+    - nuFlows_pairing_consistency_NOSYS
     - event_jet_truth_idx
     - event_jet_truth_candidates
     - event_electron_truth_idx
@@ -681,7 +879,24 @@ ntuples: # Use this block to define the ntuples to be created.
     - event_muon_truth_candidates
     - event_nLeptons
     #- selected_match_truth_bpair_NOSYS
-    #- KLF_.+_index
+
+    - Met_pt
+    - Met_phi
+    - nu_e_px
+    - nu_e_py
+    - nu_e_pz
+    - nu_mu_px
+    - nu_mu_py
+    - nu_mu_pz
+    - neutrino_vector_NOSYS
+
+    - top_reco_truth_.*_NOSYS
+    - antitop_reco_truth_.*_NOSYS
+
+    - t_afterFSR.*
+    - tbar_afterFSR.*
+    - ttbar_afterFSR.*
+
 
     # - .*_pt_NOSYS # You can use regular expressions. This will select e, mu and jet pt.
     # - jet_eta
@@ -733,7 +948,7 @@ samples: # All the samples to be used in the analysis.
 
   - name: "ttll" # Name given to the sample.
     dsids: [601230] # For data, this is always 0.
-    campaigns: ["mc23a"] #,"mc23d", "mc23e"] #,"mc23e""mc23a","#], "mc23e"] # "mc23d" , The corresponding campaing or campaigns.
+    campaigns: ["mc23a","mc23d"] #,"mc23e"] #,"mc23d", "mc23e"] #,"mc23e""mc23a","#], "mc23e"] # "mc23d" , The corresponding campaing or campaigns.
     simulation_type: "fullsim" # Type of simulation.
     exclude_variables: &truth_excluded
       - reco_index_truth_b
@@ -802,4 +1017,3 @@ samples: # All the samples to be used in the analysis.
   #   campaigns: ["mc23a","mc23d"] #"mc23d",
   #   simulation_type: "fullsim"
   #   #exclude_variables: *truth_excluded
-

@@ -1,0 +1,28 @@
+{
+  "root_entries": 72,
+  "h5_events": 72,
+  "h5_even_events": 29,
+  "h5_odd_events": 43,
+  "root_h5_event_identity_join": "eventNumber",
+  "h5_neutrino_order_matches_raw_truth": 72,
+  "h5_neutrino_pairs_match_raw_truth_unordered": 72,
+  "h5_targets_match_fastframes_vector": 72,
+  "max_h5_root_component_difference_GeV": 0.0,
+  "max_ordered_truth_component_difference_GeV": 3.2354688642044493e-05,
+  "neutrino_parent_flavour_counts_abs_pdg": {
+    "12": 63,
+    "14": 76,
+    "16": 5
+  },
+  "neutrino_slot_flavour_counts_abs_pdg": {
+    "12": 63,
+    "14": 76,
+    "16": 5
+  },
+  "direct_flavour_charge_checks": 139,
+  "direct_flavour_charge_matches": 139,
+  "duplicate_neutrino_target_events": 0,
+  "meta_neutrino_slot_order": "electron_flavour_candidates_then_muon_flavour_candidates; remaining_slots_filled_by_parent_t_then_parent_tbar_candidates",
+  "meta_neutrino_components": "px,py,pz in GeV",
+  "note": "The fully-matched filter requires both truth b jets and exactly two opposite-charge selected e/mu leptons; same- and mixed-flavour events are retained."
+}

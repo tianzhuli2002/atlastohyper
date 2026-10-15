@@ -1,0 +1,8 @@
+# One existing mc20a raw file per SM/KK representative DSID; diagnostic slices
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697341._000027.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574793.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697127._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697128._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574801.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697136._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574803.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697138._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574807.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697142._000001.output.root

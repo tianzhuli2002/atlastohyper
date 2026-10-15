@@ -1,0 +1,6 @@
+Loading events (target=all), chunk size=100000...
+✅ Chunk processed. Saved: 29/all
+🎉 Successfully saved 29 events to /data/leet/FFTutorial/output_h5_sm_vyper_pilot/sm410472_reference_even.h5
+Loading events (target=all), chunk size=100000...
+✅ Chunk processed. Saved: 43/all
+🎉 Successfully saved 43 events to /data/leet/FFTutorial/output_h5_sm_vyper_pilot/sm410472_reference_odd.h5

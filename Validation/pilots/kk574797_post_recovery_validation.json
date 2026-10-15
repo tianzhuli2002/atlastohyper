@@ -1,0 +1,30 @@
+{
+  "pilot_selected": 88,
+  "pilot_truth_reconstructible": 63,
+  "pilot_supported": 63,
+  "pilot_assignment_categories": {
+    "CORRECT": 57,
+    "SWAPPED": 1,
+    "ONE_WRONG": 5,
+    "BOTH_WRONG": 0,
+    "INVALID": 0,
+    "UNSUPPORTED": 0
+  },
+  "all_selected_mtt_pairs": {
+    "VYPER_NATIVE": 88,
+    "VYPER_NUFLOWS": 88,
+    "VYPER_TRUTHNU": 63,
+    "TRUTHASSIGN_TRUTHNU": 63
+  },
+  "strict_mtt_pairs": {
+    "VYPER_NATIVE": 63,
+    "VYPER_NUFLOWS": 63,
+    "VYPER_TRUTHNU": 63,
+    "TRUTHASSIGN_TRUTHNU": 63
+  },
+  "topside_rows": 32,
+  "neutrino_rows": 48,
+  "raw_representative_files": 7,
+  "manifest_sha_verified": true,
+  "plot_existence_checked": true
+}

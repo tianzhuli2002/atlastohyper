@@ -1,0 +1,1 @@
+601230  mc23a   fullsim /data/leet/ntuples/ttbar_dilepton_reco_19_5/user.leet.601230.PhPy8EG.DAOD_PHYS.e8514_s4159_r15530_p6697.TtNT_2L_2Lsys_7452919_output/user.leet.50394396._000001.output.root

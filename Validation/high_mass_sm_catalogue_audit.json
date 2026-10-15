@@ -1,0 +1,129 @@
+{
+  "audit_date": "2026-10-08",
+  "purpose": "Inventory local metadata candidates for high-mass SM dilepton ttbar control; metadata presence is not branch-schema or physics-support validation.",
+  "nominal_control": {
+    "dsid": 410472,
+    "campaign": "mc20a",
+    "simulation": "fullsim",
+    "production": "r13167_p7266",
+    "metadata_source": "/home/leet/FF/metadata_kkgraviton/filelist.txt",
+    "directory": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output",
+    "catalogued_files": 766,
+    "raw_support_audit": "Validation/high_mass_sm_support_r13167.json",
+    "direct_dilepton_raw_counts_above_mtt_GeV": {
+      "1000": 162645,
+      "1600": 10988,
+      "2000": 2292,
+      "3000": 72,
+      "4000": 3,
+      "5000": 0
+    },
+    "max_direct_dilepton_truth_mtt_GeV": 4226.9305,
+    "method_schema": "audited on the raw production",
+    "status": "nominal MC20a fullsim; high-mass method extraction blocked by Ceph metadata access"
+  },
+  "catalogued_candidates": [
+    {
+      "dsid": 410470,
+      "campaign": "mc20a",
+      "simulation": "fullsim",
+      "production": "r13167_p7266",
+      "metadata_source": "/home/leet/FF/metadata_kkgraviton/filelist.txt",
+      "directory": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410470.PhPy8EG.DAOD_PHYS.e6337_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output",
+      "catalogued_files": 370,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "event_overlap_with_other_productions": "unknown",
+      "status": "alternative DSID; no evidence yet that it is mtt-filtered or enriched"
+    },
+    {
+      "dsid": 410472,
+      "campaign": "mc20a",
+      "simulation": "fullsim",
+      "production": "r13167_p6697",
+      "metadata_source": "/home/leet/FF/metadata_ttbar2L_16_2/filelist.txt",
+      "directory": "/data/leet/ttbar2L/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p6697.TtNT_2L_2Lsys_fd44b3d_output",
+      "catalogued_files": 164,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "event_overlap_with_other_productions": "unknown",
+      "status": "alternate production; do not combine with p7266 without event-identity audit"
+    },
+    {
+      "dsid": 410472,
+      "campaign": "mc20a",
+      "simulation": "fullsim",
+      "production": "r13167_p6697",
+      "metadata_source": "/home/leet/FF/metadata_ttbar2L_run2_run3/filelist.txt",
+      "directory": "/data/leet/ttbar2L_17_2/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p6697.TtNT_2L_2Lsys_260ceed_output",
+      "catalogued_files": 168,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "event_overlap_with_other_productions": "unknown",
+      "status": "alternate production; do not combine with p7266 without event-identity audit"
+    },
+    {
+      "dsid": 601491,
+      "campaign": "mc20e",
+      "simulation": "fastsim",
+      "production": "r14861_p7266",
+      "metadata_source": "/home/leet/FF/metadata_kkgraviton/filelist.txt",
+      "directory": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.601491.PhPy8EG.DAOD_PHYS.e8441_a907_r14861_p7266.TtNT_2L_2Lsys_b71171e_output",
+      "catalogued_files": 1762,
+      "raw_support_audit": "Validation/high_mass_sm_support_601491_r14861.json",
+      "direct_dilepton_raw_counts_above_mtt_GeV": {
+        "1000": 360390,
+        "1600": 24283,
+        "2000": 5204,
+        "3000": 149,
+        "4000": 6,
+        "5000": 0
+      },
+      "max_direct_dilepton_truth_mtt_GeV": 4533.962,
+      "method_schema": "audited; VyPER, EM, NW, and DA branches exist",
+      "generator_family": "Powheg+Pythia8 ttbar pTHard variation",
+      "official_classification_source": "https://atlas-sw-doxygen.web.cern.ch/atlas-sw-doxygen/atlas_main--Doxygen/docs/html/d9/ddd/HadronOriginClassifier_8cxx_source.html",
+      "status": "alternate fastsim variation, not a nominal fullsim denominator; no useful raw support above 5 TeV"
+    },
+    {
+      "dsid": 601491,
+      "campaign": "mc23a",
+      "simulation": "fullsim",
+      "production": "r14622_p6697",
+      "metadata_source": "/home/leet/FF/metadata_ttbar2L_16_2/filelist.txt",
+      "catalogued_files": 97,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "status": "TtNT candidate; branch schema, weights, and raw support unvalidated"
+    },
+    {
+      "dsid": 601491,
+      "campaign": "mc23d",
+      "simulation": "fullsim",
+      "production": "r15224_p6697",
+      "metadata_source": "/home/leet/FF/metadata_ttbar2L_16_2/filelist.txt",
+      "catalogued_files": 4,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "status": "TtNT candidate; branch schema, weights, and raw support unvalidated"
+    },
+    {
+      "dsid": 601491,
+      "campaign": "mc23e",
+      "simulation": "fullsim",
+      "production": "r16083_p6697",
+      "metadata_source": "/home/leet/FF/metadata_ttbar2L_16_2/filelist.txt",
+      "catalogued_files": 160,
+      "raw_schema_validated": false,
+      "high_mass_support_validated": false,
+      "status": "TtNT candidate; branch schema, weights, and raw support unvalidated"
+    }
+  ],
+  "overall_conclusion": "No locally validated nominal fullsim SM sample has useful 5-6 TeV dilepton support. The best next control is the unprocessed remainder of nominal MC20a DSID 410472 r13167_p7266, which may extend matched response into roughly 2-2.5 TeV after selection. Metadata candidates require ROOT/schema/weight/event-identity validation before use.",
+  "minimum_useful_new_control": {
+    "sample": "nominal full-simulation SM ttbar with the same reconstruction branches, selection, and event weights",
+    "target_truth_mtt_support_GeV": [1000, 6000],
+    "minimum_finite_strict_population_events_per_method_per_truth_mtt_bin": 50,
+    "qualification": "50 is the current support threshold, not a precision target; additional events are needed for stable uncertainty estimates and matching in truth ttbar pT."
+  }
+}

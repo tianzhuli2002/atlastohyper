@@ -1,0 +1,37 @@
+{
+  "configs": [
+    {
+      "config": "/home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonvyper_KKGraviton.yml",
+      "parse": "passed",
+      "regions": [
+        "ttll_h5"
+      ],
+      "samples": [
+        "kkgraviton_mc20a",
+        "kkgraviton_mc20d",
+        "kkgraviton_mc20e"
+      ],
+      "input_filelist_path": "/home/leet/FF/metadata_kkgraviton/filelist.txt",
+      "input_filelist_exists": true,
+      "input_sumweights_path": "/home/leet/FF/metadata_kkgraviton/sum_of_weights.txt",
+      "input_sumweights_exists": true
+    },
+    {
+      "config": "/home/leet/FF/atlastohyper/FastFramesConfig/TtbarDileptonReco_VyPERStudy_KKGraviton.yml",
+      "parse": "passed",
+      "regions": [
+        "ttll_analysis",
+        "ttll_truth_reconstructible"
+      ],
+      "samples": [
+        "kkgraviton_mc20a",
+        "kkgraviton_mc20d",
+        "kkgraviton_mc20e"
+      ],
+      "input_filelist_path": "/home/leet/FF/metadata_kkgraviton/filelist.txt",
+      "input_filelist_exists": true,
+      "input_sumweights_path": "/home/leet/FF/metadata_kkgraviton/sum_of_weights.txt",
+      "input_sumweights_exists": true
+    }
+  ]
+}

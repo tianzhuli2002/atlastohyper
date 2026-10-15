@@ -1,0 +1,101 @@
+general:
+  debug_level: INFO
+  input_filelist_path: /home/leet/FF/atlastohyper/Validation/pilots/kk574797_mc20a_filelist.txt
+  input_sumweights_path: /home/leet/FF/atlastohyper/Validation/pilots/kk574797_mc20a_sum_of_weights.txt
+  output_path_histograms: /data/leet/FFTutorial/output_histograms_kk574797_pilot_reproduced_reco
+  output_path_ntuples: /data/leet/FFTutorial/output_ntuples_kk574797_pilot_reproduced_reco
+  default_sumweights: NOSYS
+  default_event_weights: weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS
+  default_reco_tree_name: reco
+  xsection_files:
+  - campaigns:
+    - mc20a
+    - mc20d
+    - mc20e
+    files:
+    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  luminosity:
+    mc20a: 36207.66
+    mc20d: 44307.4
+    mc20e: 58450.1
+  automatic_systematics: false
+  nominal_only: true
+  normalise_to_luminosity: false
+  use_rvec: true
+  number_of_cpus: 4
+  use_region_subfolders: false
+  custom_frame_name: PartonMatcher
+  custom_options:
+    class_name: TtbarDileptonFrameReco
+  create_tlorentz_vectors_for:
+  - jet
+  - el
+  - mu
+regions:
+- name: ttll_analysis
+  selection: region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2
+    && n_bjets_NOSYS >= 1
+  variables: &id001
+  - name: n_jet
+    type: unsigned long
+    title: Number of selected jets; nJets; Events
+    definition: n_jets_NOSYS
+    binning:
+      min: -0.5
+      max: 15.5
+      number_of_bins: 16
+- name: ttll_truth_reconstructible
+  selection: region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2
+    && n_bjets_NOSYS >= 1 && is_fully_matched_NOSYS == 1
+  variables: *id001
+ntuples:
+  regions:
+  - ttll_analysis
+  branches:
+  - eventNumber
+  - mcChannelNumber
+  - runNumber
+  - weight_.*
+  - weight_total_.*
+  - isTtbarDilepton_NOSYS
+  - is_fully_matched_NOSYS
+  - region_name_NOSYS
+  - n_jets_NOSYS
+  - n_bjets_NOSYS
+  - neutrino_both_nonzero_NOSYS
+  - jet_(pt|eta|phi|e)_NOSYS
+  - jet_(pt|eta|phi|e)$
+  - jet_GN2v01.*
+  - jet_select_.*
+  - el_(pt|eta|phi|e|charge|select_).*
+  - mu_(pt|eta|phi|e|charge|select_).*
+  - met_.*
+  - Truth_had_b_index
+  - Truth_had_bbar_index
+  - Truth_.*_index
+  - TtbarDiLepton_(DA|EM|NW|NuFlows|HyPER|VyPER)_.*
+  - spin_TtbarDiLepton_(DA|EM|NW|VyPER|HyPER_plus_EM|HyPER_plus_NW|HyPER_plus_NuFlows)_.*
+  - neutrino_vector_NOSYS
+  - Ttbar_MC_.*
+  - truth_.*
+  - mttbar_.*
+  - llbb_.*
+  - betaStar_.*
+  - top_(pt|eta|phi|m)_.*
+  - antitop_(pt|eta|phi|m)_.*
+  - ttbar_(pt|eta|phi|m)_.*
+  - nu_.*_NOSYS
+  - nuflows_nu[12]_(pt|eta|phi|px|py|pz|m)_NOSYS
+  - .*_valid_NOSYS
+  - .*_failure_code_NOSYS
+  - has_native_.*_NOSYS
+  - .*_correct_NOSYS
+  - VYPER_NUFLOWS_.*
+  - nu[12]_(pt|pz)_VYPER_NUFLOWS_NOSYS
+samples:
+- name: kk574797_mc20a_pilot_reco
+  dsids:
+  - 574797
+  campaigns:
+  - mc20a
+  simulation_type: fullsim

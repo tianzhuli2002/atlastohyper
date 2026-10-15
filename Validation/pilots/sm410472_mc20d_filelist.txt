@@ -1,0 +1,1 @@
+410472 mc20d fullsim /data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697338._001808.output.root

@@ -1,0 +1,77 @@
+{
+  "dataset": "MC20a nominal Powheg+Pythia8 ttbar, DSID 410472, r13167",
+  "scope": "one exact local ntuple directory; raw generated events before analysis selection",
+  "input_directory": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output",
+  "file_count": 766,
+  "tree": "reco",
+  "truth_mtt_branch": "Ttbar_MC_ttbar_afterFSR_m",
+  "truth_mtt_units_in_file": "MeV; converted to GeV for counts",
+  "direct_2l_definition": "one after-FSR e/mu charged daughter on each top side using daughter PDG IDs",
+  "raw_tree_entries": 7246983,
+  "finite_positive_mtt_entries": 7246982,
+  "direct_2l_entries": 6535112,
+  "max_finite_mtt_GeV": 4226.9305,
+  "max_direct_2l_mtt_GeV": 4226.9305,
+  "mtt_bin_edges_GeV": [
+    0.0,
+    500.0,
+    1000.0,
+    1500.0,
+    2000.0,
+    3000.0,
+    4000.0,
+    5000.0,
+    6000.0,
+    10000.0
+  ],
+  "all_event_counts_by_mtt_bin": [
+    3940756,
+    3119463,
+    167561,
+    16515,
+    2607,
+    77,
+    3,
+    0,
+    0
+  ],
+  "direct_2l_counts_by_mtt_bin": [
+    3592632,
+    2779835,
+    146047,
+    14306,
+    2220,
+    69,
+    3,
+    0,
+    0
+  ],
+  "thresholds_GeV": [
+    1000,
+    1600,
+    2000,
+    3000,
+    4000,
+    5000,
+    6000
+  ],
+  "all_event_counts_above_threshold": {
+    "1000": 186763,
+    "1600": 12760,
+    "2000": 2687,
+    "3000": 80,
+    "4000": 3,
+    "5000": 0,
+    "6000": 0
+  },
+  "direct_2l_counts_above_threshold": {
+    "1000": 162645,
+    "1600": 10988,
+    "2000": 2292,
+    "3000": 72,
+    "4000": 3,
+    "5000": 0,
+    "6000": 0
+  },
+  "warning": "Counts are raw support only; analysis-selected, truth-reconstructible and candidate-supported counts are lower."
+}

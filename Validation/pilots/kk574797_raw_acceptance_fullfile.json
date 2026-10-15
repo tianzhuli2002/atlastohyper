@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+      "entries_read": 34010,
+      "dsid": 574797,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 34010,
+        "truth_direct_2l": 28814,
+        "truth_2l_reco_lepton_pair": 28581,
+        "truth_2l_reco_lepton_truth_matched": 28535,
+        "truth_2l_reco_lepton_and_two_jets": 28581,
+        "truth_2l_reco_object_eligible": 24761,
+        "truth_2l_analysis_selected": 24756,
+        "all_analysis_selected": 29245,
+        "selected_b_pair_matched": 22390,
+        "selected_lepton_pair_matched": 24716,
+        "selected_combined_match": 18911
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "inputs": [
+    {
+      "path": "/home/leet/FF/atlastohyper/Validation/pilots/artifacts/root/sm410472_vyper_pilot.root",
+      "entries": 72,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 2,
+          "required": 11,
+          "missing": [
+            "Ttbar_MC_t_afterFSR_pt",
+            "Ttbar_MC_tbar_afterFSR_pt",
+            "Ttbar_MC_ttbar_afterFSR_m",
+            "mttbar_TRUTH_NOSYS",
+            "mttbar_truth_assignment_valid_NOSYS",
+            "mttbar_truth_bbarjet_index_NOSYS",
+            "mttbar_truth_bjet_index_NOSYS",
+            "truth_nu1_pz_NOSYS",
+            "truth_nu2_pz_NOSYS"
+          ]
+        },
+        "objects_and_candidates": {
+          "present": 0,
+          "required": 8,
+          "missing": [
+            "el_select_tight_NOSYS",
+            "jet_e_NOSYS",
+            "jet_eta",
+            "jet_phi",
+            "jet_pt_NOSYS",
+            "jet_select_baselineJvt_NOSYS",
+            "mu_select_tight_NOSYS",
+            "n_jets_NOSYS"
+          ]
+        },
+        "native_and_mechanism": {
+          "present": 0,
+          "required": 9,
+          "missing": [
+            "TtbarDiLepton_VyPER_AntiTop_Indices_NOSYS",
+            "TtbarDiLepton_VyPER_Tbar_NOSYS",
+            "TtbarDiLepton_VyPER_Top_Indices_NOSYS",
+            "TtbarDiLepton_VyPER_Top_NOSYS",
+            "VYPER_NATIVE_reco_valid_NOSYS",
+            "mttbar_VYPER_NUFLOWS_NOSYS",
+            "mttbar_VYPER_TRUTHNU_NOSYS",
+            "nuflows_nu1_pz_NOSYS",
+            "nuflows_nu2_pz_NOSYS"
+          ]
+        },
+        "strict_lepton_match": {
+          "present": 0,
+          "required": 12,
+          "missing": [
+            "el_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "el_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "el_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "el_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar",
+            "n_lep_matched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "n_lep_matched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "n_lep_matched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "n_lep_matched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar"
+          ]
+        }
+      },
+      "identity": {
+        "n_rows": 72,
+        "n_unique_channel_event": 72,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": false,
+      "strict_lepton_match_present": false,
+      "sidecar_required": false
+    },
+    {
+      "path": "/home/leet/FF/atlastohyper/Validation/pilots/artifacts/root/kk574797_reco_leptonmatch_pilot.root",
+      "entries": 88,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 11,
+          "required": 11,
+          "missing": []
+        },
+        "objects_and_candidates": {
+          "present": 8,
+          "required": 8,
+          "missing": []
+        },
+        "native_and_mechanism": {
+          "present": 9,
+          "required": 9,
+          "missing": []
+        },
+        "strict_lepton_match": {
+          "present": 12,
+          "required": 12,
+          "missing": []
+        }
+      },
+      "identity": {
+        "n_rows": 88,
+        "n_unique_channel_event": 88,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": true,
+      "strict_lepton_match_present": true,
+      "sidecar_required": false
+    }
+  ]
+}

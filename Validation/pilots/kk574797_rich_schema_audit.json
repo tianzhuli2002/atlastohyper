@@ -1,0 +1,97 @@
+{
+  "inputs": [
+    {
+      "path": "/home/leet/FF/atlastohyper/Validation/pilots/artifacts/root/kk574797_reco_pilot.root",
+      "entries": 88,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 11,
+          "required": 11,
+          "missing": []
+        },
+        "objects_and_candidates": {
+          "present": 8,
+          "required": 8,
+          "missing": []
+        },
+        "native_and_mechanism": {
+          "present": 9,
+          "required": 9,
+          "missing": []
+        },
+        "strict_lepton_match": {
+          "present": 0,
+          "required": 12,
+          "missing": [
+            "el_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "el_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "el_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "el_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "mu_dRmatched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar",
+            "n_lep_matched_to_Ttbar_MC_Wdecay1_afterFSR_from_t",
+            "n_lep_matched_to_Ttbar_MC_Wdecay1_afterFSR_from_tbar",
+            "n_lep_matched_to_Ttbar_MC_Wdecay2_afterFSR_from_t",
+            "n_lep_matched_to_Ttbar_MC_Wdecay2_afterFSR_from_tbar"
+          ]
+        }
+      },
+      "identity": {
+        "n_rows": 88,
+        "n_unique_channel_event": 88,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": true,
+      "strict_lepton_match_present": false,
+      "sidecar_required": true
+    },
+    {
+      "path": "/home/leet/FF/atlastohyper/Validation/pilots/artifacts/root/kk574797_reco_leptonmatch_pilot.root",
+      "entries": 88,
+      "groups": {
+        "identity": {
+          "present": 2,
+          "required": 2,
+          "missing": []
+        },
+        "truth_and_matching": {
+          "present": 11,
+          "required": 11,
+          "missing": []
+        },
+        "objects_and_candidates": {
+          "present": 8,
+          "required": 8,
+          "missing": []
+        },
+        "native_and_mechanism": {
+          "present": 9,
+          "required": 9,
+          "missing": []
+        },
+        "strict_lepton_match": {
+          "present": 12,
+          "required": 12,
+          "missing": []
+        }
+      },
+      "identity": {
+        "n_rows": 88,
+        "n_unique_channel_event": 88,
+        "duplicate_channel_event": 0,
+        "n_dsid": 1
+      },
+      "usable_core_schema": true,
+      "strict_lepton_match_present": true,
+      "sidecar_required": false
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "antitop_bbar_unique_selected_jet_matches": 88,
+  "distinct_b_and_bbar_jet_matches": 88,
+  "events": 88,
+  "failure_codes": [
+    0
+  ],
+  "input": "/data/leet/FFTutorial/output_ntuples_kk574797_pilot_reproduced_reco/kk574797_mc20a_pilot_reco_574797_mc20a_fullsim_Njobs_1_jobIndex_0.root",
+  "max_independent_antitop_mass_difference_MeV": 0.010968351096380502,
+  "max_independent_antitop_pt_difference_MeV": 0.026676957495510578,
+  "max_independent_mtt_difference_MeV": 0.030871719936840236,
+  "max_independent_top_mass_difference_MeV": 0.011258993356022984,
+  "max_independent_top_pt_difference_MeV": 0.02888109686318785,
+  "max_native_antitop_constituent_closure_MeV": 0.08951996173709631,
+  "max_native_top_constituent_closure_MeV": 0.04794313956517726,
+  "mtt_VYPER_NATIVE_constituent_sum_median_GeV": 922.380062219067,
+  "mtt_VYPER_TRUTHNU_median_GeV": 943.06059375,
+  "native_vyper_constituents": "Top=(b, positive lepton, nu), Tbar=(bbar, negative lepton, nubar)",
+  "negative_lepton_charge_matches": 88,
+  "positive_lepton_charge_matches": 88,
+  "top_b_unique_selected_jet_matches": 88,
+  "tree": "reco",
+  "truth_neutrino_convention": "truth_nu1 = from top; truth_nu2 = from antitop",
+  "unique_eventNumber": 88,
+  "units": "MeV for four-vectors, mtt, and top kinematics; betaStar is dimensionless",
+  "validity_counts": {
+    "VYPER_NATIVE_assignment_valid_NOSYS": 88,
+    "VYPER_NATIVE_neutrino_valid_NOSYS": 88,
+    "VYPER_NATIVE_reco_valid_NOSYS": 88,
+    "VYPER_TRUTHNU_assignment_valid_NOSYS": 88,
+    "VYPER_TRUTHNU_neutrino_valid_NOSYS": 88,
+    "VYPER_TRUTHNU_reco_valid_NOSYS": 88,
+    "has_native_VYPER_NOSYS": 88
+  }
+}

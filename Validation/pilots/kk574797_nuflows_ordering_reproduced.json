@@ -1,0 +1,35 @@
+{
+  "charge_order_matches": 88,
+  "comparison_tolerance_GeV": 0.01,
+  "entries_read": 88,
+  "events_with_invalid_native_nu_vectors": 0,
+  "events_with_well_formed_two_lepton_order": 88,
+  "events_without_exactly_two_opposite_charge_selected_leptons": 0,
+  "input": "/data/leet/FFTutorial/output_ntuples_kk574797_pilot_reproduced_reco/kk574797_mc20a_pilot_reco_574797_mc20a_fullsim_Njobs_1_jobIndex_0.root",
+  "input_entries": 88,
+  "input_slot_order": "selected electron collection in event order, followed by selected muon collection in event order",
+  "malformed_six_component_outputs": 0,
+  "max_best_permutation_component_difference_GeV": 9.607974413938791e-05,
+  "max_expected_cartesian_component_difference_GeV": 9.607974413938791e-05,
+  "output_units": "nuflows_nu_out components and native NuFlows constituent p4 branches are GeV",
+  "parent_mapping": "positive charged lepton -> nu from top; negative charged lepton -> nubar from antitop",
+  "per_channel": {
+    "ee": {
+      "charge_order_matches": 27,
+      "events": 27
+    },
+    "em": {
+      "charge_order_matches": 43,
+      "events": 43
+    },
+    "mm": {
+      "charge_order_matches": 18,
+      "events": 18
+    }
+  },
+  "slot0_native_parent_counts": {
+    "antitop": 50,
+    "top": 38
+  },
+  "tree": "reco"
+}

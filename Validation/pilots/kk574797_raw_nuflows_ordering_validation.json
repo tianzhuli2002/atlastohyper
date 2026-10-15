@@ -1,0 +1,35 @@
+{
+  "charge_order_matches": 496,
+  "comparison_tolerance_GeV": 0.01,
+  "entries_read": 500,
+  "events_with_invalid_native_nu_vectors": 0,
+  "events_with_well_formed_two_lepton_order": 496,
+  "events_without_exactly_two_opposite_charge_selected_leptons": 4,
+  "input": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+  "input_entries": 34010,
+  "input_slot_order": "selected electron collection in event order, followed by selected muon collection in event order",
+  "malformed_six_component_outputs": 0,
+  "max_best_permutation_component_difference_GeV": 0.00012496597446443047,
+  "max_expected_cartesian_component_difference_GeV": 0.00012496597446443047,
+  "output_units": "nuflows_nu_out components and native NuFlows constituent p4 branches are GeV",
+  "parent_mapping": "positive charged lepton -> nu from top; negative charged lepton -> nubar from antitop",
+  "per_channel": {
+    "ee": {
+      "charge_order_matches": 143,
+      "events": 143
+    },
+    "em": {
+      "charge_order_matches": 235,
+      "events": 235
+    },
+    "mm": {
+      "charge_order_matches": 118,
+      "events": 118
+    }
+  },
+  "slot0_native_parent_counts": {
+    "antitop": 251,
+    "top": 245
+  },
+  "tree": "reco"
+}

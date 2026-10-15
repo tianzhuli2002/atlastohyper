@@ -1,0 +1,32 @@
+# Existing validated 19-file representative slice plus one exact mc20a r13167 file for each previously unrepresented KK mass.
+# Exact paths come from the local metadata filelist; added DSIDs are listed below.
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697341._000027.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574793.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697203._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574793.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697297._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574793.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697127._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697205._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697299._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697128._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697210._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697304._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574801.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697218._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574801.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697313._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574801.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697136._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574803.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697222._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574803.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697318._000005.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574803.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697138._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574807.MGPy8EG.DAOD_PHYS.e8588_s3797_r13144_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697229._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574807.MGPy8EG.DAOD_PHYS.e8588_s3797_r13145_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697324._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574807.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697142._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574795.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697129._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574808.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697143._000003.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574799.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697134._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574798.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697133._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574804.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697139._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574800.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697135._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574792.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697126._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574805.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697140._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574802.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697137._000002.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574806.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697141._000001.output.root
+/data/leet/ntuples/run2_ttbar_dilep/user.leet.574796.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697130._000001.output.root

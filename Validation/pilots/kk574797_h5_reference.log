@@ -1,0 +1,6 @@
+Loading events (target=all), chunk size=100000...
+✅ Chunk processed. Saved: 36/all
+🎉 Successfully saved 36 events to /data/leet/FFTutorial/output_h5_kk_graviton_pilot/kkgrav_574797_reference_even.h5
+Loading events (target=all), chunk size=100000...
+✅ Chunk processed. Saved: 38/all
+🎉 Successfully saved 38 events to /data/leet/FFTutorial/output_h5_kk_graviton_pilot/kkgrav_574797_reference_odd.h5

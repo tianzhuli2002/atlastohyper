@@ -1,0 +1,2440 @@
+{
+  "inputs": [
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.410472.PhPy8EG.DAOD_PHYS.e6348_s3681_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697341._000027.output.root",
+      "entries_read": 49386,
+      "dsid": 410472,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 49386,
+        "truth_direct_2l": 44621,
+        "truth_2l_reco_lepton_pair": 44448,
+        "truth_2l_reco_lepton_truth_matched": 44306,
+        "truth_2l_reco_lepton_and_two_jets": 44448,
+        "truth_2l_reco_object_eligible": 37188,
+        "truth_2l_analysis_selected": 37167,
+        "all_analysis_selected": 41120,
+        "selected_b_pair_matched": 31688,
+        "selected_lepton_pair_matched": 37052,
+        "selected_combined_match": 28608
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 8559,
+            "n_analysis_selected": 7040,
+            "n_selected_b_pair_matched": 5306,
+            "f_selected_given_truth_2l": 0.8225259960275734,
+            "f_b_pair_matched_given_selected": 0.7536931818181818
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 15987,
+            "n_analysis_selected": 13254,
+            "n_selected_b_pair_matched": 10294,
+            "f_selected_given_truth_2l": 0.8290486019891161,
+            "f_b_pair_matched_given_selected": 0.7766711936019315
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 12227,
+            "n_analysis_selected": 10251,
+            "n_selected_b_pair_matched": 7971,
+            "f_selected_given_truth_2l": 0.8383904473705733,
+            "f_b_pair_matched_given_selected": 0.7775826748609892
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 4586,
+            "n_analysis_selected": 3871,
+            "n_selected_b_pair_matched": 3046,
+            "f_selected_given_truth_2l": 0.8440907108591365,
+            "f_b_pair_matched_given_selected": 0.7868767760268665
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 2121,
+            "n_analysis_selected": 1796,
+            "n_selected_b_pair_matched": 1369,
+            "f_selected_given_truth_2l": 0.8467703913248468,
+            "f_b_pair_matched_given_selected": 0.762249443207127
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 763,
+            "n_analysis_selected": 648,
+            "n_selected_b_pair_matched": 480,
+            "f_selected_given_truth_2l": 0.8492791612057667,
+            "f_b_pair_matched_given_selected": 0.7407407407407407
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 247,
+            "n_analysis_selected": 208,
+            "n_selected_b_pair_matched": 154,
+            "f_selected_given_truth_2l": 0.8421052631578947,
+            "f_b_pair_matched_given_selected": 0.7403846153846154
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 95,
+            "n_analysis_selected": 70,
+            "n_selected_b_pair_matched": 52,
+            "f_selected_given_truth_2l": 0.7368421052631579,
+            "f_b_pair_matched_given_selected": 0.7428571428571429
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 16,
+            "n_analysis_selected": 14,
+            "n_selected_b_pair_matched": 9,
+            "f_selected_given_truth_2l": 0.875,
+            "f_b_pair_matched_given_selected": 0.6428571428571429
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 5,
+            "n_analysis_selected": 5,
+            "n_selected_b_pair_matched": 5,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 1.0
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 17471,
+            "n_analysis_selected": 14322,
+            "n_selected_b_pair_matched": 10946,
+            "f_selected_given_truth_2l": 0.8197584568713868,
+            "f_b_pair_matched_given_selected": 0.7642787320206675
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 18614,
+            "n_analysis_selected": 15509,
+            "n_selected_b_pair_matched": 11955,
+            "f_selected_given_truth_2l": 0.8331900719888257,
+            "f_b_pair_matched_given_selected": 0.7708427364755949
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 6304,
+            "n_analysis_selected": 5383,
+            "n_selected_b_pair_matched": 4213,
+            "f_selected_given_truth_2l": 0.8539022842639594,
+            "f_b_pair_matched_given_selected": 0.7826490804384172
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 1604,
+            "n_analysis_selected": 1406,
+            "n_selected_b_pair_matched": 1137,
+            "f_selected_given_truth_2l": 0.8765586034912718,
+            "f_b_pair_matched_given_selected": 0.8086770981507824
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 579,
+            "n_analysis_selected": 503,
+            "n_selected_b_pair_matched": 404,
+            "f_selected_given_truth_2l": 0.8687392055267703,
+            "f_b_pair_matched_given_selected": 0.8031809145129225
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 45,
+            "n_analysis_selected": 40,
+            "n_selected_b_pair_matched": 32,
+            "f_selected_given_truth_2l": 0.8888888888888888,
+            "f_b_pair_matched_given_selected": 0.8
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 2,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.6666666666666666
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 1,
+            "n_analysis_selected": 1,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 1.0
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 2,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.0,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 14,
+            "n_analysis_selected": 9,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.6428571428571429,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 72,
+            "n_analysis_selected": 51,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.7083333333333334,
+            "f_b_pair_matched_given_selected": 0.0196078431372549
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 173,
+            "n_analysis_selected": 127,
+            "n_selected_b_pair_matched": 66,
+            "f_selected_given_truth_2l": 0.7341040462427746,
+            "f_b_pair_matched_given_selected": 0.5196850393700787
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 997,
+            "n_analysis_selected": 896,
+            "n_selected_b_pair_matched": 764,
+            "f_selected_given_truth_2l": 0.8986960882647944,
+            "f_b_pair_matched_given_selected": 0.8526785714285714
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 3191,
+            "n_analysis_selected": 2884,
+            "n_selected_b_pair_matched": 2400,
+            "f_selected_given_truth_2l": 0.9037919147602632,
+            "f_b_pair_matched_given_selected": 0.8321775312066574
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 6826,
+            "n_analysis_selected": 6047,
+            "n_selected_b_pair_matched": 4918,
+            "f_selected_given_truth_2l": 0.8858775271022561,
+            "f_b_pair_matched_given_selected": 0.8132958491814123
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 12547,
+            "n_analysis_selected": 10757,
+            "n_selected_b_pair_matched": 8453,
+            "f_selected_given_truth_2l": 0.8573364150793018,
+            "f_b_pair_matched_given_selected": 0.7858138886306592
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 10464,
+            "n_analysis_selected": 8541,
+            "n_selected_b_pair_matched": 6441,
+            "f_selected_given_truth_2l": 0.8162270642201835,
+            "f_b_pair_matched_given_selected": 0.7541271513874254
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 9754,
+            "n_analysis_selected": 7464,
+            "n_selected_b_pair_matched": 5418,
+            "f_selected_given_truth_2l": 0.7652245232725036,
+            "f_b_pair_matched_given_selected": 0.7258842443729904
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 581,
+            "n_analysis_selected": 391,
+            "n_selected_b_pair_matched": 229,
+            "f_selected_given_truth_2l": 0.6729776247848537,
+            "f_b_pair_matched_given_selected": 0.5856777493606138
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574793.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697127._000001.output.root",
+      "entries_read": 23420,
+      "dsid": 574793,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 23420,
+        "truth_direct_2l": 20914,
+        "truth_2l_reco_lepton_pair": 20820,
+        "truth_2l_reco_lepton_truth_matched": 20762,
+        "truth_2l_reco_lepton_and_two_jets": 20820,
+        "truth_2l_reco_object_eligible": 17179,
+        "truth_2l_analysis_selected": 17175,
+        "all_analysis_selected": 19179,
+        "selected_b_pair_matched": 14228,
+        "selected_lepton_pair_matched": 17126,
+        "selected_combined_match": 12754
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 6527,
+            "n_analysis_selected": 5329,
+            "n_selected_b_pair_matched": 3976,
+            "f_selected_given_truth_2l": 0.8164547265206067,
+            "f_b_pair_matched_given_selected": 0.7461062112966785
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 10721,
+            "n_analysis_selected": 8736,
+            "n_selected_b_pair_matched": 6520,
+            "f_selected_given_truth_2l": 0.8148493610670646,
+            "f_b_pair_matched_given_selected": 0.7463369963369964
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 1660,
+            "n_analysis_selected": 1377,
+            "n_selected_b_pair_matched": 1029,
+            "f_selected_given_truth_2l": 0.8295180722891566,
+            "f_b_pair_matched_given_selected": 0.7472766884531591
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 804,
+            "n_analysis_selected": 701,
+            "n_selected_b_pair_matched": 531,
+            "f_selected_given_truth_2l": 0.8718905472636815,
+            "f_b_pair_matched_given_selected": 0.7574893009985735
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 601,
+            "n_analysis_selected": 526,
+            "n_selected_b_pair_matched": 392,
+            "f_selected_given_truth_2l": 0.8752079866888519,
+            "f_b_pair_matched_given_selected": 0.7452471482889734
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 336,
+            "n_analysis_selected": 294,
+            "n_selected_b_pair_matched": 212,
+            "f_selected_given_truth_2l": 0.875,
+            "f_b_pair_matched_given_selected": 0.7210884353741497
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 168,
+            "n_analysis_selected": 136,
+            "n_selected_b_pair_matched": 91,
+            "f_selected_given_truth_2l": 0.8095238095238095,
+            "f_b_pair_matched_given_selected": 0.6691176470588235
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 72,
+            "n_analysis_selected": 53,
+            "n_selected_b_pair_matched": 28,
+            "f_selected_given_truth_2l": 0.7361111111111112,
+            "f_b_pair_matched_given_selected": 0.5283018867924528
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 19,
+            "n_analysis_selected": 17,
+            "n_selected_b_pair_matched": 9,
+            "f_selected_given_truth_2l": 0.8947368421052632,
+            "f_b_pair_matched_given_selected": 0.5294117647058824
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 2,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.6666666666666666
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 7963,
+            "n_analysis_selected": 6477,
+            "n_selected_b_pair_matched": 4950,
+            "f_selected_given_truth_2l": 0.8133869144794675,
+            "f_b_pair_matched_given_selected": 0.7642427049559981
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 8724,
+            "n_analysis_selected": 7115,
+            "n_selected_b_pair_matched": 5308,
+            "f_selected_given_truth_2l": 0.8155662540119212,
+            "f_b_pair_matched_given_selected": 0.7460295151089248
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 2326,
+            "n_analysis_selected": 1952,
+            "n_selected_b_pair_matched": 1389,
+            "f_selected_given_truth_2l": 0.8392089423903697,
+            "f_b_pair_matched_given_selected": 0.711577868852459
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 1019,
+            "n_analysis_selected": 890,
+            "n_selected_b_pair_matched": 654,
+            "f_selected_given_truth_2l": 0.873405299313052,
+            "f_b_pair_matched_given_selected": 0.7348314606741573
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 679,
+            "n_analysis_selected": 584,
+            "n_selected_b_pair_matched": 406,
+            "f_selected_given_truth_2l": 0.8600883652430045,
+            "f_b_pair_matched_given_selected": 0.6952054794520548
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 148,
+            "n_analysis_selected": 116,
+            "n_selected_b_pair_matched": 64,
+            "f_selected_given_truth_2l": 0.7837837837837838,
+            "f_b_pair_matched_given_selected": 0.5517241379310345
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 52,
+            "n_analysis_selected": 38,
+            "n_selected_b_pair_matched": 19,
+            "f_selected_given_truth_2l": 0.7307692307692307,
+            "f_b_pair_matched_given_selected": 0.5
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.0,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 7,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.42857142857142855,
+            "f_b_pair_matched_given_selected": 0.3333333333333333
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 75,
+            "n_analysis_selected": 48,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.64,
+            "f_b_pair_matched_given_selected": 0.020833333333333332
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 142,
+            "n_analysis_selected": 104,
+            "n_selected_b_pair_matched": 30,
+            "f_selected_given_truth_2l": 0.7323943661971831,
+            "f_b_pair_matched_given_selected": 0.28846153846153844
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 648,
+            "n_analysis_selected": 573,
+            "n_selected_b_pair_matched": 456,
+            "f_selected_given_truth_2l": 0.8842592592592593,
+            "f_b_pair_matched_given_selected": 0.7958115183246073
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 1845,
+            "n_analysis_selected": 1666,
+            "n_selected_b_pair_matched": 1322,
+            "f_selected_given_truth_2l": 0.9029810298102982,
+            "f_b_pair_matched_given_selected": 0.7935174069627852
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 3310,
+            "n_analysis_selected": 2911,
+            "n_selected_b_pair_matched": 2250,
+            "f_selected_given_truth_2l": 0.8794561933534744,
+            "f_b_pair_matched_given_selected": 0.7729302645139128
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 6032,
+            "n_analysis_selected": 5165,
+            "n_selected_b_pair_matched": 3944,
+            "f_selected_given_truth_2l": 0.8562665782493368,
+            "f_b_pair_matched_given_selected": 0.7636011616650532
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 4913,
+            "n_analysis_selected": 3956,
+            "n_selected_b_pair_matched": 2911,
+            "f_selected_given_truth_2l": 0.8052106655811113,
+            "f_b_pair_matched_given_selected": 0.7358442871587462
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 3760,
+            "n_analysis_selected": 2644,
+            "n_selected_b_pair_matched": 1814,
+            "f_selected_given_truth_2l": 0.7031914893617022,
+            "f_b_pair_matched_given_selected": 0.6860816944024206
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 179,
+            "n_analysis_selected": 105,
+            "n_selected_b_pair_matched": 61,
+            "f_selected_given_truth_2l": 0.5865921787709497,
+            "f_b_pair_matched_given_selected": 0.580952380952381
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574794.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697128._000001.output.root",
+      "entries_read": 28737,
+      "dsid": 574794,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 28737,
+        "truth_direct_2l": 25330,
+        "truth_2l_reco_lepton_pair": 25216,
+        "truth_2l_reco_lepton_truth_matched": 25175,
+        "truth_2l_reco_lepton_and_two_jets": 25216,
+        "truth_2l_reco_object_eligible": 21017,
+        "truth_2l_analysis_selected": 21014,
+        "all_analysis_selected": 23799,
+        "selected_b_pair_matched": 17817,
+        "selected_lepton_pair_matched": 20980,
+        "selected_combined_match": 15758
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 152,
+            "n_analysis_selected": 121,
+            "n_selected_b_pair_matched": 84,
+            "f_selected_given_truth_2l": 0.7960526315789473,
+            "f_b_pair_matched_given_selected": 0.6942148760330579
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 11965,
+            "n_analysis_selected": 9889,
+            "n_selected_b_pair_matched": 7399,
+            "f_selected_given_truth_2l": 0.826493940660259,
+            "f_b_pair_matched_given_selected": 0.7482050763474568
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 11675,
+            "n_analysis_selected": 9677,
+            "n_selected_b_pair_matched": 7280,
+            "f_selected_given_truth_2l": 0.828865096359743,
+            "f_b_pair_matched_given_selected": 0.7522992663015398
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 780,
+            "n_analysis_selected": 668,
+            "n_selected_b_pair_matched": 513,
+            "f_selected_given_truth_2l": 0.8564102564102564,
+            "f_b_pair_matched_given_selected": 0.7679640718562875
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 394,
+            "n_analysis_selected": 342,
+            "n_selected_b_pair_matched": 275,
+            "f_selected_given_truth_2l": 0.868020304568528,
+            "f_b_pair_matched_given_selected": 0.804093567251462
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 202,
+            "n_analysis_selected": 184,
+            "n_selected_b_pair_matched": 143,
+            "f_selected_given_truth_2l": 0.9108910891089109,
+            "f_b_pair_matched_given_selected": 0.7771739130434783
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 91,
+            "n_analysis_selected": 78,
+            "n_selected_b_pair_matched": 51,
+            "f_selected_given_truth_2l": 0.8571428571428571,
+            "f_b_pair_matched_given_selected": 0.6538461538461539
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 59,
+            "n_analysis_selected": 47,
+            "n_selected_b_pair_matched": 34,
+            "f_selected_given_truth_2l": 0.7966101694915254,
+            "f_b_pair_matched_given_selected": 0.723404255319149
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 10,
+            "n_analysis_selected": 7,
+            "n_selected_b_pair_matched": 4,
+            "f_selected_given_truth_2l": 0.7,
+            "f_b_pair_matched_given_selected": 0.5714285714285714
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 2,
+            "n_analysis_selected": 1,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.5,
+            "f_b_pair_matched_given_selected": 1.0
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 2003,
+            "n_analysis_selected": 1626,
+            "n_selected_b_pair_matched": 1180,
+            "f_selected_given_truth_2l": 0.8117823265102346,
+            "f_b_pair_matched_given_selected": 0.7257072570725708
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 15702,
+            "n_analysis_selected": 12971,
+            "n_selected_b_pair_matched": 9896,
+            "f_selected_given_truth_2l": 0.8260731117055152,
+            "f_b_pair_matched_given_selected": 0.7629326960141855
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 5447,
+            "n_analysis_selected": 4572,
+            "n_selected_b_pair_matched": 3345,
+            "f_selected_given_truth_2l": 0.8393611162107583,
+            "f_b_pair_matched_given_selected": 0.7316272965879265
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 1311,
+            "n_analysis_selected": 1113,
+            "n_selected_b_pair_matched": 830,
+            "f_selected_given_truth_2l": 0.8489702517162472,
+            "f_b_pair_matched_given_selected": 0.7457322551662174
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 693,
+            "n_analysis_selected": 597,
+            "n_selected_b_pair_matched": 450,
+            "f_selected_given_truth_2l": 0.8614718614718615,
+            "f_b_pair_matched_given_selected": 0.7537688442211056
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 136,
+            "n_analysis_selected": 107,
+            "n_selected_b_pair_matched": 65,
+            "f_selected_given_truth_2l": 0.7867647058823529,
+            "f_b_pair_matched_given_selected": 0.6074766355140186
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 38,
+            "n_analysis_selected": 28,
+            "n_selected_b_pair_matched": 18,
+            "f_selected_given_truth_2l": 0.7368421052631579,
+            "f_b_pair_matched_given_selected": 0.6428571428571429
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 3,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.6666666666666666,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 7,
+            "n_analysis_selected": 5,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.7142857142857143,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 91,
+            "n_analysis_selected": 46,
+            "n_selected_b_pair_matched": 3,
+            "f_selected_given_truth_2l": 0.5054945054945055,
+            "f_b_pair_matched_given_selected": 0.06521739130434782
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 181,
+            "n_analysis_selected": 131,
+            "n_selected_b_pair_matched": 56,
+            "f_selected_given_truth_2l": 0.7237569060773481,
+            "f_b_pair_matched_given_selected": 0.42748091603053434
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 1049,
+            "n_analysis_selected": 944,
+            "n_selected_b_pair_matched": 780,
+            "f_selected_given_truth_2l": 0.899904671115348,
+            "f_b_pair_matched_given_selected": 0.826271186440678
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 3122,
+            "n_analysis_selected": 2832,
+            "n_selected_b_pair_matched": 2311,
+            "f_selected_given_truth_2l": 0.9071108263933376,
+            "f_b_pair_matched_given_selected": 0.8160310734463276
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 6167,
+            "n_analysis_selected": 5495,
+            "n_selected_b_pair_matched": 4387,
+            "f_selected_given_truth_2l": 0.8910329171396141,
+            "f_b_pair_matched_given_selected": 0.7983621474067334
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 8965,
+            "n_analysis_selected": 7595,
+            "n_selected_b_pair_matched": 5778,
+            "f_selected_given_truth_2l": 0.8471834913552705,
+            "f_b_pair_matched_given_selected": 0.7607636603028308
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 4004,
+            "n_analysis_selected": 2981,
+            "n_selected_b_pair_matched": 1963,
+            "f_selected_given_truth_2l": 0.7445054945054945,
+            "f_b_pair_matched_given_selected": 0.6585038577658504
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 1678,
+            "n_analysis_selected": 963,
+            "n_selected_b_pair_matched": 498,
+            "f_selected_given_truth_2l": 0.5738974970202623,
+            "f_b_pair_matched_given_selected": 0.5171339563862928
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 63,
+            "n_analysis_selected": 20,
+            "n_selected_b_pair_matched": 8,
+            "f_selected_given_truth_2l": 0.31746031746031744,
+            "f_b_pair_matched_given_selected": 0.4
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+      "entries_read": 34010,
+      "dsid": 574797,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 34010,
+        "truth_direct_2l": 28814,
+        "truth_2l_reco_lepton_pair": 28581,
+        "truth_2l_reco_lepton_truth_matched": 28535,
+        "truth_2l_reco_lepton_and_two_jets": 28581,
+        "truth_2l_reco_object_eligible": 24761,
+        "truth_2l_analysis_selected": 24756,
+        "all_analysis_selected": 29245,
+        "selected_b_pair_matched": 22390,
+        "selected_lepton_pair_matched": 24716,
+        "selected_combined_match": 18911
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 26,
+            "n_analysis_selected": 22,
+            "n_selected_b_pair_matched": 13,
+            "f_selected_given_truth_2l": 0.8461538461538461,
+            "f_b_pair_matched_given_selected": 0.5909090909090909
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 130,
+            "n_analysis_selected": 109,
+            "n_selected_b_pair_matched": 75,
+            "f_selected_given_truth_2l": 0.8384615384615385,
+            "f_b_pair_matched_given_selected": 0.6880733944954128
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 686,
+            "n_analysis_selected": 587,
+            "n_selected_b_pair_matched": 443,
+            "f_selected_given_truth_2l": 0.8556851311953353,
+            "f_b_pair_matched_given_selected": 0.7546848381601363
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 2166,
+            "n_analysis_selected": 1835,
+            "n_selected_b_pair_matched": 1372,
+            "f_selected_given_truth_2l": 0.8471837488457987,
+            "f_b_pair_matched_given_selected": 0.7476839237057221
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 17416,
+            "n_analysis_selected": 14943,
+            "n_selected_b_pair_matched": 11443,
+            "f_selected_given_truth_2l": 0.858004134129536,
+            "f_b_pair_matched_given_selected": 0.7657766178143612
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 7899,
+            "n_analysis_selected": 6853,
+            "n_selected_b_pair_matched": 5313,
+            "f_selected_given_truth_2l": 0.8675781744524623,
+            "f_b_pair_matched_given_selected": 0.7752808988764045
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 360,
+            "n_analysis_selected": 309,
+            "n_selected_b_pair_matched": 218,
+            "f_selected_given_truth_2l": 0.8583333333333333,
+            "f_b_pair_matched_given_selected": 0.7055016181229773
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 107,
+            "n_analysis_selected": 80,
+            "n_selected_b_pair_matched": 51,
+            "f_selected_given_truth_2l": 0.7476635514018691,
+            "f_b_pair_matched_given_selected": 0.6375
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 19,
+            "n_analysis_selected": 14,
+            "n_selected_b_pair_matched": 7,
+            "f_selected_given_truth_2l": 0.7368421052631579,
+            "f_b_pair_matched_given_selected": 0.5
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 4,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.75,
+            "f_b_pair_matched_given_selected": 0.3333333333333333
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 1,
+            "n_analysis_selected": 1,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 198,
+            "n_analysis_selected": 162,
+            "n_selected_b_pair_matched": 116,
+            "f_selected_given_truth_2l": 0.8181818181818182,
+            "f_b_pair_matched_given_selected": 0.7160493827160493
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 1149,
+            "n_analysis_selected": 953,
+            "n_selected_b_pair_matched": 671,
+            "f_selected_given_truth_2l": 0.8294168842471714,
+            "f_b_pair_matched_given_selected": 0.7040923399790137
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 4040,
+            "n_analysis_selected": 3390,
+            "n_selected_b_pair_matched": 2514,
+            "f_selected_given_truth_2l": 0.8391089108910891,
+            "f_b_pair_matched_given_selected": 0.7415929203539823
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 9195,
+            "n_analysis_selected": 7923,
+            "n_selected_b_pair_matched": 6087,
+            "f_selected_given_truth_2l": 0.8616639477977162,
+            "f_b_pair_matched_given_selected": 0.7682695948504354
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 13050,
+            "n_analysis_selected": 11360,
+            "n_selected_b_pair_matched": 8901,
+            "f_selected_given_truth_2l": 0.8704980842911877,
+            "f_b_pair_matched_given_selected": 0.7835387323943662
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 968,
+            "n_analysis_selected": 809,
+            "n_selected_b_pair_matched": 565,
+            "f_selected_given_truth_2l": 0.8357438016528925,
+            "f_b_pair_matched_given_selected": 0.6983930778739185
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 199,
+            "n_analysis_selected": 147,
+            "n_selected_b_pair_matched": 75,
+            "f_selected_given_truth_2l": 0.7386934673366834,
+            "f_b_pair_matched_given_selected": 0.5102040816326531
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 14,
+            "n_analysis_selected": 12,
+            "n_selected_b_pair_matched": 7,
+            "f_selected_given_truth_2l": 0.8571428571428571,
+            "f_b_pair_matched_given_selected": 0.5833333333333334
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 1,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.0,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 4,
+            "n_analysis_selected": 1,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.25,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 23,
+            "n_analysis_selected": 11,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.4782608695652174,
+            "f_b_pair_matched_given_selected": 0.09090909090909091
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 564,
+            "n_analysis_selected": 359,
+            "n_selected_b_pair_matched": 16,
+            "f_selected_given_truth_2l": 0.6365248226950354,
+            "f_b_pair_matched_given_selected": 0.04456824512534819
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 1151,
+            "n_analysis_selected": 847,
+            "n_selected_b_pair_matched": 308,
+            "f_selected_given_truth_2l": 0.735881841876629,
+            "f_b_pair_matched_given_selected": 0.36363636363636365
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 5388,
+            "n_analysis_selected": 4961,
+            "n_selected_b_pair_matched": 4271,
+            "f_selected_given_truth_2l": 0.9207498144023757,
+            "f_b_pair_matched_given_selected": 0.8609151380770006
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 10514,
+            "n_analysis_selected": 9595,
+            "n_selected_b_pair_matched": 8065,
+            "f_selected_given_truth_2l": 0.9125927334981929,
+            "f_b_pair_matched_given_selected": 0.8405419489317353
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 7322,
+            "n_analysis_selected": 6361,
+            "n_selected_b_pair_matched": 4761,
+            "f_selected_given_truth_2l": 0.8687517071838295,
+            "f_b_pair_matched_given_selected": 0.7484672221348845
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 3072,
+            "n_analysis_selected": 2273,
+            "n_selected_b_pair_matched": 1367,
+            "f_selected_given_truth_2l": 0.7399088541666666,
+            "f_b_pair_matched_given_selected": 0.6014078310602727
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 583,
+            "n_analysis_selected": 285,
+            "n_selected_b_pair_matched": 131,
+            "f_selected_given_truth_2l": 0.4888507718696398,
+            "f_b_pair_matched_given_selected": 0.45964912280701753
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 182,
+            "n_analysis_selected": 61,
+            "n_selected_b_pair_matched": 16,
+            "f_selected_given_truth_2l": 0.33516483516483514,
+            "f_b_pair_matched_given_selected": 0.26229508196721313
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 11,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.18181818181818182,
+            "f_b_pair_matched_given_selected": 0.0
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574801.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697136._000001.output.root",
+      "entries_read": 16784,
+      "dsid": 574801,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 16784,
+        "truth_direct_2l": 14038,
+        "truth_2l_reco_lepton_pair": 13793,
+        "truth_2l_reco_lepton_truth_matched": 13769,
+        "truth_2l_reco_lepton_and_two_jets": 13793,
+        "truth_2l_reco_object_eligible": 10912,
+        "truth_2l_analysis_selected": 10910,
+        "all_analysis_selected": 13044,
+        "selected_b_pair_matched": 7732,
+        "selected_lepton_pair_matched": 10887,
+        "selected_combined_match": 6414
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 7,
+            "n_analysis_selected": 6,
+            "n_selected_b_pair_matched": 3,
+            "f_selected_given_truth_2l": 0.8571428571428571,
+            "f_b_pair_matched_given_selected": 0.5
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 28,
+            "n_analysis_selected": 24,
+            "n_selected_b_pair_matched": 18,
+            "f_selected_given_truth_2l": 0.8571428571428571,
+            "f_b_pair_matched_given_selected": 0.75
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 103,
+            "n_analysis_selected": 81,
+            "n_selected_b_pair_matched": 57,
+            "f_selected_given_truth_2l": 0.7864077669902912,
+            "f_b_pair_matched_given_selected": 0.7037037037037037
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 179,
+            "n_analysis_selected": 149,
+            "n_selected_b_pair_matched": 101,
+            "f_selected_given_truth_2l": 0.8324022346368715,
+            "f_b_pair_matched_given_selected": 0.6778523489932886
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 390,
+            "n_analysis_selected": 322,
+            "n_selected_b_pair_matched": 239,
+            "f_selected_given_truth_2l": 0.8256410256410256,
+            "f_b_pair_matched_given_selected": 0.7422360248447205
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 952,
+            "n_analysis_selected": 787,
+            "n_selected_b_pair_matched": 543,
+            "f_selected_given_truth_2l": 0.8266806722689075,
+            "f_b_pair_matched_given_selected": 0.6899618805590851
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 1530,
+            "n_analysis_selected": 1242,
+            "n_selected_b_pair_matched": 804,
+            "f_selected_given_truth_2l": 0.8117647058823529,
+            "f_b_pair_matched_given_selected": 0.6473429951690821
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 8936,
+            "n_analysis_selected": 6874,
+            "n_selected_b_pair_matched": 3926,
+            "f_selected_given_truth_2l": 0.7692479856759177,
+            "f_b_pair_matched_given_selected": 0.571137620017457
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 1865,
+            "n_analysis_selected": 1397,
+            "n_selected_b_pair_matched": 725,
+            "f_selected_given_truth_2l": 0.7490616621983914,
+            "f_b_pair_matched_given_selected": 0.5189692197566214
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 42,
+            "n_analysis_selected": 26,
+            "n_selected_b_pair_matched": 12,
+            "f_selected_given_truth_2l": 0.6190476190476191,
+            "f_b_pair_matched_given_selected": 0.46153846153846156
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 6,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.3333333333333333,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 33,
+            "n_analysis_selected": 24,
+            "n_selected_b_pair_matched": 13,
+            "f_selected_given_truth_2l": 0.7272727272727273,
+            "f_b_pair_matched_given_selected": 0.5416666666666666
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 176,
+            "n_analysis_selected": 140,
+            "n_selected_b_pair_matched": 92,
+            "f_selected_given_truth_2l": 0.7954545454545454,
+            "f_b_pair_matched_given_selected": 0.6571428571428571
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 445,
+            "n_analysis_selected": 349,
+            "n_selected_b_pair_matched": 252,
+            "f_selected_given_truth_2l": 0.7842696629213484,
+            "f_b_pair_matched_given_selected": 0.7220630372492837
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 845,
+            "n_analysis_selected": 720,
+            "n_selected_b_pair_matched": 503,
+            "f_selected_given_truth_2l": 0.8520710059171598,
+            "f_b_pair_matched_given_selected": 0.6986111111111111
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 3022,
+            "n_analysis_selected": 2541,
+            "n_selected_b_pair_matched": 1767,
+            "f_selected_given_truth_2l": 0.8408338848444739,
+            "f_b_pair_matched_given_selected": 0.6953955135773318
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 4365,
+            "n_analysis_selected": 3467,
+            "n_selected_b_pair_matched": 2072,
+            "f_selected_given_truth_2l": 0.7942726231386025,
+            "f_b_pair_matched_given_selected": 0.5976348428035766
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 4984,
+            "n_analysis_selected": 3561,
+            "n_selected_b_pair_matched": 1683,
+            "f_selected_given_truth_2l": 0.7144863563402889,
+            "f_b_pair_matched_given_selected": 0.472620050547599
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 166,
+            "n_analysis_selected": 106,
+            "n_selected_b_pair_matched": 46,
+            "f_selected_given_truth_2l": 0.6385542168674698,
+            "f_b_pair_matched_given_selected": 0.4339622641509434
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 2,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 9,
+            "n_analysis_selected": 7,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.7777777777777778,
+            "f_b_pair_matched_given_selected": 0.14285714285714285
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 49,
+            "n_analysis_selected": 23,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.46938775510204084,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 2141,
+            "n_analysis_selected": 1220,
+            "n_selected_b_pair_matched": 18,
+            "f_selected_given_truth_2l": 0.5698271835590846,
+            "f_b_pair_matched_given_selected": 0.014754098360655738
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 2633,
+            "n_analysis_selected": 1740,
+            "n_selected_b_pair_matched": 300,
+            "f_selected_given_truth_2l": 0.660843144701861,
+            "f_b_pair_matched_given_selected": 0.1724137931034483
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 3894,
+            "n_analysis_selected": 3488,
+            "n_selected_b_pair_matched": 2864,
+            "f_selected_given_truth_2l": 0.8957370313302516,
+            "f_b_pair_matched_given_selected": 0.8211009174311926
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 3560,
+            "n_analysis_selected": 3172,
+            "n_selected_b_pair_matched": 2487,
+            "f_selected_given_truth_2l": 0.8910112359550562,
+            "f_b_pair_matched_given_selected": 0.7840479192938209
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 1309,
+            "n_analysis_selected": 1054,
+            "n_selected_b_pair_matched": 662,
+            "f_selected_given_truth_2l": 0.8051948051948052,
+            "f_b_pair_matched_given_selected": 0.6280834914611005
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 349,
+            "n_analysis_selected": 182,
+            "n_selected_b_pair_matched": 86,
+            "f_selected_given_truth_2l": 0.5214899713467048,
+            "f_b_pair_matched_given_selected": 0.4725274725274725
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 69,
+            "n_analysis_selected": 20,
+            "n_selected_b_pair_matched": 10,
+            "f_selected_given_truth_2l": 0.2898550724637681,
+            "f_b_pair_matched_given_selected": 0.5
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 25,
+            "n_analysis_selected": 4,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.16,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574803.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697138._000001.output.root",
+      "entries_read": 7965,
+      "dsid": 574803,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 7965,
+        "truth_direct_2l": 6586,
+        "truth_2l_reco_lepton_pair": 6389,
+        "truth_2l_reco_lepton_truth_matched": 6363,
+        "truth_2l_reco_lepton_and_two_jets": 6389,
+        "truth_2l_reco_object_eligible": 4428,
+        "truth_2l_analysis_selected": 4428,
+        "all_analysis_selected": 5356,
+        "selected_b_pair_matched": 2665,
+        "selected_lepton_pair_matched": 4407,
+        "selected_combined_match": 2162
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 2,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 1.0,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 11,
+            "n_analysis_selected": 9,
+            "n_selected_b_pair_matched": 6,
+            "f_selected_given_truth_2l": 0.8181818181818182,
+            "f_b_pair_matched_given_selected": 0.6666666666666666
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 45,
+            "n_analysis_selected": 35,
+            "n_selected_b_pair_matched": 21,
+            "f_selected_given_truth_2l": 0.7777777777777778,
+            "f_b_pair_matched_given_selected": 0.6
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 94,
+            "n_analysis_selected": 81,
+            "n_selected_b_pair_matched": 54,
+            "f_selected_given_truth_2l": 0.8617021276595744,
+            "f_b_pair_matched_given_selected": 0.6666666666666666
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 158,
+            "n_analysis_selected": 129,
+            "n_selected_b_pair_matched": 84,
+            "f_selected_given_truth_2l": 0.8164556962025317,
+            "f_b_pair_matched_given_selected": 0.6511627906976745
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 284,
+            "n_analysis_selected": 231,
+            "n_selected_b_pair_matched": 147,
+            "f_selected_given_truth_2l": 0.8133802816901409,
+            "f_b_pair_matched_given_selected": 0.6363636363636364
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 388,
+            "n_analysis_selected": 311,
+            "n_selected_b_pair_matched": 186,
+            "f_selected_given_truth_2l": 0.8015463917525774,
+            "f_b_pair_matched_given_selected": 0.5980707395498392
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 1019,
+            "n_analysis_selected": 756,
+            "n_selected_b_pair_matched": 410,
+            "f_selected_given_truth_2l": 0.7419038272816487,
+            "f_b_pair_matched_given_selected": 0.5423280423280423
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 1514,
+            "n_analysis_selected": 1016,
+            "n_selected_b_pair_matched": 479,
+            "f_selected_given_truth_2l": 0.6710700132100397,
+            "f_b_pair_matched_given_selected": 0.4714566929133858
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 2597,
+            "n_analysis_selected": 1591,
+            "n_selected_b_pair_matched": 683,
+            "f_selected_given_truth_2l": 0.6126299576434348,
+            "f_b_pair_matched_given_selected": 0.42928975487115023
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 470,
+            "n_analysis_selected": 265,
+            "n_selected_b_pair_matched": 103,
+            "f_selected_given_truth_2l": 0.5638297872340425,
+            "f_b_pair_matched_given_selected": 0.3886792452830189
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 4,
+            "n_analysis_selected": 2,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.5,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 18,
+            "n_analysis_selected": 12,
+            "n_selected_b_pair_matched": 8,
+            "f_selected_given_truth_2l": 0.6666666666666666,
+            "f_b_pair_matched_given_selected": 0.6666666666666666
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 81,
+            "n_analysis_selected": 63,
+            "n_selected_b_pair_matched": 30,
+            "f_selected_given_truth_2l": 0.7777777777777778,
+            "f_b_pair_matched_given_selected": 0.47619047619047616
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 179,
+            "n_analysis_selected": 145,
+            "n_selected_b_pair_matched": 86,
+            "f_selected_given_truth_2l": 0.8100558659217877,
+            "f_b_pair_matched_given_selected": 0.593103448275862
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 294,
+            "n_analysis_selected": 237,
+            "n_selected_b_pair_matched": 152,
+            "f_selected_given_truth_2l": 0.8061224489795918,
+            "f_b_pair_matched_given_selected": 0.6413502109704642
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 929,
+            "n_analysis_selected": 731,
+            "n_selected_b_pair_matched": 484,
+            "f_selected_given_truth_2l": 0.7868675995694295,
+            "f_b_pair_matched_given_selected": 0.6621067031463749
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 1203,
+            "n_analysis_selected": 919,
+            "n_selected_b_pair_matched": 533,
+            "f_selected_given_truth_2l": 0.7639235245220283,
+            "f_b_pair_matched_given_selected": 0.5799782372143635
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 2448,
+            "n_analysis_selected": 1574,
+            "n_selected_b_pair_matched": 648,
+            "f_selected_given_truth_2l": 0.6429738562091504,
+            "f_b_pair_matched_given_selected": 0.41168996188055906
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 1418,
+            "n_analysis_selected": 735,
+            "n_selected_b_pair_matched": 232,
+            "f_selected_given_truth_2l": 0.5183356840620592,
+            "f_b_pair_matched_given_selected": 0.31564625850340133
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 16,
+            "n_analysis_selected": 12,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.75,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 12,
+            "n_analysis_selected": 4,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.3333333333333333,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 64,
+            "n_analysis_selected": 28,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.4375,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 1849,
+            "n_analysis_selected": 849,
+            "n_selected_b_pair_matched": 12,
+            "f_selected_given_truth_2l": 0.4591671173607355,
+            "f_b_pair_matched_given_selected": 0.014134275618374558
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 1386,
+            "n_analysis_selected": 832,
+            "n_selected_b_pair_matched": 143,
+            "f_selected_given_truth_2l": 0.6002886002886003,
+            "f_b_pair_matched_given_selected": 0.171875
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 1510,
+            "n_analysis_selected": 1304,
+            "n_selected_b_pair_matched": 1023,
+            "f_selected_given_truth_2l": 0.8635761589403973,
+            "f_b_pair_matched_given_selected": 0.7845092024539877
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 1189,
+            "n_analysis_selected": 1019,
+            "n_selected_b_pair_matched": 768,
+            "f_selected_given_truth_2l": 0.8570227081581161,
+            "f_b_pair_matched_given_selected": 0.7536800785083415
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 409,
+            "n_analysis_selected": 303,
+            "n_selected_b_pair_matched": 192,
+            "f_selected_given_truth_2l": 0.7408312958435208,
+            "f_b_pair_matched_given_selected": 0.6336633663366337
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 128,
+            "n_analysis_selected": 68,
+            "n_selected_b_pair_matched": 30,
+            "f_selected_given_truth_2l": 0.53125,
+            "f_b_pair_matched_given_selected": 0.4411764705882353
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 29,
+            "n_analysis_selected": 17,
+            "n_selected_b_pair_matched": 4,
+            "f_selected_given_truth_2l": 0.5862068965517241,
+            "f_b_pair_matched_given_selected": 0.23529411764705882
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 10,
+            "n_analysis_selected": 4,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.4,
+            "f_b_pair_matched_given_selected": 0.25
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    },
+    {
+      "raw_file": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574807.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697142._000001.output.root",
+      "entries_read": 4108,
+      "dsid": 574807,
+      "denominators": {
+        "truth_stages": "truth_direct_2l within entries read",
+        "selected_stages": "all_analysis_selected within entries read",
+        "weights": "unweighted"
+      },
+      "stage_counts": {
+        "raw_entries": 4108,
+        "truth_direct_2l": 3440,
+        "truth_2l_reco_lepton_pair": 3311,
+        "truth_2l_reco_lepton_truth_matched": 3297,
+        "truth_2l_reco_lepton_and_two_jets": 3311,
+        "truth_2l_reco_object_eligible": 2329,
+        "truth_2l_analysis_selected": 2328,
+        "all_analysis_selected": 2777,
+        "selected_b_pair_matched": 1491,
+        "selected_lepton_pair_matched": 2317,
+        "selected_combined_match": 1236
+      },
+      "differential": {
+        "truth_mtt_GeV": [
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          },
+          {
+            "x_low": 400,
+            "x_high": 500,
+            "n_truth_direct_2l": 11,
+            "n_analysis_selected": 9,
+            "n_selected_b_pair_matched": 8,
+            "f_selected_given_truth_2l": 0.8181818181818182,
+            "f_b_pair_matched_given_selected": 0.8888888888888888
+          },
+          {
+            "x_low": 500,
+            "x_high": 650,
+            "n_truth_direct_2l": 45,
+            "n_analysis_selected": 38,
+            "n_selected_b_pair_matched": 32,
+            "f_selected_given_truth_2l": 0.8444444444444444,
+            "f_b_pair_matched_given_selected": 0.8421052631578947
+          },
+          {
+            "x_low": 650,
+            "x_high": 800,
+            "n_truth_direct_2l": 88,
+            "n_analysis_selected": 76,
+            "n_selected_b_pair_matched": 53,
+            "f_selected_given_truth_2l": 0.8636363636363636,
+            "f_b_pair_matched_given_selected": 0.6973684210526315
+          },
+          {
+            "x_low": 800,
+            "x_high": 1000,
+            "n_truth_direct_2l": 197,
+            "n_analysis_selected": 163,
+            "n_selected_b_pair_matched": 126,
+            "f_selected_given_truth_2l": 0.8274111675126904,
+            "f_b_pair_matched_given_selected": 0.7730061349693251
+          },
+          {
+            "x_low": 1000,
+            "x_high": 1250,
+            "n_truth_direct_2l": 294,
+            "n_analysis_selected": 242,
+            "n_selected_b_pair_matched": 155,
+            "f_selected_given_truth_2l": 0.8231292517006803,
+            "f_b_pair_matched_given_selected": 0.640495867768595
+          },
+          {
+            "x_low": 1250,
+            "x_high": 1500,
+            "n_truth_direct_2l": 327,
+            "n_analysis_selected": 267,
+            "n_selected_b_pair_matched": 180,
+            "f_selected_given_truth_2l": 0.8165137614678899,
+            "f_b_pair_matched_given_selected": 0.6741573033707865
+          },
+          {
+            "x_low": 1500,
+            "x_high": 2000,
+            "n_truth_direct_2l": 613,
+            "n_analysis_selected": 461,
+            "n_selected_b_pair_matched": 256,
+            "f_selected_given_truth_2l": 0.7520391517128875,
+            "f_b_pair_matched_given_selected": 0.5553145336225597
+          },
+          {
+            "x_low": 2000,
+            "x_high": 2500,
+            "n_truth_direct_2l": 482,
+            "n_analysis_selected": 328,
+            "n_selected_b_pair_matched": 156,
+            "f_selected_given_truth_2l": 0.6804979253112033,
+            "f_b_pair_matched_given_selected": 0.47560975609756095
+          },
+          {
+            "x_low": 2500,
+            "x_high": 3000,
+            "n_truth_direct_2l": 352,
+            "n_analysis_selected": 213,
+            "n_selected_b_pair_matched": 85,
+            "f_selected_given_truth_2l": 0.6051136363636364,
+            "f_b_pair_matched_given_selected": 0.39906103286384975
+          },
+          {
+            "x_low": 3000,
+            "x_high": 4000,
+            "n_truth_direct_2l": 501,
+            "n_analysis_selected": 280,
+            "n_selected_b_pair_matched": 105,
+            "f_selected_given_truth_2l": 0.5588822355289421,
+            "f_b_pair_matched_given_selected": 0.375
+          },
+          {
+            "x_low": 4000,
+            "x_high": 5000,
+            "n_truth_direct_2l": 499,
+            "n_analysis_selected": 233,
+            "n_selected_b_pair_matched": 79,
+            "f_selected_given_truth_2l": 0.46693386773547096,
+            "f_b_pair_matched_given_selected": 0.33905579399141633
+          },
+          {
+            "x_low": 5000,
+            "x_high": 6500,
+            "n_truth_direct_2l": 31,
+            "n_analysis_selected": 18,
+            "n_selected_b_pair_matched": 3,
+            "f_selected_given_truth_2l": 0.5806451612903226,
+            "f_b_pair_matched_given_selected": 0.16666666666666666
+          },
+          {
+            "x_low": 6500,
+            "x_high": 10000,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ],
+        "truth_top_pt_GeV": [
+          {
+            "x_low": 0,
+            "x_high": 100,
+            "n_truth_direct_2l": 9,
+            "n_analysis_selected": 7,
+            "n_selected_b_pair_matched": 5,
+            "f_selected_given_truth_2l": 0.7777777777777778,
+            "f_b_pair_matched_given_selected": 0.7142857142857143
+          },
+          {
+            "x_low": 100,
+            "x_high": 200,
+            "n_truth_direct_2l": 69,
+            "n_analysis_selected": 54,
+            "n_selected_b_pair_matched": 41,
+            "f_selected_given_truth_2l": 0.782608695652174,
+            "f_b_pair_matched_given_selected": 0.7592592592592593
+          },
+          {
+            "x_low": 200,
+            "x_high": 300,
+            "n_truth_direct_2l": 145,
+            "n_analysis_selected": 115,
+            "n_selected_b_pair_matched": 85,
+            "f_selected_given_truth_2l": 0.7931034482758621,
+            "f_b_pair_matched_given_selected": 0.7391304347826086
+          },
+          {
+            "x_low": 300,
+            "x_high": 400,
+            "n_truth_direct_2l": 239,
+            "n_analysis_selected": 194,
+            "n_selected_b_pair_matched": 142,
+            "f_selected_given_truth_2l": 0.8117154811715481,
+            "f_b_pair_matched_given_selected": 0.7319587628865979
+          },
+          {
+            "x_low": 400,
+            "x_high": 600,
+            "n_truth_direct_2l": 632,
+            "n_analysis_selected": 517,
+            "n_selected_b_pair_matched": 332,
+            "f_selected_given_truth_2l": 0.8180379746835443,
+            "f_b_pair_matched_given_selected": 0.6421663442940039
+          },
+          {
+            "x_low": 600,
+            "x_high": 800,
+            "n_truth_direct_2l": 623,
+            "n_analysis_selected": 470,
+            "n_selected_b_pair_matched": 283,
+            "f_selected_given_truth_2l": 0.7544141252006421,
+            "f_b_pair_matched_given_selected": 0.6021276595744681
+          },
+          {
+            "x_low": 800,
+            "x_high": 1200,
+            "n_truth_direct_2l": 842,
+            "n_analysis_selected": 564,
+            "n_selected_b_pair_matched": 254,
+            "f_selected_given_truth_2l": 0.669833729216152,
+            "f_b_pair_matched_given_selected": 0.450354609929078
+          },
+          {
+            "x_low": 1200,
+            "x_high": 1800,
+            "n_truth_direct_2l": 611,
+            "n_analysis_selected": 309,
+            "n_selected_b_pair_matched": 83,
+            "f_selected_given_truth_2l": 0.5057283142389526,
+            "f_b_pair_matched_given_selected": 0.2686084142394822
+          },
+          {
+            "x_low": 1800,
+            "x_high": 2500,
+            "n_truth_direct_2l": 259,
+            "n_analysis_selected": 95,
+            "n_selected_b_pair_matched": 13,
+            "f_selected_given_truth_2l": 0.3667953667953668,
+            "f_b_pair_matched_given_selected": 0.1368421052631579
+          },
+          {
+            "x_low": 2500,
+            "x_high": 4000,
+            "n_truth_direct_2l": 11,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.2727272727272727,
+            "f_b_pair_matched_given_selected": 0.0
+          }
+        ],
+        "truth_min_dr_bl": [
+          {
+            "x_low": 0,
+            "x_high": 0.1,
+            "n_truth_direct_2l": 4,
+            "n_analysis_selected": 1,
+            "n_selected_b_pair_matched": 1,
+            "f_selected_given_truth_2l": 0.25,
+            "f_b_pair_matched_given_selected": 1.0
+          },
+          {
+            "x_low": 0.1,
+            "x_high": 0.2,
+            "n_truth_direct_2l": 49,
+            "n_analysis_selected": 18,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.3673469387755102,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 0.2,
+            "x_high": 0.3,
+            "n_truth_direct_2l": 921,
+            "n_analysis_selected": 407,
+            "n_selected_b_pair_matched": 7,
+            "f_selected_given_truth_2l": 0.44191096634093374,
+            "f_b_pair_matched_given_selected": 0.0171990171990172
+          },
+          {
+            "x_low": 0.3,
+            "x_high": 0.4,
+            "n_truth_direct_2l": 611,
+            "n_analysis_selected": 370,
+            "n_selected_b_pair_matched": 77,
+            "f_selected_given_truth_2l": 0.6055646481178396,
+            "f_b_pair_matched_given_selected": 0.20810810810810812
+          },
+          {
+            "x_low": 0.4,
+            "x_high": 0.5,
+            "n_truth_direct_2l": 740,
+            "n_analysis_selected": 645,
+            "n_selected_b_pair_matched": 515,
+            "f_selected_given_truth_2l": 0.8716216216216216,
+            "f_b_pair_matched_given_selected": 0.7984496124031008
+          },
+          {
+            "x_low": 0.5,
+            "x_high": 0.7,
+            "n_truth_direct_2l": 665,
+            "n_analysis_selected": 561,
+            "n_selected_b_pair_matched": 429,
+            "f_selected_given_truth_2l": 0.843609022556391,
+            "f_b_pair_matched_given_selected": 0.7647058823529411
+          },
+          {
+            "x_low": 0.7,
+            "x_high": 1.0,
+            "n_truth_direct_2l": 310,
+            "n_analysis_selected": 238,
+            "n_selected_b_pair_matched": 162,
+            "f_selected_given_truth_2l": 0.7677419354838709,
+            "f_b_pair_matched_given_selected": 0.680672268907563
+          },
+          {
+            "x_low": 1.0,
+            "x_high": 1.5,
+            "n_truth_direct_2l": 110,
+            "n_analysis_selected": 73,
+            "n_selected_b_pair_matched": 41,
+            "f_selected_given_truth_2l": 0.6636363636363637,
+            "f_b_pair_matched_given_selected": 0.5616438356164384
+          },
+          {
+            "x_low": 1.5,
+            "x_high": 2.0,
+            "n_truth_direct_2l": 21,
+            "n_analysis_selected": 12,
+            "n_selected_b_pair_matched": 6,
+            "f_selected_given_truth_2l": 0.5714285714285714,
+            "f_b_pair_matched_given_selected": 0.5
+          },
+          {
+            "x_low": 2.0,
+            "x_high": 3.0,
+            "n_truth_direct_2l": 9,
+            "n_analysis_selected": 3,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": 0.3333333333333333,
+            "f_b_pair_matched_given_selected": 0.0
+          },
+          {
+            "x_low": 3.0,
+            "x_high": 5.0,
+            "n_truth_direct_2l": 0,
+            "n_analysis_selected": 0,
+            "n_selected_b_pair_matched": 0,
+            "f_selected_given_truth_2l": null,
+            "f_b_pair_matched_given_selected": null
+          }
+        ]
+      },
+      "key_validation": null,
+      "limitations": "Truth-direct-2l excludes W->tau decays. Reco-object eligibility uses exactly the region's tight pT>25 GeV OS leptons, baseline-JVT >=2 jets, and >=1 tagged baseline jet above 30 GeV. Raw match stages do not include the rich-ntuple neutrino/oracle validity checks."
+    }
+  ]
+}

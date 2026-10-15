@@ -1,19 +1,27 @@
 general:
   debug_level: INFO # Logger level
-  input_filelist_path: "../metadata_vyper/filelist.txt" # Path to the metadata relative to fastframes directory
-  input_sumweights_path: "../metadata_vyper/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
-  output_path_histograms: "../output_histograms_vyper/" # Path to the output histograms relative to fastframes directory
-  output_path_ntuples: "../output_ntuples_vyper_new/" # Path to the output ntuples relative to fastframes directory
+  input_filelist_path: "/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/skimmedfilellist.txt" #"/home/leet/FF/metadata_ttbar_reco/skimmedfilellist.txt" # "/data/leet/FFTutorial/metadata_hyper_run2/filelist_valid.txt" #"../metadata_class/filelist_valid.txt" # Path to the metadata relative to fastframes directory
+  input_sumweights_path: "/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #"/data/leet/FFTutorial/metadata_ttbar2L_run2_run3/sum_of_weights.txt" #"/home/leet/FF/metadata_ttbar_reco/sum_of_weights.txt" #  "/data/leet/FFTutorial/metadata_hyper_run2/sum_of_weights.txt" #"../metadata_class/sum_of_weights.txt" # Path to the metadata relative to fastframes directory
+  output_path_histograms: "/data/leet/FFTutorial/output_histograms_ttbarreco_2_4" # Path to the output histograms relative to fastframes directory
+  output_path_ntuples: "/data/leet/FFTutorial/output_ntuples_ttbarreco_23_4_vyper" # Path to the output ntuples relative to fastframes directory
   default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
   default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" # * weight_ftag_effSF_GN2v01_Continuous_NOSYS"
   default_reco_tree_name: "reco" # Name of the reco tree in the input files.
   xsection_files: # Location of the cross-section, k-factor, filter-efficiency medatada split per campaign.
-    - files: ["/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt"]
-      campaigns: [ "mc23e", "mc23d"] #"mc23a", "mc23d",
+    # - files: ["/cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt"]
+    #   campaigns: ["mc23a", "mc23d", "mc23e"]
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d","mc23e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
   luminosity: # Luminosity for the campaigns
-    # mc23a: 29049.3 # update?
+    mc23a: 29049.3 # update?
     mc23d: 27239.9 # update?
-    mc23e: 25000.0
+    mc23e: 109400.0
   automatic_systematics: False
   nominal_only: True # Run with/without systematics.
   #config_define_after_custom_class : True
@@ -71,8 +79,8 @@ general:
 #     #     truth: "particle_met"
 
 regions: # All the regions (defined by a selection criteria) to be used in the analysis.
-  - name: ttll_signal_fully_matched
-    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 #n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && 
+  - name: ttll_fully_matched
+    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 && neutrino_both_nonzero_NOSYS == 1
     variables: &ttll_signal_vars
       - name: n_jet
         type: unsigned long
@@ -412,16 +420,16 @@ regions: # All the regions (defined by a selection criteria) to be used in the a
   # - name: ttll_signal_fully_matched_5plusjets
   #   selection: is_fully_matched_NOSYS ==1 && region_name_NOSYS == ("2l") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 5 # && n_bjets_NOSYS >= 1 &&
   #   variables: *ttll_signal_vars
-  - name: ttll_signal_paper_selection
-    selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == ("signal") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
-    variables: *ttll_signal_vars
+  # - name: ttll_signal_paper_selection
+  #   selection: is_fully_matched_NOSYS == 1 && region_name_NOSYS == ("2l") && signal_NOSYS == ("signal") && SingleLepton_pass_triggers_NOSYS == 1 && n_jets_NOSYS >= 2 && n_bjets_NOSYS >= 1 
+  #   variables: *ttll_signal_vars
   # - name: ttll_background
   #   selection: 
 ntuples: # Use this block to define the ntuples to be created.
   regions: # Only events passing the selection of one of the regions will be saved in the ntuple.
     #- ttll_common_selection
     #- ttll_signal
-    - ttll_signal_fully_matched
+    - ttll_fully_matched
     #- ttll_signal_paper_selection
   branches: # These branches will be saved in the ntuple.
     - eventNumber
@@ -447,20 +455,31 @@ ntuples: # Use this block to define the ntuples to be created.
     - Met_phi
     - Truth_.+_index
 
-    - nu_e_px
-    - nu_e_py
-    - nu_e_pz
-    - nu_mu_px
-    - nu_mu_py
-    - nu_mu_pz
+    - nu_e_from_t_px
+    - nu_e_from_t_py
+    - nu_e_from_t_pz
+    - nu_e_from_t_pdg_NOSYS
+    - nu_e_from_tbar_px
+    - nu_e_from_tbar_py
+    - nu_e_from_tbar_pz
+    - nu_e_from_tbar_pdg_NOSYS
+    - nu_mu_from_t_px
+    - nu_mu_from_t_py
+    - nu_mu_from_t_pz
+    - nu_mu_from_t_pdg_NOSYS
+    - nu_mu_from_tbar_px
+    - nu_mu_from_tbar_py
+    - nu_mu_from_tbar_pz
+    - nu_mu_from_tbar_pdg_NOSYS
+    - neutrino_vector
 
-    # - nu_from_t_eta
-    # - nu_from_t_phi
-    # - nu_from_t_pt
-    # - nu_from_tbar_eta
-    # - nu_from_tbar_phi
-    # - nu_from_tbar_pt
-    # - nu_from_t_e
+    # - nu_mu_from_t_eta
+    # - nu_mu_from_t_phi
+    # - nu_mu_from_t_pt
+    # - nu_mu_from_tbar_eta
+    # - nu_mu_from_tbar_phi
+    # - nu_mu_from_tbar_pt
+    # - nu_mu_from_t_e
     # - nu_from_tbar_e
     # - invariant_mass_llbb_NOSYS
     # - pairing_mlb_sum_NOSYS

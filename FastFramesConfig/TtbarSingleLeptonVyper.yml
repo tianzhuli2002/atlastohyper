@@ -1,23 +1,41 @@
 general:
   debug_level: INFO
-  input_filelist_path: "/home/sdellasa/QT_HyPER_Training/fastframes/metadata/filelist.txt"
-  input_sumweights_path: "/home/sdellasa/QT_HyPER_Training/fastframes/metadata/sum_of_weights.txt"
-  output_path_histograms: "/data/sdellasa/QT_HyPER_Training/tuples_withKLFinfo"
-  output_path_ntuples: "/data/sdellasa/QT_HyPER_Training/tuples_withKLFinfo"
-  default_sumweights: "NOSYS"
-  default_event_weights: "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_beamspot * weight_leptonSF_tight_NOSYS"
-  default_reco_tree_name: "reco"
-  xsection_files: 
-    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
-    - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  input_filelist_path: "/home/leet/FF/metadata_sim_cali_10_6/filelist.txt"
+  input_sumweights_path: "/home/leet/FF/metadata_sim_cali_10_6/sum_of_weights.txt"
+  output_path_histograms: "/data/leet/FFTutorial/output_histograms_SL_29_7"
+  output_path_ntuples: "/data/leet/FFTutorial/output_ntuples_SL_29_7_test"
+  default_sumweights: "NOSYS" # Default sum of weights for the samples. This is used to calculate the scaling to the luminosity.
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS * weight_jvt_effSF_NOSYS" #* weight_ftag_effSF_GN2v01_Continuous_NOSYS"
+  default_reco_tree_name: "reco" # Name of the reco tree in the input files.
+  xsection_files: # Location of the cross-section, k-factor, filter-efficiency medatada split per campaign.
+    - campaigns: ["mc20a", "mc20d", "mc20e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+    - campaigns: ["mc23a","mc23d","mc23e"]
+      files:
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc23.txt
+        - /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/PMGTools/PMGxsecDB_mc16.txt
+  luminosity: # Luminosity for the campaigns
+    mc23a: 29049.3 # update?
+    mc23d: 27239.9 # update?
+    mc23e: 109400.0
+  automatic_systematics: False
+  nominal_only: True # Run with/without systematics.
+  #config_define_after_custom_class : True
+  split_processing_per_unique_samples: True # Process each unique sample in a separate process. This can speed up the processing if you have many samples and enough CPU cores.
+  use_rvec: True # Use ROOT::RVec instead of std::vector.
+  number_of_cpus: 16 # CPU cores to use for the analysis.
+  use_region_subfolders: False # Save the histograms in subfolders per region.
   custom_frame_name: "PartonMatcher"
   custom_options:
     class_name: "TtbarSingleLeptonFrameVyper"
-  automatic_systematics: False
-  nominal_only: True
-  #use_region_subfolders: True
-  create_tlorentz_vectors_for: ["jet", "el", "mu"]
-  number_of_cpus: 8
+  #custom_frame_name: "TtbarDileptonFrameReco" # Name of the custom class.
+  create_tlorentz_vectors_for: ["jet", "el", "mu"] # Create TLorentzVectors for the specified objects.
+  # custom_options: # Use this to pass custom options to the custom class.
+  #   metadata_histogram_name: metadata_ttbardilepton
+  #   run_tag: ttbarDilepton_v1
+  #   runner: Tim
 
 regions:
   - name: "Electron_total"
@@ -51,7 +69,7 @@ regions:
       - name: passed_triggerMatch
         title: "histo title;X axis title;Y axis title"
         definition: globalTriggerMatch_NOSYS
-        type: bool
+        type: char
         binning:
           min: 0
           max: 2
@@ -104,7 +122,7 @@ regions:
       - name: passed_triggerMatch
         title: "histo title;X axis title;Y axis title"
         definition: globalTriggerMatch_NOSYS
-        type: bool
+        type: char
         binning:
           min: 0
           max: 2
@@ -125,9 +143,17 @@ regions:
           min: 0
           max: 10
           number_of_bins: 10
+      - name: Jets_fullyMatched
+        title: "histo title;X axis title;Y axis title"
+        definition: Jets_fullyMatched_NOSYS
+        type: bool
+        binning:
+          min: 0
+          max: 2
+          number_of_bins: 2
 
 ntuples:
-  selection: Electron_pass_basic_NOSYS || Muon_pass_basic_NOSYS
+  selection: (Electron_pass_basic_NOSYS || Muon_pass_basic_NOSYS) && Jets_fullyMatched_NOSYS
   branches:
     - eventNumber
     - Electron_pt
@@ -152,28 +178,427 @@ ntuples:
     - Met_phi
     - Truth_.+_index
     - KLF_.+_index
+    - nu_px
+    - nu_py
+    - nu_pz
 
 samples:
 # ttbar
+  - name: "ttbar_singlelep_2024" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
+    dsids: [601229]
+    campaigns: ["mc23e"]
+    simulation_type: "fullsim" # mc is full sim
+    event_weights: &no_beamspot_weight "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS"
+
   - name: "ttbar_singlelep_2023" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
     dsids: [601229]
     campaigns: ["mc23d"]
     simulation_type: "fullsim" # mc is full sim
-    event_weights: &no_beamspot_weight "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS"
+    event_weights: *no_beamspot_weight #"weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS"
   - name: "ttbar_singlelep_2022" # For run3 ttbar is split into 3 samples: ttbar-> single lep + jets, ttbar_other-> all_had, ttbar_dilep-> ttbar_dilep. All should be used for ttbar.
     dsids: [601229]
     campaigns: ["mc23a"]
     simulation_type: "fullsim" # mc is full sim
     event_weights: *no_beamspot_weight
-  - name: "ttbar_nonallhad_2018"
-    dsids: [410470]
-    campaigns: ["mc20e"]
-    simulation_type: "fullsim"
-  - name: "ttbar_nonallhad_2017"
-    dsids: [410470]
-    campaigns: ["mc20d"]
-    simulation_type: "fullsim"
-  - name: "ttbar_nonallhad_2016"
-    dsids: [410470]
-    campaigns: ["mc20a"]
-    simulation_type: "fullsim"
+  - name: ttbar_nonallhad_2018
+    dsids:
+    - 410470
+    campaigns:
+    - mc20e
+    simulation_type: fullsim
+  - name: ttbar_nonallhad_2017
+    dsids:
+    - 410470
+    campaigns:
+    - mc20d
+    simulation_type: fullsim
+  - name: ttbar_nonallhad_2016
+    dsids:
+    - 410470
+    campaigns:
+    - mc20a
+    simulation_type: fullsim
+  - name: single_top_2023
+    dsids:
+    - 601352
+    - 601355
+    - 601348
+    - 601349
+    - 601350
+    - 601351
+    campaigns:
+    - mc23d
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: single_top_2022
+    dsids:
+    - 601352
+    - 601355
+    - 601348
+    - 601349
+    - 601350
+    - 601351
+    campaigns:
+    - mc23a
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: single_top_2024
+    dsids:
+    - 601352
+    - 601355
+    - 601348
+    - 601349
+    - 601350
+    - 601351
+    campaigns:
+    - mc23e
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: single_top_2018
+    dsids:
+    - 601352
+    - 601355
+    - 410644
+    - 410645
+    - 410658
+    - 410659
+    campaigns:
+    - mc20e
+    simulation_type: fullsim
+  - name: single_top_2017
+    dsids:
+    - 601352
+    - 601355
+    - 410644
+    - 410645
+    - 410658
+    - 410659
+    campaigns:
+    - mc20d
+    simulation_type: fullsim
+  - name: single_top_2016
+    dsids:
+    - 601352
+    - 601355
+    - 410644
+    - 410645
+    - 410658
+    - 410659
+    campaigns:
+    - mc20a
+    simulation_type: fullsim
+  - name: W_jets_Sherpa_2016
+    dsids:
+    - 700338
+    - 700339
+    - 700340
+    - 700341
+    - 700342
+    - 700343
+    - 700344
+    - 700345
+    - 700346
+    - 700347
+    - 700348
+    - 700349
+    campaigns:
+    - mc20a
+    simulation_type: fullsim
+  - name: W_jets_Sherpa_2017
+    dsids:
+    - 700338
+    - 700339
+    - 700340
+    - 700341
+    - 700342
+    - 700343
+    - 700344
+    - 700345
+    - 700346
+    - 700347
+    - 700348
+    - 700349
+    campaigns:
+    - mc20d
+    simulation_type: fullsim
+  - name: W_jets_Sherpa_2018
+    dsids:
+    - 700338
+    - 700339
+    - 700340
+    - 700341
+    - 700342
+    - 700343
+    - 700344
+    - 700345
+    - 700346
+    - 700347
+    - 700348
+    - 700349
+    campaigns:
+    - mc20e
+    simulation_type: fullsim
+  - name: W_jets_Sherpa_2022
+    dsids:
+    - 700777
+    - 700778
+    - 700779
+    - 700780
+    - 700781
+    - 700782
+    - 700783
+    - 700784
+    - 700785
+    campaigns:
+    - mc23a
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: W_jets_Sherpa_2023
+    dsids:
+    - 700777
+    - 700778
+    - 700779
+    - 700780
+    - 700781
+    - 700782
+    - 700783
+    - 700784
+    - 700785
+    campaigns:
+    - mc23d
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: W_jets_Sherpa_2024
+    dsids:
+    - 700777
+    - 700778
+    - 700779
+    - 700780
+    - 700781
+    - 700782
+    - 700783
+    - 700784
+    - 700785
+    campaigns:
+    - mc23e
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: Z_jets_Sherpa_2016
+    dsids:
+    - 700320
+    - 700321
+    - 700322
+    - 700323
+    - 700324
+    - 700325
+    - 700792
+    - 700793
+    - 700794
+    - 700335
+    - 700336
+    - 700337
+    campaigns:
+    - mc20a
+    simulation_type: fullsim
+  - name: Z_jets_Sherpa_2017
+    dsids:
+    - 700320
+    - 700321
+    - 700322
+    - 700323
+    - 700324
+    - 700325
+    - 700792
+    - 700793
+    - 700794
+    - 700335
+    - 700336
+    - 700337
+    campaigns:
+    - mc20d
+    simulation_type: fullsim
+  - name: Z_jets_Sherpa_2018
+    dsids:
+    - 700320
+    - 700321
+    - 700322
+    - 700323
+    - 700324
+    - 700325
+    - 700792
+    - 700793
+    - 700794
+    - 700335
+    - 700336
+    - 700337
+    campaigns:
+    - mc20e
+    simulation_type: fullsim
+  - name: Z_jets_Sherpa_2022
+    dsids:
+    - 700786
+    - 700787
+    - 700788
+    - 700789
+    - 700790
+    - 700791
+    - 700792
+    - 700793
+    - 700794
+    - 700795
+    - 700796
+    - 700797
+    campaigns:
+    - mc23a
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: Z_jets_Sherpa_2023
+    dsids:
+    - 700786
+    - 700787
+    - 700788
+    - 700789
+    - 700790
+    - 700791
+    - 700792
+    - 700793
+    - 700794
+    - 700795
+    - 700796
+    - 700797
+    campaigns:
+    - mc23d
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: Z_jets_Sherpa_2024
+    dsids:
+    - 700786
+    - 700787
+    - 700788
+    - 700789
+    - 700790
+    - 700791
+    - 700792
+    - 700793
+    - 700794
+    - 700795
+    - 700796
+    - 700797
+    campaigns:
+    - mc23e
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: diboson_2016
+    dsids:
+    - 701055
+    - 701040
+    - 701060
+    - 701045
+    - 701050
+    - 701065
+    - 701125
+    - 701105
+    - 701085
+    - 701090
+    - 701115
+    - 701120
+    campaigns:
+    - mc20a
+    simulation_type: fullsim
+  - name: diboson_2017
+    dsids:
+    - 701055
+    - 701040
+    - 701060
+    - 701045
+    - 701050
+    - 701065
+    - 701125
+    - 701105
+    - 701085
+    - 701090
+    - 701115
+    - 701120
+    campaigns:
+    - mc20d
+    simulation_type: fullsim
+  - name: diboson_2018
+    dsids:
+    - 701055
+    - 701040
+    - 701060
+    - 701045
+    - 701050
+    - 701065
+    - 701125
+    - 701105
+    - 701085
+    - 701090
+    - 701115
+    - 701120
+    campaigns:
+    - mc20e
+    simulation_type: fullsim
+  - name: diboson_2022
+    dsids:
+    - 701040
+    - 701045
+    - 701050
+    - 701055
+    - 701060
+    - 701065
+    - 701105
+    - 701110
+    - 701125
+    - 701085
+    - 701090
+    - 701095
+    - 701100
+    - 701115
+    - 701120
+    campaigns:
+    - mc23a
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: diboson_2023
+    dsids:
+    - 701040
+    - 701045
+    - 701050
+    - 701055
+    - 701060
+    - 701065
+    - 701105
+    - 701110
+    - 701125
+    - 701085
+    - 701090
+    - 701095
+    - 701100
+    - 701115
+    - 701120
+    campaigns:
+    - mc23d
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS
+  - name: diboson_2024
+    dsids:
+    - 701040
+    - 701045
+    - 701050
+    - 701055
+    - 701060
+    - 701065
+    - 701105
+    - 701110
+    - 701125
+    - 701085
+    - 701090
+    - 701095
+    - 701100
+    - 701115
+    - 701120
+    campaigns:
+    - mc23e
+    simulation_type: fullsim
+    event_weights: weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS * weight_leptonSF_tight_NOSYS

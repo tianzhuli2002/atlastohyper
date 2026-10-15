@@ -23,6 +23,7 @@ def MakeDatasetTtbarSingleLeptonVyper(args, loop_storage, output: str, split: bo
     includeBTag  = args.btag
     fullyMatch   = args.fully_matched
     dataset_size = args.dataset_size
+    noNeutrino   = args.no_neutrino
 
     # Max number of objects (padding)
     pad_to_jet = 20
@@ -61,7 +62,7 @@ def MakeDatasetTtbarSingleLeptonVyper(args, loop_storage, output: str, split: bo
     # Neutrino features
     nu_px  = tree["nu_px"].array(library='np')
     nu_py  = tree["nu_py"].array(library='np')
-    nu_pz  = tree["nu_pz"].array(library='np")
+    nu_pz  = tree["nu_pz"].array(library='np')
 
     # Met features
     met_phi   = tree["Met_phi"].array(library='np')
@@ -248,7 +249,9 @@ def MakeDatasetTtbarSingleLeptonVyper(args, loop_storage, output: str, split: bo
     labels_group.create_dataset("ELECTRON", data=el_labels)
     labels_group.create_dataset("MUON",     data=mu_labels)
     labels_group.create_dataset("MET",      data=met_labels)
-    labels_group.create_dataset("NEUTRINO", data=nu_labels)
+    
+    if not noNeutrino:
+        labels_group.create_dataset("NEUTRINO", data=nu_labels)
 
     h5_file.close()
     root_file.close()
@@ -260,6 +263,13 @@ if __name__ == "__main__":
     parser.add_argument('-ds', '--dataset-size', type=int, help='Number of events to save', required=False)
     parser.add_argument('-fm', '--fully-matched', action='store_true', help='Keep only fully matched events', required=False)
     parser.add_argument('-b', '--btag', action='store_true', help='Have btag information in the h5 file', required=False)
+    parser.add_argument(
+        '-nn',
+        '--no-neutrino',
+        action='store_true',
+        default=False,
+        help='Do not save LABELS/NEUTRINO (included by default)',
+    )    
     args = parser.parse_args()    
-   
+    
     main(MakeDatasetTtbarSingleLeptonVyper, args)

@@ -1,0 +1,299 @@
+{
+  "assumed_object_and_MET_units": "MeV",
+  "entries_audited": 500,
+  "input": "/data/leet/ntuples/run2_ttbar_dilep/user.leet.574797.MGPy8EG.DAOD_PHYS.e8588_s3797_r13167_p7266.TtNT_2L_2Lsys_b71171e_output/user.leet.52697131._000002.output.root",
+  "input_entries": 34010,
+  "methods": {
+    "DA": {
+      "antitop_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_antitop": {
+        "median_four_vector_norm_difference": 458801650.34672403,
+        "median_mass_GeV": 52963.77047216649
+      },
+      "neutrino_MET_balance": {
+        "component_scale_1": {
+          "median_MET_residual_GeV": 20.38905376757154,
+          "p16_MET_residual_GeV": 9.923652352865119,
+          "p84_MET_residual_GeV": 38.764481718545376
+        },
+        "component_scale_1000": {
+          "median_MET_residual_GeV": 98888.80146442703,
+          "p16_MET_residual_GeV": 45751.19827183136,
+          "p84_MET_residual_GeV": 194796.74386900492
+        }
+      },
+      "stored_antitop_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.18867418030276895,
+        "median_four_vector_norm_difference": 0.02252292318828346
+      },
+      "stored_antitop_mass_GeV": {
+        "median": 142.98467187499995
+      },
+      "stored_top_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.1954254291485995,
+        "median_four_vector_norm_difference": 0.022536014785177416
+      },
+      "stored_top_mass_GeV": {
+        "median": 142.04071875
+      },
+      "top_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 2.220446049250313e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_top": {
+        "median_four_vector_norm_difference": 436445410.4668696,
+        "median_mass_GeV": 51992.15811053287
+      }
+    },
+    "EM": {
+      "antitop_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 256,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 1.0,
+        "fraction_scale_1": 0.0,
+        "matched": 256,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 0.0009999999973464438,
+        "p16_native_over_object_pt": 0.000999999969079097,
+        "p84_native_over_object_pt": 0.0010000000268688039
+      },
+      "antitop_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_antitop": {
+        "median_four_vector_norm_difference": 162810.09417931133,
+        "median_mass_GeV": 158.86571049842152
+      },
+      "neutrino_MET_balance": {
+        "component_scale_1": {
+          "median_MET_residual_GeV": 113.8958793983987,
+          "p16_MET_residual_GeV": 55.2884588944968,
+          "p84_MET_residual_GeV": 208.54578296263608
+        },
+        "component_scale_1000": {
+          "median_MET_residual_GeV": 26.98504090817199,
+          "p16_MET_residual_GeV": 1.8294409515066658e-05,
+          "p84_MET_residual_GeV": 166.03911499999992
+        }
+      },
+      "stored_antitop_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.07002218603156507,
+        "median_four_vector_norm_difference": 0.0010410106494258284
+      },
+      "stored_antitop_mass_GeV": {
+        "median": 6.005446777343779
+      },
+      "stored_top_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.05358607193920761,
+        "median_four_vector_norm_difference": 0.0010116082493184626
+      },
+      "stored_top_mass_GeV": {
+        "median": 6.06227001953127
+      },
+      "top_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 256,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 1.0,
+        "fraction_scale_1": 0.0,
+        "matched": 256,
+        "max_matched_deltaR": 2.220446049250313e-16,
+        "median_native_over_object_pt": 0.0009999999990821253,
+        "p16_native_over_object_pt": 0.0009999999695622993,
+        "p84_native_over_object_pt": 0.001000000026422169
+      },
+      "top_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_top": {
+        "median_four_vector_norm_difference": 162920.73085192137,
+        "median_mass_GeV": 161.34539741268776
+      }
+    },
+    "NW": {
+      "antitop_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 478,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 1.0,
+        "fraction_scale_1": 0.0,
+        "matched": 478,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 0.0009999999982022495,
+        "p16_native_over_object_pt": 0.0009999999703284097,
+        "p84_native_over_object_pt": 0.0010000000285398992
+      },
+      "antitop_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_antitop": {
+        "median_four_vector_norm_difference": 539502.1825250715,
+        "median_mass_GeV": 210.50098448442975
+      },
+      "neutrino_MET_balance": {
+        "component_scale_1": {
+          "median_MET_residual_GeV": 113.86598312693093,
+          "p16_MET_residual_GeV": 55.29486452284392,
+          "p84_MET_residual_GeV": 208.52724960512356
+        },
+        "component_scale_1000": {
+          "median_MET_residual_GeV": 14.259724334602158,
+          "p16_MET_residual_GeV": 4.630190442185959,
+          "p84_MET_residual_GeV": 53.116234412071876
+        }
+      },
+      "stored_antitop_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.15698475507088006,
+        "median_four_vector_norm_difference": 0.007130481001221916
+      },
+      "stored_antitop_mass_GeV": {
+        "median": 13.294659179687482
+      },
+      "stored_top_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.15386215480975807,
+        "median_four_vector_norm_difference": 0.0070519223742511045
+      },
+      "stored_top_mass_GeV": {
+        "median": 13.463165039062606
+      },
+      "top_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 478,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 1.0,
+        "fraction_scale_1": 0.0,
+        "matched": 478,
+        "max_matched_deltaR": 2.220446049250313e-16,
+        "median_native_over_object_pt": 0.0009999999985364787,
+        "p16_native_over_object_pt": 0.000999999970756328,
+        "p84_native_over_object_pt": 0.0010000000242900147
+      },
+      "top_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_top": {
+        "median_four_vector_norm_difference": 538162.9895998109,
+        "median_mass_GeV": 209.12853712895972
+      }
+    },
+    "VyPER": {
+      "antitop_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 496,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "antitop_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_antitop": {
+        "median_four_vector_norm_difference": 427924935.969487,
+        "median_mass_GeV": 82842.01535320086
+      },
+      "neutrino_MET_balance": {
+        "component_scale_1": {
+          "median_MET_residual_GeV": 44.213004695562276,
+          "p16_MET_residual_GeV": 18.975201350120436,
+          "p84_MET_residual_GeV": 93.95215162123917
+        },
+        "component_scale_1000": {
+          "median_MET_residual_GeV": 103206.90918352966,
+          "p16_MET_residual_GeV": 47997.26257304669,
+          "p84_MET_residual_GeV": 202322.89104217538
+        }
+      },
+      "stored_antitop_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.2777663227170706,
+        "median_four_vector_norm_difference": 0.022432720436262155
+      },
+      "stored_antitop_mass_GeV": {
+        "median": 176.163546875
+      },
+      "stored_top_closure_using_native_numeric_scales": {
+        "max_abs_component_difference": 0.1793455348815769,
+        "median_four_vector_norm_difference": 0.021700552622764893
+      },
+      "stored_top_mass_GeV": {
+        "median": 176.54816406250006
+      },
+      "top_b_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 500,
+        "max_matched_deltaR": 4.440892098500626e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_lepton_pt_unit_match": {
+        "fraction_scale_0p001": 0.0,
+        "fraction_scale_1": 1.0,
+        "matched": 500,
+        "max_matched_deltaR": 2.220446049250313e-16,
+        "median_native_over_object_pt": 1.0,
+        "p16_native_over_object_pt": 1.0,
+        "p84_native_over_object_pt": 1.0
+      },
+      "top_sum_if_lepton_and_neutrino_scaled_by_1000_vs_stored_top": {
+        "median_four_vector_norm_difference": 425494448.65125597,
+        "median_mass_GeV": 82576.4837836647
+      }
+    }
+  },
+  "neutrino_MET_diagnostic": "vector sum of the two reconstructed neutrinos compared with MET; a diagnostic, not a strict equality requirement",
+  "scaled_sum_diagnostic": "The factor 1000 comparison tests whether lepton/neutrino constituent p4 values use GeV while b jets use MeV; it does not rewrite native outputs.",
+  "tree": "reco"
+}
