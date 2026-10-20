@@ -1,0 +1,14 @@
+# HTCondor (UChicago AF): one job per filelist chunk; CPU and I/O only.
+#   split -l 50 -d -a 4 --additional-suffix=.txt $FILELIST $OUT/lists/chunk_
+#   condor_submit OUT=$OUT NCHUNK=$(ls $OUT/lists/chunk_*.txt | wc -l) Validation/batch/truth_lepton_sidecar.sub
+universe       = vanilla
+executable     = Validation/batch/truth_lepton_sidecar.sh
+arguments      = $(Process) $(OUT)
+getenv         = True
+request_cpus   = 1
+request_memory = 6 GB
+log            = $(OUT)/logs/truthlep_$(Cluster).log
+output         = $(OUT)/logs/truthlep_$(Cluster)_$(Process).out
+error          = $(OUT)/logs/truthlep_$(Cluster)_$(Process).err
+max_retries    = 1
+queue $(NCHUNK)
