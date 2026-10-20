@@ -57,6 +57,10 @@ def test_parent_ordering_signs_and_flags():
     assert out["truth_lplus_pdgId"][row["emu_ok"]] == -E and out["truth_lminus_pdgId"][row["emu_ok"]] == MU
     assert out["truth_lplus_pdgId"][row["swapped_order_ok"]] == -MU and out["truth_lminus_pdgId"][row["swapped_order_ok"]] == E
     assert out["truth_tau_top"][row["tau_top"]] and out["truth_direct_emu_tbar"][row["tau_top"]]
+    assert np.isnan(out["truth_lplus_E"][row["tau_top"]])
+    assert np.isfinite(out["truth_lminus_E"][row["tau_top"]])
+    assert np.isfinite(out["truth_lplus_E"][row["hadronic_tbar"]])
+    assert np.isnan(out["truth_lminus_E"][row["hadronic_tbar"]])
     assert counters["n_wrong_sign"] == 1 and counters["n_sibling_neutrino_flavour_mismatch"] == 1
     assert counters["n_tau_top"] == 1 and counters["n_hadronic_tbar"] == 1
     assert counters["n_truth_spin_support"] == 2
@@ -125,6 +129,7 @@ def test_validate_flags_wrong_sign_counter():
         path.with_suffix(".manifest.json").write_text(json.dumps({"rows": n, "counters": counters}))
         checks = sidecar.validate(path)
         assert checks["finite_on_support"] and checks["sibling_flavour_on_support"]
+        assert checks["nan_off_support_lplus"] and checks["nan_off_support_lminus"]
         assert checks["max_abs_lepton_mass_gev"] < 0.2
         assert not checks["passed"]  # the synthetic sample deliberately contains one wrong-sign top
 

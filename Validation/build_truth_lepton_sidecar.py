@@ -384,6 +384,7 @@ def validate(path: Path) -> dict:
         "support_fraction": float(support.mean()) if len(support) else None,
         "finite_on_support": bool(np.isfinite(lplus[support]).all() and np.isfinite(lminus[support]).all()),
         "nan_off_support_lplus": bool(np.isnan(lplus[~arrays["truth_direct_emu_top"]]).all()),
+        "nan_off_support_lminus": bool(np.isnan(lminus[~arrays["truth_direct_emu_tbar"]]).all()),
         "lplus_pdg_negative_on_support": bool((arrays["truth_lplus_pdgId"][support] < 0).all()),
         "lminus_pdg_positive_on_support": bool((arrays["truth_lminus_pdgId"][support] > 0).all()),
         "sibling_flavour_on_support": bool(
@@ -397,7 +398,8 @@ def validate(path: Path) -> dict:
         "dsids": {str(k): int(v) for k, v in zip(*np.unique(arrays["mcChannelNumber"], return_counts=True))},
         "counters": manifest["counters"],
     }
-    must = ["rows_match_manifest", "support_count_matches_manifest", "finite_on_support", "nan_off_support_lplus",
+    must = ["rows_match_manifest", "support_count_matches_manifest", "finite_on_support",
+            "nan_off_support_lplus", "nan_off_support_lminus",
             "lplus_pdg_negative_on_support", "lminus_pdg_positive_on_support", "sibling_flavour_on_support"]
     checks["passed"] = all(checks[name] for name in must) and checks["duplicate_keys"] == 0 \
         and manifest["counters"]["n_wrong_sign"] == 0 and manifest["counters"]["n_multiple_direct_charged_daughters"] == 0 \
